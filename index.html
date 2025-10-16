@@ -9,26 +9,255 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header><h1>Synthèse Atelier</h1></header>
+  <header>
+    <h1>🔷 Synthèse Atelier Lactalis</h1>
+  </header>
 
-  <nav class="menu-lignes">
-    <button class="ligne-btn" onclick="ouvrirPage('atelier')">🏭</button>
-    <button class="ligne-btn" onclick="ouvrirPage('rapé')">Râpé</button>
-    <button class="ligne-btn" onclick="ouvrirPage('t2')">T2</button>
-    <button class="ligne-btn" onclick="ouvrirPage('rt')">RT</button>
-    <button class="ligne-btn" onclick="ouvrirPage('omori')">Omori</button>
-    <button class="ligne-btn" onclick="ouvrirPage('t1')">T1</button>
-    <button class="ligne-btn" onclick="ouvrirPage('sticks')">Sticks</button>
-    <button class="ligne-btn" onclick="ouvrirPage('emballage')">Emballage</button>
-    <button class="ligne-btn" onclick="ouvrirPage('des')">Dés</button>
-    <button class="ligne-btn" onclick="ouvrirPage('filets')">Filets</button>
-    <button class="ligne-btn" onclick="ouvrirPage('predecoupes')">Prédécoupés</button>
-    <button class="ligne-btn" onclick="ouvrirPage('arrets')">⏸️</button>
-    <button class="ligne-btn" onclick="ouvrirPage('organisation')">🗂️</button>
-    <button class="ligne-btn" onclick="ouvrirPage('personnel')">👥</button>
-  </nav>
+  <aside class="sidebar">
+    <button onclick="ouvrirPage('atelier')">🏭 Atelier</button>
+    <button onclick="ouvrirPage('rapé')">Râpé</button>
+    <button onclick="ouvrirPage('t2')">T2</button>
+    <button onclick="ouvrirPage('rt')">RT</button>
+    <button onclick="ouvrirPage('omori')">Omori</button>
+    <button onclick="ouvrirPage('t1')">T1</button>
+    <button onclick="ouvrirPage('sticks')">Sticks</button>
+    <button onclick="ouvrirPage('emballage')">Emballage</button>
+    <button onclick="ouvrirPage('des')">Dés</button>
+    <button onclick="ouvrirPage('filets')">Filets</button>
+    <button onclick="ouvrirPage('predecoupes')">Prédécoupés</button>
+    <button onclick="ouvrirPage('arrets')">⏸️ Arrêts</button>
+    <button onclick="ouvrirPage('organisation')">🗂️ Organisation</button>
+    <button onclick="ouvrirPage('personnel')">👥 Personnel</button>
+  </aside>
 
-  <main id="contenu"></main>
+  <main id="contenu">
+    <section id="page-atelier" class="page active">
+      <h2>Vue d’ensemble Atelier</h2>
+      <canvas id="graphGlobal"></canvas>
+      <div id="tableauGlobal"></div>
+      <button onclick="exporterGlobal()">📤 Export Excel global</button>
+    </section>
+
+    <section id="page-arrets" class="page">
+      <h2>Arrêts de ligne</h2>
+      <select id="ligneArret">
+        <option value="">Sélectionner une ligne</option>
+        <option>Râpé</option><option>T2</option><option>RT</option>
+        <option>Omori</option><option>T1</option><option>Sticks</option>
+        <option>Emballage</option><option>Dés</option><option>Filets</option>
+        <option>Prédécoupés</option>
+      </select>
+      <input id="tempsArret" type="number" placeholder="Durée d’arrêt (min)" />
+      <input id="causeArret" placeholder="Cause de l’arrêt" />
+      <button onclick="enregistrerArret()">Enregistrer</button>
+      <h3>Historique des arrêts</h3>
+      <table id="historiqueArrets"><tr><th>Ligne</th><th>Durée</th><th>Cause</th><th>Date</th></tr></table>
+    </section>
+
+    <section id="page-organisation" class="page">
+      <h2>Organisation</h2>
+      <textarea id="consigne" placeholder="Ajouter une consigne..."></textarea>
+      <button onclick="enregistrerConsigne()">Enregistrer</button>
+      <div id="historiqueConsignes"></div>
+    </section>
+
+    <section id="page-personnel" class="page">
+      <h2>Personnel</h2>
+      <input id="nomPersonnel" placeholder="Nom du salarié" />
+      <select id="motifPersonnel">
+        <option value="">Motif</option>
+        <option>Absence</option>
+        <option>Retard</option>
+        <option>Infirmerie</option>
+        <option>RAH</option>
+        <option>Autre</option>
+      </select>
+      <textarea id="commentairePersonnel" placeholder="Commentaire"></textarea>
+      <button onclick="enregistrerPersonnel()">Enregistrer</button>
+      <div id="historiquePersonnel"></div>
+    </section>
+  </main>
+  
+  <!-- Lignes de production -->
+<section id="page-rapé" class="page">
+  <h2>Ligne Râpé</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-rapé" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-rapé" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-rapé" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-rapé" placeholder="Quantité restante..." oninput="calculerEstimation('rapé')" />
+  <p id="resultat-rapé"></p>
+  <button onclick="enregistrerLigne('rapé')">Enregistrer</button>
+  <button onclick="effacerDernier('rapé')">Annuler dernier</button>
+  <button onclick="exporterLigne('rapé')">📤 Export Excel</button>
+  <canvas id="graph-rapé"></canvas>
+  <table id="historique-rapé"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-t2" class="page">
+  <h2>Ligne T2</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-t2" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-t2" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-t2" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-t2" placeholder="Quantité restante..." oninput="calculerEstimation('t2')" />
+  <p id="resultat-t2"></p>
+  <button onclick="enregistrerLigne('t2')">Enregistrer</button>
+  <button onclick="effacerDernier('t2')">Annuler dernier</button>
+  <button onclick="exporterLigne('t2')">📤 Export Excel</button>
+  <canvas id="graph-t2"></canvas>
+  <table id="historique-t2"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-rt" class="page">
+  <h2>Ligne RT</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-rt" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-rt" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-rt" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-rt" placeholder="Quantité restante..." oninput="calculerEstimation('rt')" />
+  <p id="resultat-rt"></p>
+  <button onclick="enregistrerLigne('rt')">Enregistrer</button>
+  <button onclick="effacerDernier('rt')">Annuler dernier</button>
+  <button onclick="exporterLigne('rt')">📤 Export Excel</button>
+  <canvas id="graph-rt"></canvas>
+  <table id="historique-rt"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-omori" class="page">
+  <h2>Ligne Omori</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-omori" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-omori" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-omori" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-omori" placeholder="Quantité restante..." oninput="calculerEstimation('omori')" />
+  <p id="resultat-omori"></p>
+  <button onclick="enregistrerLigne('omori')">Enregistrer</button>
+  <button onclick="effacerDernier('omori')">Annuler dernier</button>
+  <button onclick="exporterLigne('omori')">📤 Export Excel</button>
+  <canvas id="graph-omori"></canvas>
+  <table id="historique-omori"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-t1" class="page">
+  <h2>Ligne T1</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-t1" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-t1" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-t1" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-t1" placeholder="Quantité restante..." oninput="calculerEstimation('t1')" />
+  <p id="resultat-t1"></p>
+  <button onclick="enregistrerLigne('t1')">Enregistrer</button>
+  <button onclick="effacerDernier('t1')">Annuler dernier</button>
+  <button onclick="exporterLigne('t1')">📤 Export Excel</button>
+  <canvas id="graph-t1"></canvas>
+  <table id="historique-t1"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-sticks" class="page">
+  <h2>Ligne Sticks</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-sticks" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-sticks" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-sticks" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-sticks" placeholder="Quantité restante..." oninput="calculerEstimation('sticks')" />
+  <p id="resultat-sticks"></p>
+  <button onclick="enregistrerLigne('sticks')">Enregistrer</button>
+  <button onclick="effacerDernier('sticks')">Annuler dernier</button>
+  <button onclick="exporterLigne('sticks')">📤 Export Excel</button>
+  <canvas id="graph-sticks"></canvas>
+  <table id="historique-sticks"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-emballage" class="page">
+  <h2>Ligne Emballage</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-emballage" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-emballage" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-emballage" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-emballage" placeholder="Quantité restante..." oninput="calculerEstimation('emballage')" />
+  <p id="resultat-emballage"></p>
+  <button onclick="enregistrerLigne('emballage')">Enregistrer</button>
+  <button onclick="effacerDernier('emballage')">Annuler dernier</button>
+  <button onclick="exporterLigne('emballage')">📤 Export Excel</button>
+  <canvas id="graph-emballage"></canvas>
+  <table id="historique-emballage"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-des" class="page">
+  <h2>Ligne Dés</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-des" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-des" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-des" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-des" placeholder="Quantité restante..." oninput="calculerEstimation('des')" />
+  <p id="resultat-des"></p>
+  <button onclick="enregistrerLigne('des')">Enregistrer</button>
+  <button onclick="effacerDernier('des')">Annuler dernier</button>
+  <button onclick="exporterLigne('des')">📤 Export Excel</button>
+  <canvas id="graph-des"></canvas>
+  <table id="historique-des"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-filets" class="page">
+  <h2>Ligne Filets</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-filets" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-filets" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-filets" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-filets" placeholder="Quantité restante..." oninput="calculerEstimation('filets')" />
+  <p id="resultat-filets"></p>
+  <button onclick="enregistrerLigne('filets')">Enregistrer</button>
+  <button onclick="effacerDernier('filets')">Annuler dernier</button>
+  <button onclick="exporterLigne('filets')">📤 Export Excel</button>
+  <canvas id="graph-filets"></canvas>
+  <table id="historique-filets"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+</section>
+
+<section id="page-predecoupes" class="page">
+  <h2>Ligne Prédécoupés</h2>
+  <label>Heure début :</label>
+  <input type="time" id="debut-predecoupes" step="60" />
+  <label>Heure fin :</label>
+  <input type="time" id="fin-predecoupes" step="60" />
+  <label>Quantité produite :</label>
+  <input type="number" id="quantite-predecoupes" placeholder="Quantité produite..." />
+  <label>Quantité restante :</label>
+  <input type="number" id="restante-predecoupes" placeholder="Quantité restante..." oninput="calculerEstimation('predecoupes')" />
+  <p id="resultat-predecoupes"></p>
+  <button onclick="enregistrerLigne('predecoupes')">Enregistrer</button>
+  <button onclick="effacerDernier('predecoupes')">Annuler dernier</button>
+  <button onclick="exporterLigne('predecoupes')">📤 Export Excel</button>
+  <canvas id="graph-predecoupes"></canvas>
+  <table id="historique-predecoupes"><tr><th>Début</th><th>Fin</th><th>Quantité</th><th>Cadence</th><th>Est. Fin</th></tr></table>
+    </section>
 
   <button class="btn-calculatrice" onclick="toggleCalculatrice()">🧮</button>
   <div id="calculatrice" class="calculatrice">
