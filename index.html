@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synthèse Atelier</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f9ff;
+      color: #002b5c;
+      margin: 0;
+      text-align: center;
+      overflow-x: hidden;
+    }
+    header {
+      background: #0072ce;
+      color: white;
+      padding: 12px;
+      font-size: 22px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .menu-lignes {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+      background: #eaf3ff;
+      border-bottom: 2px solid #0072ce;
+    }
+    .ligne-btn {
+      background: #0072ce;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 75px;
+      height: 75px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .ligne-btn:hover { background: #005ca1; transform: scale(1.05); }
+    section {
+      background: white;
+      margin: 20px auto;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      width: 90%;
+      max-width: 700px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+    button {
+      background: #0072ce;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 600;
+    }
+    button:hover { background: #005ca1; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+    th { background: #0072ce; color: white; }
+    .btn-calculatrice {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0072ce;
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .calculatrice {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      width: 220px;
+      z-index: 999;
+    }
+    .calc-boutons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    .calc-boutons button { padding: 10px; font-size: 16px; }
+    .fermer { grid-column: span 2; background: #ff4b4b; }
+    .effacer { grid-column: span 2; background: #999; }
+  </style>
+</head>
+
+<body>
+  <header><h1>Synthèse Atelier</h1></header>
+
+  <nav class="menu-lignes">
+    <button class="ligne-btn" onclick="ouvrirPage('atelier')">🏭</button>
+    <button class="ligne-btn" onclick="ouvrirPage('rapé')">Râpé</button>
+    <button class="ligne-btn" onclick="ouvrirPage('t2')">T2</button>
+    <button class="ligne-btn" onclick="ouvrirPage('rt')">RT</button>
+    <button class="ligne-btn" onclick="ouvrirPage('omori')">Omori</button>
+    <button class="ligne-btn" onclick="ouvrirPage('t1')">T1</button>
+    <button class="ligne-btn" onclick="ouvrirPage('sticks')">Sticks</button>
+    <button class="ligne-btn" onclick="ouvrirPage('emballage')">Emballage</button>
+    <button class="ligne-btn" onclick="ouvrirPage('des')">Dés</button>
+    <button class="ligne-btn" onclick="ouvrirPage('filets')">Filets</button>
+    <button class="ligne-btn" onclick="ouvrirPage('predecoupes')">Prédécoupés</button>
+    <button class="ligne-btn" onclick="ouvrirPage('arrets')">⏸️</button>
+    <button class="ligne-btn" onclick="ouvrirPage('organisation')">🗂️</button>
+    <button class="ligne-btn" onclick="ouvrirPage('personnel')">👥</button>
+  </nav>
+
+  <main id="contenu"></main>
+
+  <button class="btn-calculatrice" onclick="toggleCalculatrice()">🧮</button>
+  <div id="calculatrice" class="calculatrice">
+    <input type="text" id="calc-affichage" readonly />
+    <div class="calc-boutons">
+      <button onclick="ajouterCalc('7')">7</button><button onclick="ajouterCalc('8')">8</button><button onclick="ajouterCalc('9')">9</button><button onclick="ajouterCalc('/')">÷</button>
+      <button onclick="ajouterCalc('4')">4</button><button onclick="ajouterCalc('5')">5</button><button onclick="ajouterCalc('6')">6</button><button onclick="ajouterCalc('*')">×</button>
+      <button onclick="ajouterCalc('1')">1</button><button onclick="ajouterCalc('2')">2</button><button onclick="ajouterCalc('3')">3</button><button onclick="ajouterCalc('-')">−</button>
+      <button onclick="ajouterCalc('0')">0</button><button onclick="ajouterCalc('.')">.</button><button onclick="calculerCalc()">=</button><button onclick="ajouterCalc('+')">+</button>
+      <button class="fermer" onclick="toggleCalculatrice()">Fermer</button><button class="effacer" onclick="effacerCalc()">C</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const contenu = document.getElementById("contenu");
+    let data = JSON.parse(localStorage.getItem("syntheseData")) || {production:{},arrets:[],organisation:[],personnel:[]};
+    const save=()=>localStorage.setItem("syntheseData",JSON.stringify(data));
+    const dateNow=()=>new Date().toLocaleDateString("fr-FR");
+    const timeNow=()=>new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+
+    function ouvrirPage(page){
+      if(page==="atelier") return pageAtelier();
+      if(page==="arrets") return pageArrets();
+      if(page==="organisation") return pageOrganisation();
+      if(page==="personnel") return pagePersonnel();
+      pageLigne(page);
+    }
+
+    function pageLigne(nom){
+      const l=data.production[nom]||{enregistrements:[],saisie:{}};
+      contenu.innerHTML=`
+        <section>
+          <h2>${nom.toUpperCase()}</h2>
+          <label>Heure début :</label><input type="time" id="debut" value="${l.saisie.debut||""}">
+          <label>Heure fin :</label><input type="time" id="fin" value="${l.saisie.fin||""}">
+          <label>Quantité :</label><input type="number" id="quantite" value="${l.saisie.quantite||""}">
+          <label>Quantité restante :</label><input type="number" id="restant" value="${l.saisie.restant||""}" oninput="majEstimation('${nom}')">
+          <p id="finEstimee">Fin estimée : —</p>
+          <textarea id="commentaire" placeholder="Commentaire...">${l.saisie.commentaire||""}</textarea>
+          <button onclick="enregistrerLigne('${nom}')">Enregistrer</button>
+          <button onclick="remiseZeroLigne('${nom}')">Remise à zéro</button>
+          <h3>Historique</h3>
+          <table><tr><th>Date</th><th>Début</th><th>Fin</th><th>Qté</th><th>Cadence</th><th>Com.</th><th></th></tr>
+          ${l.enregistrements.map((e,i)=>`<tr><td>${e.date}</td><td>${e.debut}</td><td>${e.fin}</td><td>${e.quantite}</td><td>${e.cadence}</td><td>${e.commentaire||""}</td><td><button onclick="supprLigne('${nom}',${i})">X</button></td></tr>`).join("")}</table>
+        </section>`;
+      majEstimation(nom);
+    }
+
+    function majEstimation(nom){
+      const r=parseFloat(document.getElementById("restant").value)||0;
+      const l=data.production[nom]||{enregistrements:[]};
+      const d=l.enregistrements[l.enregistrements.length-1];
+      let c=d?parseFloat(d.cadence):0;
+      const f=document.getElementById("finEstimee");
+      if(c>0&&r>0){let h=r/c;let t=new Date();t.setHours(t.getHours()+h);f.innerText=`Fin estimée : ${t.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`;}
+      else f.innerText="Fin estimée : —";
+    }
+
+    function enregistrerLigne(nom){
+      const debut=document.getElementById("debut").value,fin=document.getElementById("fin").value;
+      const quant=parseFloat(document.getElementById("quantite").value)||0,comm=document.getElementById("commentaire").value;
+      const diff=(new Date(`1970-01-01T${fin}:00`)-new Date(`1970-01-01T${debut}:00`))/3600000;
+      const cadence=diff>0?(quant/diff).toFixed(1):0;
+      if(!data.production[nom])data.production[nom]={enregistrements:[],saisie:{}};
+      data.production[nom].enregistrements.push({date:dateNow(),debut,fin,quantite:quant,cadence,commentaire:comm});
+      data.production[nom].saisie={};
+      save();pageLigne(nom);
+    }
+
+    function supprLigne(nom,i){data.production[nom].enregistrements.splice(i,1);save();pageLigne(nom);}
+    function remiseZeroLigne(nom){if(confirm("Tout remettre à zéro ?")){data.production[nom].saisie={};save();pageLigne(nom);}}
+
+    function pageArrets(){
+      contenu.innerHTML=`
+      <section><h2>Arrêts</h2>
+      <label>Ligne :</label><select id="ligneA">${Object.keys(data.production).map(l=>`<option>${l}</option>`).join("")}</select>
+      <label>Durée (min) :</label><input type="number" id="duree">
+      <label>Motif :</label><textarea id="motif"></textarea>
+      <button onclick="ajouterArret()">Enregistrer</button>
+      <table><tr><th>Date</th><th>Ligne</th><th>Durée</th><th>Motif</th></tr>
+      ${data.arrets.map(a=>`<tr><td>${a.date}</td><td>${a.ligne}</td><td>${a.duree}</td><td>${a.motif}</td></tr>`).join("")}</table></section>`;
+    }
+    function ajouterArret(){data.arrets.push({date:dateNow(),ligne:document.getElementById("ligneA").value,duree:document.getElementById("duree").value,motif:document.getElementById("motif").value});save();pageArrets();}
+
+    function pageOrganisation(){contenu.innerHTML=`<section><h2>Organisation</h2>
+    <textarea id="org"></textarea><button onclick="ajouterOrg()">Ajouter</button>
+    <ul>${data.organisation.map(o=>`<li>${o.date} - ${o.texte}</li>`).join("")}</ul></section>`;}
+    function ajouterOrg(){data.organisation.push({date:dateNow(),texte:document.getElementById("org").value});save();pageOrganisation();}
+
+    function pagePersonnel(){contenu.innerHTML=`<section><h2>Personnel</h2>
+    <input id="nomPerso" placeholder="Nom"><select id="motifPerso"><option>Absence</option><option>Retard</option><option>Départ</option><option>Autre</option></select>
+    <textarea id="commentPerso" placeholder="Commentaire"></textarea>
+    <button onclick="ajouterPerso()">Enregistrer</button>
+    <table><tr><th>Date</th><th>Nom</th><th>Motif</th><th>Commentaire</th></tr>
+    ${data.personnel.map(p=>`<tr><td>${p.date}</td><td>${p.nom}</td><td>${p.motif}</td><td>${p.commentaire}</td></tr>`).join("")}</table></section>`;}
+    function ajouterPerso(){data.personnel.push({date:dateNow(),nom:document.getElementById("nomPerso").value,motif:document.getElementById("motifPerso").value,commentaire:document.getElementById("commentPerso").value});save();pagePersonnel();}
+
+    function pageAtelier(){
+      const lignes=Object.entries(data.production);
+      contenu.innerHTML=`<section><h2>Atelier</h2><canvas id="chartAtelier" height="120"></canvas><button onclick="exporterExcel()">📤 Export Excel</button></section>`;
+      if(lignes.length){
+        const ctx=document.getElementById("chartAtelier").getContext("2d");
+        new Chart(ctx,{type:"bar",data:{labels:lignes.map(l=>l[0].toUpperCase()),datasets:[{label:"Quantité totale",data:lignes.map(l=>l[1].enregistrements.reduce((t,e)=>t+Number(e.quantite||0),0)),backgroundColor:"#0072ce"}]},options:{scales:{y:{beginAtZero:true}}}});
+      }
+    }
+
+    function exporterExcel(){
+      let csv="Catégorie;Date;Ligne;Début;Fin;Quantité;Cadence;Commentaire;Motif/Durée\n";
+      Object.entries(data.production).forEach(([n,l])=>l.enregistrements.forEach(e=>{csv+=`Production;${e.date};${n};${e.debut};${e.fin};${e.quantite};${e.cadence};${e.commentaire};\n`;}));
+      data.arrets.forEach(a=>{csv+=`Arrêt;${a.date};${a.ligne};;;;;${a.motif};${a.duree}\n`;});
+      data.personnel.forEach(p=>{csv+=`Personnel;${p.date};;${p.nom};;;${p.motif};${p.commentaire}\n`;});
+      data.organisation.forEach(o=>{csv+=`Organisation;${o.date};;;;;;${o.texte}\n`;});
+      const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});const lien=document.createElement("a");
+      lien.href=URL.createObjectURL(blob);lien.download=`Synthese_Atelier_${dateNow()}.csv`;lien.click();
+    }
+
+    // calculatrice
+    let calcAff="";function toggleCalculatrice(){const c=document.getElementById("calculatrice");c.style.display=c.style.display==="block"?"none":"block";}
+    function ajouterCalc(v){calcAff+=v;document.getElementById("calc-affichage").value=calcAff;}
+    function effacerCalc(){calcAff="";document.getElementById("calc-affichage").value="";}
+    function calculerCalc(){try{calcAff=eval(calcAff).toString();document.getElementById("calc-affichage").value=calcAff;}catch{calcAff="";document.getElementById("calc-affichage").value="Erreur";}}
+
+    pageAtelier();
+  </script>
+</body>
+</html>
