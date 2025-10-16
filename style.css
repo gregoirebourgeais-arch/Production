@@ -1,0 +1,254 @@
+/* ===== STYLE GLOBAL ===== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f5f8fc;
+  color: #0d2e5b;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(90deg, #007bff, #00aaff);
+  color: white;
+  text-align: center;
+  padding: 0.8em 0;
+  font-size: 1.3em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  width: 110px;
+  height: calc(100% - 70px);
+  background: #e6f0ff;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+}
+
+.sidebar button {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 5px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: background 0.3s;
+}
+
+.sidebar button:hover {
+  background: #005fbe;
+}
+
+/* ===== CONTENU PRINCIPAL ===== */
+main {
+  margin-left: 130px;
+  padding: 90px 20px 40px;
+  width: calc(100% - 130px);
+  overflow-y: auto;
+}
+
+.page {
+  display: none;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h2 {
+  color: #003366;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ===== FORMULAIRES ===== */
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border: 1px solid #a0c4ff;
+  border-radius: 10px;
+  font-size: 1em;
+  background: white;
+  box-sizing: border-box;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin: 6px 3px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #005fbe;
+}
+
+/* ===== TABLEAUX ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+th, td {
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  padding: 10px;
+  font-size: 0.95em;
+}
+
+th {
+  background: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+/* ===== GRAPHIQUES ===== */
+canvas {
+  max-width: 100%;
+  background: #ffffff;
+  border-radius: 10px;
+  margin-top: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ===== CALCULATRICE ===== */
+.btn-calculatrice {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  background: #007bff;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5em;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  transition: transform 0.3s;
+  z-index: 1001;
+}
+
+.btn-calculatrice:hover {
+  transform: scale(1.1);
+}
+
+.calculatrice {
+  display: none;
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  padding: 15px;
+  z-index: 1002;
+  width: 250px;
+}
+
+.calculatrice.active {
+  display: block;
+}
+
+#calc-affichage {
+  width: 100%;
+  height: 40px;
+  font-size: 1.2em;
+  text-align: right;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+.calc-boutons button {
+  width: 25%;
+  height: 45px;
+  font-size: 1.1em;
+  margin: 3px 0;
+}
+
+.calc-boutons .fermer {
+  width: 60%;
+  background: #ff7b7b;
+}
+
+.calc-boutons .effacer {
+  width: 38%;
+  background: #ffa500;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    padding: 10px;
+    gap: 8px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+  }
+
+  main {
+    margin-left: 0;
+    margin-top: 70px;
+    padding: 20px;
+    height: calc(100vh - 130px);
+  }
+
+  .sidebar button {
+    flex: 1;
+    font-size: 0.8em;
+    border-radius: 20px;
+  }
+
+  .btn-calculatrice {
+    bottom: 80px;
+  }
+  }
