@@ -1,5 +1,5 @@
-// === VARIABLES ===
-const lignes = ["Râpé","T2","RT","OMORI","T1","Sticks","Emballage","Dés","Filets","Prédécoupé"];
+// === VARIABLES GLOBALES ===
+const lignes = ["Râpé", "T2", "RT", "OMORI", "T1", "Sticks", "Emballage", "Dés", "Filets", "Prédécoupé"];
 let dataLignes = JSON.parse(localStorage.getItem("dataLignes")) || [];
 let dataArrets = JSON.parse(localStorage.getItem("dataArrets")) || [];
 let dataConsignes = JSON.parse(localStorage.getItem("dataConsignes")) || [];
@@ -9,15 +9,19 @@ let ligneActive = null;
 // === NAVIGATION ===
 function afficherPage(id) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(`page-${id}`).classList.add("active");
-  if (id === "atelier") majAtelier();
-  if (id === "lignes") afficherLignes();
-  if (id === "organisation") afficherConsignes();
-  if (id === "arrets") afficherArrets();
-  if (id === "personnel") afficherPersonnel();
+  const page = document.getElementById(`page-${id}`);
+  if (page) page.classList.add("active");
+
+  switch (id) {
+    case "atelier": majAtelier(); break;
+    case "lignes": afficherLignes(); break;
+    case "arrets": afficherArrets(); break;
+    case "organisation": afficherConsignes(); break;
+    case "personnel": afficherPersonnel(); break;
+  }
 }
 
-// === LIGNES ===
+// === PAGE LIGNES ===
 function afficherLignes() {
   const cont = document.getElementById("listeLignes");
   cont.innerHTML = "";
@@ -30,6 +34,7 @@ function afficherLignes() {
 function ouvrirLigne(nom) {
   ligneActive = nom;
   const zone = document.getElementById("zoneLigne");
+  zone.scrollIntoView({ behavior: "smooth" });
   zone.innerHTML = `
     <h3>Ligne : ${nom}</h3>
     <label>Heure début :</label><input type="time" id="hDebut">
@@ -46,16 +51,18 @@ function ouvrirLigne(nom) {
 }
 
 function majEstimation() {
-  const hD = document.getElementById("hDebut").value;
-  const hF = document.getElementById("hFin").value;
-  const q = parseFloat(document.getElementById("qRealisee").value);
-  const rest = parseFloat(document.getElementById("qRestante").value);
+  const hD = document.getElementById("hDebut")?.value;
+  const hF = document.getElementById("hFin")?.value;
+  const q = parseFloat(document.getElementById("qRealisee")?.value);
+  const rest = parseFloat(document.getElementById("qRestante")?.value);
   if (!hD || !hF || isNaN(q) || isNaN(rest)) return;
-  const diff = ((new Date(`2025-10-15T${hF}`) - new Date(`2025-10-15T${hD}`)) / 3600000);
+  const diff = (new Date(`2025-10-22T${hF}`) - new Date(`2025-10-22T${hD}`)) / 3600000;
   if (diff <= 0) return;
   const cadence = (q / diff).toFixed(2);
-  const estimation = new Date(Date.now() + (rest / cadence) * 3600000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-  document.getElementById("resultatsCalc").innerHTML = `Cadence : ${cadence}/h — Fin estimée : ${estimation}`;
+  const estimation = new Date(Date.now() + (rest / cadence) * 3600000)
+    .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  document.getElementById("resultatsCalc").innerHTML =
+    `Cadence : ${cadence}/h — Fin estimée : ${estimation}`;
 }
 
 function enregistrerLigne(nom) {
@@ -64,14 +71,23 @@ function enregistrerLigne(nom) {
   const q = parseFloat(document.getElementById("qRealisee").value);
   const rest = parseFloat(document.getElementById("qRestante").value);
   if (!hD || !hF || isNaN(q)) return alert("Champs incomplets !");
-  const diff = ((new Date(`2025-10-15T${hF}`) - new Date(`2025-10-15T${hD}`)) / 3600000);
+  const diff = (new Date(`2025-10-22T${hF}`) - new Date(`2025-10-22T${hD}`)) / 3600000;
   const cadence = (q / diff).toFixed(2);
-  const estimation = new Date(Date.now() + (rest / cadence) * 3600000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-  const ligneData = { nom, hD, hF, q, rest, cadence, estimation, date: new Date().toLocaleString() };
+  const estimation = new Date(Date.now() + (rest / cadence) * 3600000)
+    .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  const ligneData = {
+    nom, hD, hF, q, rest, cadence, estimation,
+    date: new Date().toLocaleString()
+  };
   dataLignes.push(ligneData);
   localStorage.setItem("dataLignes", JSON.stringify(dataLignes));
+
   majHistoriqueLigne(nom);
   majAtelier();
+
+  document.getElementById("qRealisee").value = "";
+  document.getElementById("qRestante").value = "";
 }
 
 function majHistoriqueLigne(nom) {
@@ -91,9 +107,9 @@ function majGraphLigne(nom, data) {
   const labels = data.map(e => e.date.split(" ")[1]);
   const valeurs = data.map(e => e.q);
   new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: {
-      labels: labels,
+      labels,
       datasets: [{
         label: `Évolution ${nom}`,
         data: valeurs,
@@ -126,20 +142,28 @@ function majGraphAtelier() {
     return entries.length ? entries[entries.length - 1].q : 0;
   });
   new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: "Quantités réalisées", data: valeurs, backgroundColor: "#1a73e8" }] },
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Quantités réalisées",
+        data: valeurs,
+        backgroundColor: "#1a73e8"
+      }]
+    },
     options: { responsive: true, plugins: { legend: { display: false } } }
   });
 }
 
 // === ARRETS ===
 function ajouterArret() {
-  const motif = document.getElementById("motifArret").value;
+  const motif = document.getElementById("motifArret").value.trim();
   if (!motif) return;
   dataArrets.push({ motif, date: new Date().toLocaleString() });
   localStorage.setItem("dataArrets", JSON.stringify(dataArrets));
   document.getElementById("motifArret").value = "";
   afficherArrets();
+  majAtelier();
 }
 
 function afficherArrets() {
@@ -169,8 +193,8 @@ function afficherConsignes() {
   div.innerHTML = "";
   dataConsignes.forEach((c, i) => {
     div.innerHTML += `
-      <div class="consigne-item ${c.realisee ? 'realisee' : ''}">
-        <input type="checkbox" ${c.realisee ? 'checked' : ''} onchange="toggleConsigne(${i})">
+      <div class="consigne-item ${c.realisee ? "realisee" : ""}">
+        <input type="checkbox" ${c.realisee ? "checked" : ""} onchange="toggleConsigne(${i})">
         <label>${c.date} — ${c.texte}</label>
       </div>`;
   });
@@ -184,9 +208,9 @@ function toggleConsigne(i) {
 
 // === PERSONNEL ===
 function ajouterPersonnel() {
-  const nom = document.getElementById("nomPersonnel").value;
-  const motif = document.getElementById("motifPersonnel").value;
-  const com = document.getElementById("commentairePersonnel").value;
+  const nom = document.getElementById("nomPersonnel").value.trim();
+  const motif = document.getElementById("motifPersonnel").value.trim();
+  const com = document.getElementById("commentairePersonnel").value.trim();
   if (!nom || !motif) return;
   dataPersonnel.push({ nom, motif, com, date: new Date().toLocaleString() });
   localStorage.setItem("dataPersonnel", JSON.stringify(dataPersonnel));
@@ -208,12 +232,12 @@ function afficherPersonnel() {
 function exporterExcel() {
   const rows = [["Ligne","Date","Heure Début","Heure Fin","Quantité Réalisée","Quantité Restante","Cadence","Fin estimée"]];
   dataLignes.forEach(e => {
-    rows.push([e.nom,e.date,e.hD,e.hF,e.q,e.rest,e.cadence,e.estimation]);
+    rows.push([e.nom, e.date, e.hD, e.hF, e.q, e.rest, e.cadence, e.estimation]);
   });
   let csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.join(";")).join("\n");
   const link = document.createElement("a");
   link.setAttribute("href", encodeURI(csvContent));
-  link.setAttribute("download", "Synthese_Production_Lactalis.csv");
+  link.setAttribute("download", "Synthese_Atelier_PPNC.csv");
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
