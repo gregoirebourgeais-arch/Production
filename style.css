@@ -1,4 +1,4 @@
-/* ==== STYLE GLOBAL - BLEU LACTALIS ==== */
+/* ==== STYLE GLOBAL - LACTALIS MARBRE ==== */
 :root {
   --bleu-lactalis: #1a73e8;
   --bleu-fond: #f4f8ff;
@@ -6,6 +6,10 @@
   --blanc: #fff;
   --arrondi: 14px;
   --ombre: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -16,7 +20,6 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden;
 }
 
 /* ==== HEADER ==== */
@@ -24,7 +27,7 @@ header {
   background-color: var(--bleu-lactalis);
   color: var(--blanc);
   text-align: center;
-  padding: 10px 0;
+  padding: 12px 0;
   font-size: 1.3rem;
   font-weight: bold;
   box-shadow: var(--ombre);
@@ -33,7 +36,7 @@ header {
   z-index: 1000;
 }
 
-/* ==== MENU LATÉRAL ==== */
+/* ==== SIDEBAR ==== */
 .sidebar {
   position: fixed;
   left: 0;
@@ -61,7 +64,8 @@ header {
   transition: 0.3s;
 }
 
-.sidebar button:hover {
+.sidebar button:hover,
+.sidebar button.active {
   background-color: var(--bleu-lactalis);
   color: var(--blanc);
 }
@@ -80,7 +84,7 @@ main {
   padding: 20px;
   border-radius: var(--arrondi);
   box-shadow: var(--ombre);
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 .page.active {
@@ -91,6 +95,19 @@ main {
 @keyframes fondu {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==== TITRES ==== */
+h2 {
+  color: var(--bleu-lactalis);
+  margin-top: 0;
+  border-bottom: 2px solid #e3ecfc;
+  padding-bottom: 6px;
+}
+
+h3 {
+  color: #0d58c1;
+  margin-top: 15px;
 }
 
 /* ==== FORMULAIRES ==== */
@@ -116,6 +133,8 @@ button {
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+  border-radius: var(--arrondi);
+  box-shadow: var(--ombre);
 }
 
 button:hover {
@@ -127,6 +146,9 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
+  border-radius: var(--arrondi);
+  overflow: hidden;
+  box-shadow: var(--ombre);
 }
 
 th, td {
@@ -138,6 +160,20 @@ th, td {
 th {
   background-color: var(--bleu-lactalis);
   color: var(--blanc);
+}
+
+tr:nth-child(even) {
+  background-color: #f8faff;
+}
+
+/* ==== CANVAS ==== */
+canvas {
+  background-color: var(--blanc);
+  border-radius: var(--arrondi);
+  box-shadow: var(--ombre);
+  padding: 10px;
+  margin-top: 15px;
+  width: 100%;
 }
 
 /* ==== CALCULATRICE ==== */
@@ -209,15 +245,6 @@ th {
   color: var(--blanc);
 }
 
-/* ==== GRAPHIQUES ==== */
-canvas {
-  background-color: var(--blanc);
-  border-radius: var(--arrondi);
-  box-shadow: var(--ombre);
-  padding: 10px;
-  margin-top: 10px;
-}
-
 /* ==== RESPONSIVE ==== */
 @media (max-width: 768px) {
   .sidebar {
@@ -244,4 +271,4 @@ canvas {
     right: 10px;
     bottom: 90px;
   }
-  }
+}
