@@ -1,21 +1,24 @@
-// ========== VARIABLES GLOBALES ==========
-const lignes = [
-  "Râpé","T2","RT","Omori","T1","Sticks","Emballage","Dés","Filets","Prédécoupés"
-];
+// ==================== VARIABLES GLOBALES ====================
+const lignes = ["Râpé","T2","RT","Omori","T1","Sticks","Emballage","Dés","Filets","Prédécoupés"];
 let dataProduction = JSON.parse(localStorage.getItem("dataProduction")) || {};
 let dataArrets = JSON.parse(localStorage.getItem("dataArrets")) || [];
 let dataConsignes = JSON.parse(localStorage.getItem("dataConsignes")) || [];
 let dataPersonnel = JSON.parse(localStorage.getItem("dataPersonnel")) || [];
 
-// ========== INITIALISATION ==========
+// ==================== INITIALISATION ====================
 window.onload = () => {
   creerPagesLignes();
+  remplirSelectLignes();
   chargerHistorique();
-  ouvrirPage('atelier');
+  chargerHistoriqueArrets();
+  chargerHistoriqueConsignes();
+  chargerHistoriquePersonnel();
   majGraphGlobal();
+  ouvrirPage("atelier");
+  planifierSauvegardeEquipe();
 };
 
-// ========== CREATION DES PAGES LIGNES ==========
+// ==================== CREATION DES PAGES LIGNES ====================
 function creerPagesLignes() {
   const container = document.getElementById("lignes");
   container.innerHTML = "";
@@ -23,7 +26,7 @@ function creerPagesLignes() {
     const id = nom.toLowerCase().replace(/é/g,'e');
     container.innerHTML += `
       <section id="page-${id}" class="page">
-        <h2>${nom}</h2>
+        <h3>${nom}</h3>
         <label>Heure début :</label>
         <input id="debut-${id}" type="time">
         <label>Heure fin :</label>
@@ -45,14 +48,14 @@ function creerPagesLignes() {
   });
 }
 
-// ========== NAVIGATION ==========
+// ==================== NAVIGATION ====================
 function ouvrirPage(page) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.getElementById(`page-${page}`).classList.add("active");
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ========== ENREGISTREMENT PRODUCTION ==========
+// ==================== ENREGISTREMENT PRODUCTION ====================
 function enregistrerProduction(id) {
   const debut = document.getElementById(`debut-${id}`).value;
   const fin = document.getElementById(`fin-${id}`).value;
@@ -77,7 +80,7 @@ function enregistrerProduction(id) {
   viderChamps(id);
 }
 
-// ========== CALCUL ESTIMATION ==========
+// ==================== CALCUL INSTANTANÉ ESTIMATION ====================
 function calculerEstimation(id) {
   const qteRest = parseFloat(document.getElementById(`restante-${id}`).value) || 0;
   const cadence = parseFloat(document.getElementById(`cadence-${id}`).value) || 0;
@@ -89,17 +92,17 @@ function estimerFin(qteRest, cadence) {
   if (!cadence || cadence <= 0 || !qteRest) return "--:--";
   const minutes = (qteRest / cadence) * 60;
   const fin = new Date(Date.now() + minutes * 60000);
-  return fin.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+  return fin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-// ========== VIDER CHAMPS ==========
+// ==================== VIDER CHAMPS ====================
 function viderChamps(id) {
   document.getElementById(`quantite-${id}`).value = "";
   document.getElementById(`restante-${id}`).value = "";
   document.getElementById(`cadence-${id}`).value = "";
 }
 
-// ========== HISTORIQUES ==========
+// ==================== HISTORIQUES ====================
 function chargerHistorique() {
   lignes.forEach(nom => {
     const id = nom.toLowerCase().replace(/é/g,'e');
@@ -114,7 +117,7 @@ function chargerHistorique() {
   });
 }
 
-// ========== GRAPHIQUES ==========
+// ==================== GRAPHIQUES ====================
 function majGraphique(id, data) {
   const ctx = document.getElementById(`graph-${id}`);
   if (!ctx) return;
@@ -150,7 +153,7 @@ function majGraphGlobal() {
     data: {
       labels: lignes,
       datasets: [{
-        label: "Cadence moyenne",
+        label: "Cadence moyenne (colis/h)",
         data: moyennes,
         backgroundColor: "#1a73e8"
       }]
@@ -159,7 +162,7 @@ function majGraphGlobal() {
   });
 }
 
-// ========== ANNULER DERNIER ==========
+// ==================== ANNULER DERNIER ====================
 function annulerDernier(id) {
   if (!dataProduction[id] || !dataProduction[id].length) return;
   dataProduction[id].pop();
@@ -168,7 +171,7 @@ function annulerDernier(id) {
   majGraphGlobal();
 }
 
-// ========== EXPORT EXCEL ==========
+// ==================== EXPORT EXCEL ====================
 function exporterHistorique(id) {
   const data = dataProduction[id] || [];
   const ws = XLSX.utils.json_to_sheet(data);
@@ -191,10 +194,20 @@ function exporterGlobal() {
   const ws = XLSX.utils.json_to_sheet(allData);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Synthèse Atelier");
-  XLSX.writeFile(wb, `Synthese_Atelier_${new Date().toLocaleDateString()}.xlsx`);
+  XLSX.writeFile(wb, `Synthese_Atelier_${new Date().toLocaleDateString()}_${new Date().toLocaleTimeString().replace(/:/g,"-")}.xlsx`);
 }
 
-// ========== ARRÊTS ==========
+// ==================== ARRÊTS ====================
+function remplirSelectLignes() {
+  const select = document.getElementById("ligneArret");
+  lignes.forEach(nom => {
+    const opt = document.createElement("option");
+    opt.value = nom;
+    opt.textContent = nom;
+    select.appendChild(opt);
+  });
+}
+
 function enregistrerArret() {
   const ligne = document.getElementById("ligneArret").value;
   const temps = document.getElementById("tempsArret").value;
@@ -203,17 +216,28 @@ function enregistrerArret() {
   dataArrets.push({ ligne, temps, cause, date: new Date().toLocaleString() });
   localStorage.setItem("dataArrets", JSON.stringify(dataArrets));
   chargerHistoriqueArrets();
+  chargerHistoriqueArretsAtelier();
 }
 
 function chargerHistoriqueArrets() {
   const table = document.getElementById("historiqueArrets");
+  if (!table) return;
   table.innerHTML = "<tr><th>Ligne</th><th>Durée</th><th>Cause</th><th>Date</th></tr>";
   dataArrets.forEach(a => {
     table.innerHTML += `<tr><td>${a.ligne}</td><td>${a.temps}</td><td>${a.cause}</td><td>${a.date}</td></tr>`;
   });
 }
 
-// ========== ORGANISATION ==========
+function chargerHistoriqueArretsAtelier() {
+  const table = document.getElementById("historiqueArretsAtelier");
+  if (!table) return;
+  table.innerHTML = "<tr><th>Ligne</th><th>Durée (min)</th><th>Cause</th><th>Date</th></tr>";
+  dataArrets.forEach(a => {
+    table.innerHTML += `<tr><td>${a.ligne}</td><td>${a.temps}</td><td>${a.cause}</td><td>${a.date}</td></tr>`;
+  });
+}
+
+// ==================== ORGANISATION ====================
 function enregistrerConsigne() {
   const texte = document.getElementById("consigne").value;
   if (!texte) return;
@@ -225,10 +249,11 @@ function enregistrerConsigne() {
 
 function chargerHistoriqueConsignes() {
   const div = document.getElementById("historiqueConsignes");
+  if (!div) return;
   div.innerHTML = dataConsignes.map(c => `<p>📅 ${c.date} — ${c.texte}</p>`).join("");
 }
 
-// ========== PERSONNEL ==========
+// ==================== PERSONNEL ====================
 function enregistrerPersonnel() {
   const nom = document.getElementById("nomPersonnel").value;
   const motif = document.getElementById("motifPersonnel").value;
@@ -244,10 +269,11 @@ function enregistrerPersonnel() {
 
 function chargerHistoriquePersonnel() {
   const div = document.getElementById("historiquePersonnel");
+  if (!div) return;
   div.innerHTML = dataPersonnel.map(p => `<p>👤 ${p.nom} — ${p.motif} — ${p.commentaire} (${p.date})</p>`).join("");
 }
 
-// ========== CALCULATRICE ==========
+// ==================== CALCULATRICE ====================
 let calcAffichage = "";
 function toggleCalculatrice() {
   document.getElementById("calculatrice").classList.toggle("active");
@@ -265,4 +291,32 @@ function calculerCalc() {
 function effacerCalc() {
   calcAffichage = "";
   document.getElementById("calc-affichage").value = "";
-    }
+}
+
+// ==================== SAUVEGARDE AUTOMATIQUE D'EQUIPE ====================
+function planifierSauvegardeEquipe() {
+  const maintenant = new Date();
+  const heuresCibles = [5, 13, 21];
+  const prochaine = heuresCibles.map(h => {
+    let t = new Date(maintenant);
+    t.setHours(h,0,0,0);
+    if (t < maintenant) t.setDate(t.getDate() + 1);
+    return t;
+  }).sort((a,b) => a-b)[0];
+
+  const delai = prochaine - maintenant;
+  setTimeout(() => {
+    if (confirm("Fin d'équipe détectée.\nVoulez-vous enregistrer le rapport Excel ?")) exporterGlobal();
+    planifierSauvegardeEquipe();
+  }, delai);
+}
+
+// ==================== REMISE A ZERO D'EQUIPE ====================
+function remiseEquipe() {
+  if (!confirm("Confirmer la remise à zéro des données de l'équipe ?")) return;
+  dataProduction = {};
+  localStorage.removeItem("dataProduction");
+  chargerHistorique();
+  majGraphGlobal();
+  alert("Remise à zéro effectuée !");
+        }
