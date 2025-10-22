@@ -1,10 +1,9 @@
 {
-  "name": "Synthèse Atelier Lactalis",
-  "short_name": "Synthèse Atelier",
-  "description": "Application de suivi de production, arrêts et personnel Lactalis",
+  "name": "Synthèse Atelier PPNC",
+  "short_name": "Atelier PPNC",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f4f8ff",
+  "background_color": "#1a73e8",
   "theme_color": "#1a73e8",
   "orientation": "portrait",
   "icons": [
