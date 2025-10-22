@@ -1,6 +1,5 @@
-const CACHE_NAME = "synthese-atelier-cache-v1";
-const urlsToCache = [
-  "./",
+const CACHE_NAME = "synthese-atelier-ppnc-v1";
+const FILES_TO_CACHE = [
   "./index.html",
   "./style.css",
   "./app.js",
@@ -9,27 +8,29 @@ const urlsToCache = [
   "./icons/icon-512.png"
 ];
 
-// === INSTALLATION ===
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+// Installation du service worker
+self.addEventListener("install", evt => {
+  evt.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(FILES_TO_CACHE);
+    })
   );
+  self.skipWaiting();
 });
 
-// === ACTIVATION ===
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames =>
-      Promise.all(cacheNames.map(name => {
-        if (name !== CACHE_NAME) caches.delete(name);
-      }))
+// Activation (nettoyage ancien cache)
+self.addEventListener("activate", evt => {
+  evt.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))
     )
   );
+  self.clients.claim();
 });
 
-// === FETCH : MODE OFFLINE ===
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
+// Interception des requêtes réseau
+self.addEventListener("fetch", evt => {
+  evt.respondWith(
+    caches.match(evt.request).then(resp => resp || fetch(evt.request))
   );
 });
