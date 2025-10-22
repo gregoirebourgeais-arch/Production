@@ -1,12 +1,12 @@
 {
   "name": "Synthèse Atelier Lactalis",
-  "short_name": "Synthèse",
-  "description": "Application Atelier Lactalis - Suivi Production, Arrêts, Personnel et Organisation.",
+  "short_name": "Synthèse Atelier",
+  "description": "Application de suivi de production, arrêts et personnel Lactalis",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f4f8ff",
   "theme_color": "#1a73e8",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icons/icon-192.png",
