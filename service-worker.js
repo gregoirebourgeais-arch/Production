@@ -1,5 +1,6 @@
-const CACHE_NAME = "synthese-atelier-ppnc-v1";
+const CACHE_NAME = "atelier-ppnc-v1";
 const FILES_TO_CACHE = [
+  "./",
   "./index.html",
   "./style.css",
   "./app.js",
@@ -8,29 +9,36 @@ const FILES_TO_CACHE = [
   "./icons/icon-512.png"
 ];
 
-// Installation du service worker
-self.addEventListener("install", evt => {
+self.addEventListener("install", (evt) => {
   evt.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log("[ServiceWorker] Mise en cache des fichiers");
       return cache.addAll(FILES_TO_CACHE);
     })
   );
   self.skipWaiting();
 });
 
-// Activation (nettoyage ancien cache)
-self.addEventListener("activate", evt => {
+self.addEventListener("activate", (evt) => {
   evt.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))
-    )
+    caches.keys().then((keyList) => {
+      return Promise.all(
+        keyList.map((key) => {
+          if (key !== CACHE_NAME) {
+            console.log("[ServiceWorker] Suppression de l'ancien cache", key);
+            return caches.delete(key);
+          }
+        })
+      );
+    })
   );
   self.clients.claim();
 });
 
-// Interception des requêtes réseau
-self.addEventListener("fetch", evt => {
+self.addEventListener("fetch", (evt) => {
   evt.respondWith(
-    caches.match(evt.request).then(resp => resp || fetch(evt.request))
+    caches.match(evt.request).then((response) => {
+      return response || fetch(evt.request);
+    })
   );
 });
