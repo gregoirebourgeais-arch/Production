@@ -1,4 +1,4 @@
-/* --- Structure globale --- */
+/* --- Reset et style global --- */
 * {
   box-sizing: border-box;
   font-family: "Segoe UI", Roboto, sans-serif;
@@ -7,7 +7,7 @@
 }
 
 body {
-  background-color: #f7fbff;
+  background-color: #f5faff;
   color: #0b2d59;
   display: flex;
   flex-direction: column;
@@ -38,7 +38,7 @@ header .logo {
   color: #003366;
 }
 
-/* --- Menu latéral --- */
+/* --- Menu principal --- */
 .side-menu {
   display: flex;
   flex-wrap: wrap;
@@ -214,7 +214,7 @@ canvas {
   transform: scale(1.1);
 }
 
-/* --- Animations --- */
+/* --- Animation douce --- */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
