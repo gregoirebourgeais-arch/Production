@@ -5,6 +5,7 @@ let dataArrets = JSON.parse(localStorage.getItem("dataArrets")) || [];
 let dataConsignes = JSON.parse(localStorage.getItem("dataConsignes")) || [];
 let dataPersonnel = JSON.parse(localStorage.getItem("dataPersonnel")) || [];
 let ligneActive = null;
+let derniereEquipe = null;
 
 // === NAVIGATION ===
 function afficherPage(id) {
@@ -19,6 +20,25 @@ function afficherPage(id) {
     case "organisation": afficherConsignes(); break;
     case "personnel": afficherPersonnel(); break;
   }
+}
+
+// === CALCUL D'ÉQUIPE ACTUELLE ===
+function determinerEquipe() {
+  const heure = new Date().getHours();
+  if (heure >= 5 && heure < 13) return "M";
+  if (heure >= 13 && heure < 21) return "AM";
+  return "N";
+}
+
+function verifierChangementEquipe() {
+  const equipeActuelle = determinerEquipe();
+  if (derniereEquipe && derniereEquipe !== equipeActuelle) {
+    if (confirm(`Changement d'équipe détecté (${derniereEquipe} → ${equipeActuelle}). Exporter les données avant réinitialisation ?`)) {
+      exporterExcel();
+    }
+    reinitialiserDonnees();
+  }
+  derniereEquipe = equipeActuelle;
 }
 
 // === PAGE LIGNES ===
@@ -43,6 +63,7 @@ function ouvrirLigne(nom) {
     <label>Quantité restante :</label><input type="number" id="qRestante" oninput="majEstimation()">
     <div id="resultatsCalc" style="margin:8px 0;font-weight:bold;"></div>
     <button onclick="enregistrerLigne('${nom}')">Enregistrer</button>
+    <button class="effacer" onclick="effacerHistoriqueLigne('${nom}')">❌ Effacer cette ligne</button>
     <h4>Historique ${nom}</h4>
     <div id="historique_${nom}"></div>
     <canvas id="graph_${nom}"></canvas>
@@ -90,6 +111,15 @@ function enregistrerLigne(nom) {
   document.getElementById("qRestante").value = "";
 }
 
+function effacerHistoriqueLigne(nom) {
+  if (confirm(`Supprimer tous les enregistrements de la ligne ${nom} ?`)) {
+    dataLignes = dataLignes.filter(e => e.nom !== nom);
+    localStorage.setItem("dataLignes", JSON.stringify(dataLignes));
+    majHistoriqueLigne(nom);
+    majAtelier();
+  }
+}
+
 function majHistoriqueLigne(nom) {
   const div = document.getElementById(`historique_${nom}`);
   if (!div) return;
@@ -122,7 +152,7 @@ function majGraphLigne(nom, data) {
   });
 }
 
-// === ATELIER ===
+// === PAGE ATELIER ===
 function majAtelier() {
   const resume = document.getElementById("resumeAtelier");
   resume.innerHTML = "<h3>Résumé des lignes</h3>";
@@ -155,11 +185,13 @@ function majGraphAtelier() {
   });
 }
 
-// === ARRETS ===
+// === PAGE ARRETS ===
 function ajouterArret() {
+  const ligne = document.getElementById("ligneArret").value;
+  const type = document.getElementById("typeArret").value;
   const motif = document.getElementById("motifArret").value.trim();
-  if (!motif) return;
-  dataArrets.push({ motif, date: new Date().toLocaleString() });
+  if (!ligne || !motif || !type) return;
+  dataArrets.push({ ligne, type, motif, date: new Date().toLocaleString() });
   localStorage.setItem("dataArrets", JSON.stringify(dataArrets));
   document.getElementById("motifArret").value = "";
   afficherArrets();
@@ -169,13 +201,15 @@ function ajouterArret() {
 function afficherArrets() {
   const div = document.getElementById("historiqueArrets");
   div.innerHTML = "";
-  dataArrets.forEach(a => div.innerHTML += `<p>${a.date} - ${a.motif}</p>`);
+  dataArrets.forEach(a => {
+    div.innerHTML += `<p>[${a.ligne}] ${a.date} - ${a.type} - ${a.motif}</p>`;
+  });
 }
 
 function majArretsAtelier() {
   const div = document.getElementById("listeArretsAtelier");
   div.innerHTML = "<h3>Historique des arrêts</h3>";
-  dataArrets.forEach(a => div.innerHTML += `<p>${a.date} - ${a.motif}</p>`);
+  dataArrets.forEach(a => div.innerHTML += `<p>[${a.ligne}] ${a.date} - ${a.type} - ${a.motif}</p>`);
 }
 
 // === CONSIGNES ===
@@ -206,7 +240,7 @@ function toggleConsigne(i) {
   afficherConsignes();
 }
 
-// === PERSONNEL ===
+// === PAGE PERSONNEL ===
 function ajouterPersonnel() {
   const nom = document.getElementById("nomPersonnel").value.trim();
   const motif = document.getElementById("motifPersonnel").value.trim();
@@ -228,23 +262,45 @@ function afficherPersonnel() {
   });
 }
 
-// === EXPORT EXCEL ===
+// === EXPORT EXCEL FORMATÉ ===
 function exporterExcel() {
-  const rows = [["Ligne","Date","Heure Début","Heure Fin","Quantité Réalisée","Quantité Restante","Cadence","Fin estimée"]];
-  dataLignes.forEach(e => {
-    rows.push([e.nom, e.date, e.hD, e.hF, e.q, e.rest, e.cadence, e.estimation]);
-  });
-  let csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.join(";")).join("\n");
-  const link = document.createElement("a");
-  link.setAttribute("href", encodeURI(csvContent));
-  link.setAttribute("download", "Synthese_Atelier_PPNC.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const wb = XLSX.utils.book_new();
+
+  const lignesSheet = [
+    ["Ligne","Date","Début","Fin","Q Réalisée","Q Restante","Cadence","Fin estimée"]
+  ];
+  dataLignes.forEach(e => lignesSheet.push([e.nom, e.date, e.hD, e.hF, e.q, e.rest, e.cadence, e.estimation]));
+
+  const arretsSheet = [["Ligne","Type","Date","Motif"]];
+  dataArrets.forEach(a => arretsSheet.push([a.ligne, a.type, a.date, a.motif]));
+
+  const consignesSheet = [["Date","Texte","Réalisée"]];
+  dataConsignes.forEach(c => consignesSheet.push([c.date, c.texte, c.realisee ? "Oui" : "Non"]));
+
+  const personnelSheet = [["Date","Nom","Motif","Commentaire"]];
+  dataPersonnel.forEach(p => personnelSheet.push([p.date, p.nom, p.motif, p.com]));
+
+  const sheet = [...lignesSheet, [""], ["ARRETS"], ...arretsSheet, [""], ["CONSIGNES"], ...consignesSheet, [""], ["PERSONNEL"], ...personnelSheet];
+  const ws = XLSX.utils.aoa_to_sheet(sheet);
+
+  XLSX.utils.book_append_sheet(wb, ws, "Synthèse complète");
+  XLSX.writeFile(wb, `Synthese_Atelier_${new Date().toLocaleDateString()}.xlsx`);
+}
+
+// === RÉINITIALISATION ===
+function reinitialiserDonnees() {
+  dataLignes = [];
+  dataArrets = [];
+  dataConsignes = [];
+  dataPersonnel = [];
+  localStorage.clear();
+  majAtelier();
+  afficherLignes();
 }
 
 // === INIT ===
 window.onload = () => {
+  setInterval(verifierChangementEquipe, 60000);
   afficherLignes();
   afficherConsignes();
   afficherArrets();
