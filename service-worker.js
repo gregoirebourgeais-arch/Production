@@ -1,6 +1,5 @@
-const CACHE_NAME = "atelier-ppnc-v1";
+const CACHE_NAME = "synthese-atelier-ppnc-v1";
 const FILES_TO_CACHE = [
-  "./",
   "./index.html",
   "./style.css",
   "./app.js",
@@ -9,36 +8,30 @@ const FILES_TO_CACHE = [
   "./icons/icon-512.png"
 ];
 
-self.addEventListener("install", (evt) => {
-  evt.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log("[ServiceWorker] Mise en cache des fichiers");
+// Installation : mise en cache initiale
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log("Mise en cache initiale...");
       return cache.addAll(FILES_TO_CACHE);
     })
   );
   self.skipWaiting();
 });
 
-self.addEventListener("activate", (evt) => {
-  evt.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(
-        keyList.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log("[ServiceWorker] Suppression de l'ancien cache", key);
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+// Activation : nettoyage anciens caches
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(key => key !== CACHE_NAME && caches.delete(key)))
+    )
   );
   self.clients.claim();
 });
 
-self.addEventListener("fetch", (evt) => {
-  evt.respondWith(
-    caches.match(evt.request).then((response) => {
-      return response || fetch(evt.request);
-    })
+// Fetch : récupération des fichiers depuis le cache
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(response => response || fetch(event.request))
   );
 });
