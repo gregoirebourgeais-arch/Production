@@ -1,203 +1,238 @@
-/* 🌐 Style général */
-body {
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: #f5f9ff;
-  color: #1a1a1a;
+/* --- Structure globale --- */
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Roboto, sans-serif;
   margin: 0;
   padding: 0;
+}
+
+body {
+  background-color: #f7fbff;
+  color: #0b2d59;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* 🧭 En-tête */
+/* --- En-tête --- */
 header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(90deg, #1a73e8, #42a5f5);
-  color: white;
-  padding: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  background-color: #d9ecff;
+  color: #003366;
+  text-align: center;
+  padding: 15px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 header .logo {
-  width: 48px;
-  height: 48px;
-  margin-right: 10px;
+  width: 70px;
+  position: absolute;
+  left: 10px;
+  top: 10px;
 }
 
-/* 🧩 Barre de navigation */
-nav {
+#dateTimeDisplay {
+  font-size: 0.9em;
+  margin-top: 5px;
+  color: #003366;
+}
+
+/* --- Menu latéral --- */
+.side-menu {
   display: flex;
-  justify-content: space-around;
-  background: #e3f2fd;
-  border-bottom: 1px solid #90caf9;
-  padding: 8px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  background-color: #eaf4ff;
+  padding: 10px;
+  border-bottom: 2px solid #cde2ff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-nav button {
-  background: none;
+.side-menu button {
+  background-color: #1a73e8;
+  color: white;
   border: none;
-  color: #1a73e8;
-  font-size: 16px;
+  border-radius: 20px;
+  padding: 8px 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-nav button:hover {
-  color: #0d47a1;
-  transform: scale(1.05);
+.side-menu button:hover {
+  background-color: #135fc4;
 }
 
-/* 📄 Pages */
+/* --- Pages --- */
+main {
+  flex-grow: 1;
+  padding: 15px;
+}
+
 .page {
   display: none;
-  padding: 20px;
-  animation: fadeIn 0.4s ease;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .page.active {
   display: block;
 }
 
-/* 🧱 Boutons ligne de production */
-.liste-lignes {
+/* --- Formulaires --- */
+.form-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin: 20px 0;
-}
-
-.bouton-ligne {
-  background: #1a73e8;
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.bouton-ligne:hover {
-  background: #0d47a1;
-  transform: scale(1.05);
-}
-
-/* 📊 Graphiques */
-canvas {
-  width: 100% !important;
-  max-width: 700px;
-  margin: 20px auto;
-  display: block;
-}
-
-/* 🧾 Formulaires et champs */
-label {
-  display: block;
-  margin-top: 10px;
-  font-weight: 600;
-  color: #0d47a1;
-}
-
-input, select, textarea {
-  width: 100%;
-  max-width: 400px;
-  padding: 8px 10px;
-  margin-top: 6px;
-  border: 1px solid #90caf9;
-  border-radius: 6px;
-  font-size: 15px;
+  flex-direction: column;
+  gap: 10px;
   background: white;
-  box-sizing: border-box;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+  color: #0b2d59;
+}
+
+input, select, textarea, button {
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #b3d4fc;
+  outline: none;
+  font-size: 1em;
 }
 
 textarea {
   resize: vertical;
-  min-height: 80px;
 }
 
-/* ✅ Boutons généraux */
 button {
-  margin-top: 14px;
-  background: #42a5f5;
+  background-color: #1a73e8;
   color: white;
   border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: bold;
 }
 
 button:hover {
-  background: #1a73e8;
+  background-color: #135fc4;
 }
 
-/* 🧩 Historique et cartes */
-#historiqueArrets div,
-#historiqueConsignes div,
-#historiquePersonnel div {
-  background: white;
-  border: 1px solid #bbdefb;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#historiqueConsignes div.consigne.realise {
-  text-decoration: line-through;
-  color: #757575;
-  background: #f1f1f1;
-}
-
-/* 🔢 Tableaux Excel visuel (optionnel dans page atelier) */
-.tableau-ateliers {
+/* --- Graphiques --- */
+canvas {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+  max-height: 300px;
+  margin-top: 15px;
 }
 
-.tableau-ateliers th, .tableau-ateliers td {
-  border: 1px solid #bbdefb;
+/* --- Historique --- */
+#historiqueArrets, #historiqueConsignes, #historiquePersonnel, #atelierHistorique {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
+}
+
+#historiqueArrets div, #historiqueConsignes div, #historiquePersonnel div {
+  border-bottom: 1px solid #cde2ff;
+  padding: 6px 0;
+}
+
+/* --- Calculatrice --- */
+.calculator {
+  position: fixed;
+  bottom: 70px;
+  right: 15px;
+  background-color: #ffffff;
+  border: 2px solid #cde2ff;
+  border-radius: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  z-index: 1000;
+}
+
+.hidden {
+  display: none;
+}
+
+.calc-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.calc-buttons button {
+  background-color: #e8f2ff;
+  border: 1px solid #b3d4fc;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #003366;
+  border-radius: 10px;
   padding: 8px;
-  text-align: center;
 }
 
-.tableau-ateliers th {
-  background: #1a73e8;
+.calc-buttons button:hover {
+  background-color: #d6eaff;
+}
+
+#calcDisplay {
+  width: 100%;
+  height: 40px;
+  border: none;
+  text-align: right;
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+/* --- Bouton flottant --- */
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #1a73e8;
   color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease-in-out;
+  z-index: 1000;
 }
 
-/* ⚙️ Animations */
+.floating-btn:hover {
+  transform: scale(1.1);
+}
+
+/* --- Animations --- */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 📱 Responsive */
-@media (max-width: 768px) {
-  .bouton-ligne {
-    font-size: 14px;
-    padding: 10px 16px;
+/* --- Adaptation mobile --- */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.2em;
   }
 
-  nav {
+  .side-menu {
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
   }
 
-  input, select, textarea {
-    max-width: 100%;
+  .side-menu button {
+    font-size: 0.8em;
+    padding: 6px 10px;
   }
 }
