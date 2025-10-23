@@ -1,309 +1,222 @@
-// === VARIABLES GLOBALES ===
-const lignes = ["Râpé", "T2", "RT", "OMORI", "T1", "Sticks", "Emballage", "Dés", "Filets", "Prédécoupé"];
-let dataLignes = JSON.parse(localStorage.getItem("dataLignes")) || [];
-let dataArrets = JSON.parse(localStorage.getItem("dataArrets")) || [];
-let dataConsignes = JSON.parse(localStorage.getItem("dataConsignes")) || [];
-let dataPersonnel = JSON.parse(localStorage.getItem("dataPersonnel")) || [];
-let ligneActive = null;
-let derniereEquipe = null;
+/******************************************
+ * APPLICATION SYNTHÈSE ATELIER PPNC vFinale
+ ******************************************/
 
-// === NAVIGATION ===
-function afficherPage(id) {
+// 🧭 Gestion de navigation entre les pages
+function afficherPage(pageId) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  const page = document.getElementById(`page-${id}`);
-  if (page) page.classList.add("active");
-
-  switch (id) {
-    case "atelier": majAtelier(); break;
-    case "lignes": afficherLignes(); break;
-    case "arrets": afficherArrets(); break;
-    case "organisation": afficherConsignes(); break;
-    case "personnel": afficherPersonnel(); break;
-  }
+  document.getElementById(pageId).classList.add("active");
+  localStorage.setItem("pageActive", pageId);
 }
 
-// === CALCUL D'ÉQUIPE ACTUELLE ===
-function determinerEquipe() {
-  const heure = new Date().getHours();
-  if (heure >= 5 && heure < 13) return "M";
-  if (heure >= 13 && heure < 21) return "AM";
-  return "N";
-}
+// Restaurer la dernière page active
+window.addEventListener("load", () => {
+  const pageActive = localStorage.getItem("pageActive") || "atelier";
+  afficherPage(pageActive);
+  chargerTout();
+});
 
-function verifierChangementEquipe() {
-  const equipeActuelle = determinerEquipe();
-  if (derniereEquipe && derniereEquipe !== equipeActuelle) {
-    if (confirm(`Changement d'équipe détecté (${derniereEquipe} → ${equipeActuelle}). Exporter les données avant réinitialisation ?`)) {
-      exporterExcel();
-    }
-    reinitialiserDonnees();
-  }
-  derniereEquipe = equipeActuelle;
-}
+// 🧩 Données principales
+let lignes = ["Râpé", "T2", "RT", "OMORI T1", "Sticks", "Emballage", "Dés", "Filets", "Prédécoupés"];
+let historiques = JSON.parse(localStorage.getItem("historiques")) || {};
+let arrets = JSON.parse(localStorage.getItem("arrets")) || [];
+let consignes = JSON.parse(localStorage.getItem("consignes")) || [];
+let personnel = JSON.parse(localStorage.getItem("personnel")) || [];
 
-// === PAGE LIGNES ===
-function afficherLignes() {
-  const cont = document.getElementById("listeLignes");
-  cont.innerHTML = "";
-  lignes.forEach(l => {
-    cont.innerHTML += `<button class="bouton-ligne" onclick="ouvrirLigne('${l}')">${l}</button>`;
-  });
-  document.getElementById("zoneLigne").innerHTML = "";
-}
+// Créer l’objet d’historique par ligne s’il n’existe pas
+lignes.forEach(l => {
+  if (!historiques[l]) historiques[l] = [];
+});
 
+// 🧮 Ouvrir une ligne
 function ouvrirLigne(nom) {
-  ligneActive = nom;
-  const zone = document.getElementById("zoneLigne");
-  zone.scrollIntoView({ behavior: "smooth" });
-  zone.innerHTML = `
-    <h3>Ligne : ${nom}</h3>
-    <label>Heure début :</label><input type="time" id="hDebut">
-    <label>Heure fin :</label><input type="time" id="hFin">
-    <label>Quantité réalisée :</label><input type="number" id="qRealisee" oninput="majEstimation()">
-    <label>Quantité restante :</label><input type="number" id="qRestante" oninput="majEstimation()">
-    <div id="resultatsCalc" style="margin:8px 0;font-weight:bold;"></div>
-    <button onclick="enregistrerLigne('${nom}')">Enregistrer</button>
-    <button class="effacer" onclick="effacerHistoriqueLigne('${nom}')">❌ Effacer cette ligne</button>
-    <h4>Historique ${nom}</h4>
-    <div id="historique_${nom}"></div>
-    <canvas id="graph_${nom}"></canvas>
-  `;
-  majHistoriqueLigne(nom);
-}
+  let ligne = prompt(`Saisie pour la ligne ${nom}\nQuantité produite :`);
+  if (ligne === null || ligne.trim() === "") return;
+  const qty = parseFloat(ligne);
+  const debut = prompt("Heure de début (HH:MM)", "08:00");
+  const fin = prompt("Heure de fin (HH:MM)", "10:00");
 
-function majEstimation() {
-  const hD = document.getElementById("hDebut")?.value;
-  const hF = document.getElementById("hFin")?.value;
-  const q = parseFloat(document.getElementById("qRealisee")?.value);
-  const rest = parseFloat(document.getElementById("qRestante")?.value);
-  if (!hD || !hF || isNaN(q) || isNaN(rest)) return;
-  const diff = (new Date(`2025-10-22T${hF}`) - new Date(`2025-10-22T${hD}`)) / 3600000;
-  if (diff <= 0) return;
-  const cadence = (q / diff).toFixed(2);
-  const estimation = new Date(Date.now() + (rest / cadence) * 3600000)
-    .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  document.getElementById("resultatsCalc").innerHTML =
-    `Cadence : ${cadence}/h — Fin estimée : ${estimation}`;
-}
+  if (!debut || !fin) return alert("⚠️ Heures invalides !");
+  const [hd, md] = debut.split(":").map(Number);
+  const [hf, mf] = fin.split(":").map(Number);
+  let diff = ((hf * 60 + mf) - (hd * 60 + md)) / 60;
+  if (diff <= 0) diff += 24;
+  const cadence = (qty / diff).toFixed(1);
 
-function enregistrerLigne(nom) {
-  const hD = document.getElementById("hDebut").value;
-  const hF = document.getElementById("hFin").value;
-  const q = parseFloat(document.getElementById("qRealisee").value);
-  const rest = parseFloat(document.getElementById("qRestante").value);
-  if (!hD || !hF || isNaN(q)) return alert("Champs incomplets !");
-  const diff = (new Date(`2025-10-22T${hF}`) - new Date(`2025-10-22T${hD}`)) / 3600000;
-  const cadence = (q / diff).toFixed(2);
-  const estimation = new Date(Date.now() + (rest / cadence) * 3600000)
-    .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const reste = prompt("Quantité restante :", "0") || 0;
+  const estimationHeures = reste / cadence;
+  const estimationFin = new Date();
+  estimationFin.setHours(estimationFin.getHours() + estimationHeures);
+  const estimationTxt = estimationFin.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-  const ligneData = {
-    nom, hD, hF, q, rest, cadence, estimation,
-    date: new Date().toLocaleString()
+  const data = {
+    ligne: nom,
+    debut, fin, qty, cadence,
+    reste, estimation: estimationTxt,
+    date: new Date().toLocaleDateString(),
+    heure: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   };
-  dataLignes.push(ligneData);
-  localStorage.setItem("dataLignes", JSON.stringify(dataLignes));
 
-  majHistoriqueLigne(nom);
-  majAtelier();
-
-  document.getElementById("qRealisee").value = "";
-  document.getElementById("qRestante").value = "";
+  historiques[nom].push(data);
+  localStorage.setItem("historiques", JSON.stringify(historiques));
+  alert(`✅ Enregistré\nCadence : ${cadence} colis/h\nFin estimée : ${estimationTxt}`);
+  afficherGraphAtelier();
 }
 
-function effacerHistoriqueLigne(nom) {
-  if (confirm(`Supprimer tous les enregistrements de la ligne ${nom} ?`)) {
-    dataLignes = dataLignes.filter(e => e.nom !== nom);
-    localStorage.setItem("dataLignes", JSON.stringify(dataLignes));
-    majHistoriqueLigne(nom);
-    majAtelier();
-  }
+// 🧾 Charger tout (au lancement)
+function chargerTout() {
+  afficherGraphAtelier();
+  afficherArrets();
+  afficherConsignes();
+  afficherPersonnel();
 }
 
-function majHistoriqueLigne(nom) {
-  const div = document.getElementById(`historique_${nom}`);
-  if (!div) return;
-  div.innerHTML = "";
-  const filtres = dataLignes.filter(e => e.nom === nom);
-  filtres.forEach(e => {
-    div.innerHTML += `<p>${e.date} — ${e.hD}→${e.hF} | Q=${e.q} | Cad=${e.cadence}/h | Fin=${e.estimation}</p>`;
-  });
-  majGraphLigne(nom, filtres);
-}
-
-function majGraphLigne(nom, data) {
-  const ctx = document.getElementById(`graph_${nom}`);
-  if (!ctx) return;
-  const labels = data.map(e => e.date.split(" ")[1]);
-  const valeurs = data.map(e => e.q);
-  new Chart(ctx, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [{
-        label: `Évolution ${nom}`,
-        data: valeurs,
-        borderColor: "#1a73e8",
-        fill: false,
-        tension: 0.3
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } } }
-  });
-}
-
-// === PAGE ATELIER ===
-function majAtelier() {
-  const resume = document.getElementById("resumeAtelier");
-  resume.innerHTML = "<h3>Résumé des lignes</h3>";
-  dataLignes.forEach(e => {
-    resume.innerHTML += `<p>${e.nom}: ${e.q} colis (${e.cadence}/h, fin ~ ${e.estimation})</p>`;
-  });
-  majGraphAtelier();
-  majArretsAtelier();
-}
-
-function majGraphAtelier() {
+// 📉 Graphique général (Atelier)
+function afficherGraphAtelier() {
   const ctx = document.getElementById("graphAtelier");
   if (!ctx) return;
+
   const labels = lignes;
-  const valeurs = lignes.map(l => {
-    const entries = dataLignes.filter(x => x.nom === l);
-    return entries.length ? entries[entries.length - 1].q : 0;
+  const data = lignes.map(l => {
+    const total = historiques[l].reduce((s, r) => s + (parseFloat(r.qty) || 0), 0);
+    return total;
   });
-  new Chart(ctx, {
+
+  if (window.graphAtelierInstance) window.graphAtelierInstance.destroy();
+
+  window.graphAtelierInstance = new Chart(ctx, {
     type: "bar",
     data: {
       labels,
       datasets: [{
-        label: "Quantités réalisées",
-        data: valeurs,
+        label: "Production (colis)",
+        data,
         backgroundColor: "#1a73e8"
       }]
     },
-    options: { responsive: true, plugins: { legend: { display: false } } }
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: "Production totale par ligne" }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { color: "#333" } },
+        x: { ticks: { color: "#333" } }
+      }
+    }
   });
 }
 
-// === PAGE ARRETS ===
+// 🛠️ ARRÊTS
 function ajouterArret() {
-  const ligne = document.getElementById("ligneArret").value;
+  const ligne = document.getElementById("ligneSelect").value;
   const type = document.getElementById("typeArret").value;
-  const motif = document.getElementById("motifArret").value.trim();
-  if (!ligne || !motif || !type) return;
-  dataArrets.push({ ligne, type, motif, date: new Date().toLocaleString() });
-  localStorage.setItem("dataArrets", JSON.stringify(dataArrets));
-  document.getElementById("motifArret").value = "";
+  const duree = parseFloat(document.getElementById("dureeArret").value);
+  if (!ligne || !type || isNaN(duree)) return alert("⚠️ Complétez tous les champs d'arrêt.");
+
+  arrets.push({
+    ligne, type, duree,
+    date: new Date().toLocaleDateString(),
+    heure: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  });
+  localStorage.setItem("arrets", JSON.stringify(arrets));
+  document.getElementById("dureeArret").value = "";
   afficherArrets();
-  majAtelier();
 }
 
 function afficherArrets() {
-  const div = document.getElementById("historiqueArrets");
-  div.innerHTML = "";
-  dataArrets.forEach(a => {
-    div.innerHTML += `<p>[${a.ligne}] ${a.date} - ${a.type} - ${a.motif}</p>`;
+  const zone = document.getElementById("historiqueArrets");
+  if (!zone) return;
+  zone.innerHTML = "";
+  arrets.forEach(a => {
+    const div = document.createElement("div");
+    div.className = "ligne-arret";
+    div.textContent = `${a.date} ${a.heure} — ${a.ligne} : ${a.type} (${a.duree} min)`;
+    zone.appendChild(div);
   });
 }
 
-function majArretsAtelier() {
-  const div = document.getElementById("listeArretsAtelier");
-  div.innerHTML = "<h3>Historique des arrêts</h3>";
-  dataArrets.forEach(a => div.innerHTML += `<p>[${a.ligne}] ${a.date} - ${a.type} - ${a.motif}</p>`);
-}
-
-// === CONSIGNES ===
-function enregistrerConsigne() {
-  const texte = document.getElementById("consigne").value.trim();
-  if (!texte) return;
-  dataConsignes.push({ texte, date: new Date().toLocaleString(), realisee: false });
-  localStorage.setItem("dataConsignes", JSON.stringify(dataConsignes));
-  document.getElementById("consigne").value = "";
+// 📋 CONSIGNES
+function ajouterConsigne() {
+  const texte = document.getElementById("consigneTexte").value.trim();
+  if (!texte) return alert("Saisissez une consigne.");
+  consignes.push({ texte, date: new Date().toLocaleString(), realise: false });
+  localStorage.setItem("consignes", JSON.stringify(consignes));
+  document.getElementById("consigneTexte").value = "";
   afficherConsignes();
 }
 
 function afficherConsignes() {
-  const div = document.getElementById("historiqueConsignes");
-  div.innerHTML = "";
-  dataConsignes.forEach((c, i) => {
-    div.innerHTML += `
-      <div class="consigne-item ${c.realisee ? "realisee" : ""}">
-        <input type="checkbox" ${c.realisee ? "checked" : ""} onchange="toggleConsigne(${i})">
-        <label>${c.date} — ${c.texte}</label>
-      </div>`;
+  const zone = document.getElementById("historiqueConsignes");
+  if (!zone) return;
+  zone.innerHTML = "";
+  consignes.forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = c.realise ? "consigne realise" : "consigne";
+    div.innerHTML = `
+      <input type="checkbox" ${c.realise ? "checked" : ""} onchange="toggleConsigne(${i})">
+      ${c.texte} <span>(${c.date})</span>`;
+    zone.appendChild(div);
   });
 }
 
 function toggleConsigne(i) {
-  dataConsignes[i].realisee = !dataConsignes[i].realisee;
-  localStorage.setItem("dataConsignes", JSON.stringify(dataConsignes));
+  consignes[i].realise = !consignes[i].realise;
+  localStorage.setItem("consignes", JSON.stringify(consignes));
   afficherConsignes();
 }
 
-// === PAGE PERSONNEL ===
+// 👥 PERSONNEL
 function ajouterPersonnel() {
-  const nom = document.getElementById("nomPersonnel").value.trim();
-  const motif = document.getElementById("motifPersonnel").value.trim();
-  const com = document.getElementById("commentairePersonnel").value.trim();
-  if (!nom || !motif) return;
-  dataPersonnel.push({ nom, motif, com, date: new Date().toLocaleString() });
-  localStorage.setItem("dataPersonnel", JSON.stringify(dataPersonnel));
-  document.getElementById("nomPersonnel").value = "";
-  document.getElementById("motifPersonnel").value = "";
-  document.getElementById("commentairePersonnel").value = "";
+  const nom = document.getElementById("nomPerso").value.trim();
+  const motif = document.getElementById("motifPerso").value;
+  const com = document.getElementById("commentairePerso").value.trim();
+  if (!nom || !motif) return alert("⚠️ Complétez nom et motif.");
+
+  personnel.push({
+    nom, motif, com,
+    date: new Date().toLocaleDateString(),
+    heure: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  });
+  localStorage.setItem("personnel", JSON.stringify(personnel));
+  document.getElementById("nomPerso").value = "";
+  document.getElementById("motifPerso").value = "";
+  document.getElementById("commentairePerso").value = "";
   afficherPersonnel();
 }
 
 function afficherPersonnel() {
-  const div = document.getElementById("historiquePersonnel");
-  div.innerHTML = "";
-  dataPersonnel.forEach(p => {
-    div.innerHTML += `<p>${p.date} - ${p.nom}: ${p.motif} (${p.com})</p>`;
+  const zone = document.getElementById("historiquePersonnel");
+  if (!zone) return;
+  zone.innerHTML = "";
+  personnel.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "ligne-personnel";
+    div.textContent = `${p.date} ${p.heure} — ${p.nom} : ${p.motif} (${p.com})`;
+    zone.appendChild(div);
   });
 }
 
-// === EXPORT EXCEL FORMATÉ ===
-function exporterExcel() {
+// 📊 EXPORT GLOBAL EXCEL (présentable)
+function exporterExcelGlobal() {
+  const lignesData = Object.entries(historiques).map(([l, h]) => h.map(r => ({
+    Ligne: l, Début: r.debut, Fin: r.fin, Quantité: r.qty, Cadence: r.cadence,
+    Reste: r.reste, Estimation: r.estimation, Date: r.date, Heure: r.heure
+  }))).flat();
+
   const wb = XLSX.utils.book_new();
+  const ws1 = XLSX.utils.json_to_sheet(lignesData);
+  XLSX.utils.book_append_sheet(wb, ws1, "Production");
 
-  const lignesSheet = [
-    ["Ligne","Date","Début","Fin","Q Réalisée","Q Restante","Cadence","Fin estimée"]
-  ];
-  dataLignes.forEach(e => lignesSheet.push([e.nom, e.date, e.hD, e.hF, e.q, e.rest, e.cadence, e.estimation]));
+  const ws2 = XLSX.utils.json_to_sheet(arrets);
+  XLSX.utils.book_append_sheet(wb, ws2, "Arrêts");
 
-  const arretsSheet = [["Ligne","Type","Date","Motif"]];
-  dataArrets.forEach(a => arretsSheet.push([a.ligne, a.type, a.date, a.motif]));
+  const ws3 = XLSX.utils.json_to_sheet(consignes);
+  XLSX.utils.book_append_sheet(wb, ws3, "Consignes");
 
-  const consignesSheet = [["Date","Texte","Réalisée"]];
-  dataConsignes.forEach(c => consignesSheet.push([c.date, c.texte, c.realisee ? "Oui" : "Non"]));
+  const ws4 = XLSX.utils.json_to_sheet(personnel);
+  XLSX.utils.book_append_sheet(wb, ws4, "Personnel");
 
-  const personnelSheet = [["Date","Nom","Motif","Commentaire"]];
-  dataPersonnel.forEach(p => personnelSheet.push([p.date, p.nom, p.motif, p.com]));
-
-  const sheet = [...lignesSheet, [""], ["ARRETS"], ...arretsSheet, [""], ["CONSIGNES"], ...consignesSheet, [""], ["PERSONNEL"], ...personnelSheet];
-  const ws = XLSX.utils.aoa_to_sheet(sheet);
-
-  XLSX.utils.book_append_sheet(wb, ws, "Synthèse complète");
-  XLSX.writeFile(wb, `Synthese_Atelier_${new Date().toLocaleDateString()}.xlsx`);
-}
-
-// === RÉINITIALISATION ===
-function reinitialiserDonnees() {
-  dataLignes = [];
-  dataArrets = [];
-  dataConsignes = [];
-  dataPersonnel = [];
-  localStorage.clear();
-  majAtelier();
-  afficherLignes();
-}
-
-// === INIT ===
-window.onload = () => {
-  setInterval(verifierChangementEquipe, 60000);
-  afficherLignes();
-  afficherConsignes();
-  afficherArrets();
-  afficherPersonnel();
-  majAtelier();
-};
+  XLSX.writeFile(wb, `Synthese_Atelier_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }
