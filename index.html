@@ -6,24 +6,26 @@
   <meta name="theme-color" content="#1a73e8" />
   <title>Synthèse Atelier PPNC</title>
 
-  <!-- Lien vers le manifest -->
-  <link rel="manifest" href="manifest.json" />
-
-  <!-- Icône pour navigateur -->
+  <!-- Manifest + icône -->
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon-192.png" type="image/png" />
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Librairie Chart.js -->
+  <!-- Librairies externes -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
+
 <body>
+  <!-- 🧭 En-tête -->
   <header>
-    <img src="icons/icon-192.png" alt="Logo Lactalis" class="logo">
+    <img src="icons/icon-192.png" alt="Logo Lactalis" class="logo" />
     <h1>Synthèse Atelier PPNC</h1>
   </header>
 
+  <!-- 🧭 Navigation -->
   <nav>
     <button onclick="afficherPage('atelier')">Atelier</button>
     <button onclick="afficherPage('arrets')">Arrêts</button>
@@ -31,13 +33,12 @@
     <button onclick="afficherPage('personnel')">Personnel</button>
   </nav>
 
-  <!-- PAGE ATELIER -->
+  <!-- 🏭 PAGE ATELIER -->
   <section id="atelier" class="page active">
     <h2>Résumé Atelier</h2>
-    <div id="resumeAtelier">
-      <p>Choisissez une ligne pour afficher les détails.</p>
-    </div>
+    <p>Suivi de la production, des cadences et des estimations de fin.</p>
 
+    <!-- Boutons lignes -->
     <div class="liste-lignes">
       <button class="bouton-ligne" onclick="ouvrirLigne('Râpé')">Râpé</button>
       <button class="bouton-ligne" onclick="ouvrirLigne('T2')">T2</button>
@@ -50,13 +51,20 @@
       <button class="bouton-ligne" onclick="ouvrirLigne('Prédécoupés')">Prédécoupés</button>
     </div>
 
+    <!-- Graphique principal -->
     <canvas id="graphAtelier"></canvas>
-    <button onclick="exporterExcelGlobal()">📊 Export global</button>
+
+    <!-- Historique synthétique -->
+    <div id="resumeAtelier"></div>
+
+    <!-- Export -->
+    <button onclick="exporterExcelGlobal()">📊 Export Excel global</button>
   </section>
 
-  <!-- PAGE ARRÊTS -->
+  <!-- ⏱️ PAGE ARRÊTS -->
   <section id="arrets" class="page">
     <h2>Arrêts de lignes</h2>
+    <p>Saisissez les arrêts rencontrés, leur type et leur durée.</p>
 
     <label for="ligneSelect">Ligne :</label>
     <select id="ligneSelect">
@@ -91,22 +99,23 @@
     <button onclick="exporterExcelGlobal()">📤 Export global</button>
   </section>
 
-  <!-- PAGE ORGANISATION -->
+  <!-- 📋 PAGE ORGANISATION -->
   <section id="organisation" class="page">
-    <h2>Consignes / Organisation</h2>
+    <h2>Consignes & Organisation</h2>
+    <p>Consignes visibles par toutes les équipes (case à cocher si réalisé).</p>
 
     <label for="consigneTexte">Nouvelle consigne :</label>
     <textarea id="consigneTexte" placeholder="Saisissez votre consigne ici..."></textarea>
-
     <button onclick="ajouterConsigne()">Enregistrer</button>
 
-    <h3>Consignes en cours</h3>
+    <h3>Historique des consignes</h3>
     <div id="historiqueConsignes"></div>
   </section>
 
-  <!-- PAGE PERSONNEL -->
+  <!-- 👥 PAGE PERSONNEL -->
   <section id="personnel" class="page">
     <h2>Suivi du personnel</h2>
+    <p>Suivi des absences, retards, départs et autres motifs.</p>
 
     <label>Nom :</label>
     <input id="nomPerso" placeholder="Nom du salarié" />
@@ -129,53 +138,39 @@
     <div id="historiquePersonnel"></div>
   </section>
 
+  <!-- 📎 Scripts -->
   <script src="app.js"></script>
 
-  <!-- Vérification et enregistrement automatique du service worker -->
+  <!-- Enregistrement du service worker -->
   <script>
   window.addEventListener("load", () => {
-    // Vérifie manifest
-    fetch("manifest.json")
-      .then(r => {
-        if (!r.ok) throw new Error("Manifest non trouvé");
-        console.log("✅ manifest.json trouvé");
-      })
-      .catch(() => alert("⚠️ Le manifest.json est introuvable. Vérifie son emplacement à la racine."));
-
-    // Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js")
         .then(() => console.log("✅ Service Worker enregistré"))
-        .catch(err => alert("❌ Erreur SW : " + err));
-    } else {
-      alert("⚠️ Votre navigateur ne supporte pas les PWA.");
+        .catch(err => console.error("❌ Erreur SW :", err));
     }
+  });
 
-    // Vérifie support PWA
-    let deferredPrompt;
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const installBtn = document.createElement("button");
-      installBtn.textContent = "📲 Installer l'application";
-      installBtn.style.position = "fixed";
-      installBtn.style.bottom = "20px";
-      installBtn.style.right = "20px";
-      installBtn.style.background = "#1a73e8";
-      installBtn.style.color = "#fff";
-      installBtn.style.border = "none";
-      installBtn.style.padding = "12px 16px";
-      installBtn.style.borderRadius = "30px";
-      installBtn.style.fontSize = "16px";
-      installBtn.style.zIndex = "1000";
-      installBtn.onclick = async () => {
-        installBtn.remove();
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log("Résultat installation:", outcome);
-      };
-      document.body.appendChild(installBtn);
-    });
+  // PWA install
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    const installBtn = document.createElement("button");
+    installBtn.textContent = "📲 Installer l'application";
+    installBtn.style.position = "fixed";
+    installBtn.style.bottom = "20px";
+    installBtn.style.right = "20px";
+    installBtn.style.background = "#1a73e8";
+    installBtn.style.color = "#fff";
+    installBtn.style.border = "none";
+    installBtn.style.padding = "12px 16px";
+    installBtn.style.borderRadius = "30px";
+    installBtn.style.fontSize = "16px";
+    installBtn.style.zIndex = "1000";
+    installBtn.onclick = async () => {
+      installBtn.remove();
+      e.prompt();
+    };
+    document.body.appendChild(installBtn);
   });
   </script>
 </body>
