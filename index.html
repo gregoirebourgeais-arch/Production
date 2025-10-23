@@ -4,69 +4,116 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Synthèse Atelier PPNC</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Manifest et thème -->
   <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a73e8" />
+
+  <!-- Style -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Librairies externes -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
+
 <body>
   <header>
-    <img src="icons/icon-192.png" alt="Logo Lactalis" class="logo">
+    <img src="icons/icon-192.png" alt="Logo Lactalis" class="logo" />
     <h1>Synthèse Atelier PPNC</h1>
   </header>
 
+  <!-- Barre de navigation -->
   <nav>
     <button onclick="afficherPage('atelier')">🏭 Atelier</button>
-    <button onclick="afficherPage('lignes')">📦 Lignes</button>
-    <button onclick="afficherPage('arrets')">⛔ Arrêts</button>
-    <button onclick="afficherPage('organisation')">🗂 Organisation</button>
-    <button onclick="afficherPage('personnel')">👥 Personnel</button>
-    <button onclick="exporterExcel()">📊 Export</button>
+    <button onclick="afficherPage('lignes')">📊 Lignes</button>
+    <button onclick="afficherPage('arrets')">⏸️ Arrêts</button>
+    <button onclick="afficherPage('organisation')">📝 Organisation</button>
+    <button onclick="afficherPage('personnel')">👷 Personnel</button>
   </nav>
 
-  <main>
-    <!-- ====== ATELIER ====== -->
-    <section id="page-atelier" class="page active">
-      <h2>Atelier</h2>
-      <canvas id="graphAtelier"></canvas>
-      <div id="resumeAtelier"></div>
-      <div id="listeArretsAtelier"></div>
-    </section>
+  <!-- PAGE ATELIER -->
+  <section id="page-atelier" class="page active">
+    <h2>Vue Atelier</h2>
+    <div id="resumeAtelier"></div>
+    <canvas id="graphAtelier"></canvas>
+    <div id="listeArretsAtelier"></div>
+    <button onclick="exporterExcel()">📤 Exporter Excel global</button>
+  </section>
 
-    <!-- ====== LIGNES ====== -->
-    <section id="page-lignes" class="page">
-      <h2>Lignes</h2>
-      <p style="text-align:center">Suivi de production par ligne</p>
-      <div id="listeLignes" class="lignes-container"></div>
-      <div id="zoneLigne"></div>
-    </section>
+  <!-- PAGE LIGNES -->
+  <section id="page-lignes" class="page">
+    <h2>Lignes de production</h2>
+    <div id="listeLignes" class="liste-lignes"></div>
+    <div id="zoneLigne"></div>
+  </section>
 
-    <!-- ====== ARRETS ====== -->
-    <section id="page-arrets" class="page">
-      <h2>Arrêts</h2>
-      <input id="motifArret" placeholder="Motif d'arrêt..." />
-      <button onclick="ajouterArret()">Enregistrer</button>
-      <div id="historiqueArrets"></div>
-    </section>
+  <!-- PAGE ARRETS -->
+  <section id="page-arrets" class="page">
+    <h2>Arrêts</h2>
+    <label for="ligneArret">Ligne :</label>
+    <select id="ligneArret">
+      <option value="">Sélectionner...</option>
+      <option>Râpé</option>
+      <option>T2</option>
+      <option>RT</option>
+      <option>OMORI</option>
+      <option>T1</option>
+      <option>Sticks</option>
+      <option>Emballage</option>
+      <option>Dés</option>
+      <option>Filets</option>
+      <option>Prédécoupé</option>
+    </select>
 
-    <!-- ====== ORGANISATION ====== -->
-    <section id="page-organisation" class="page">
-      <h2>Organisation</h2>
-      <textarea id="consigne" placeholder="Nouvelle consigne..."></textarea>
-      <button onclick="enregistrerConsigne()">Enregistrer</button>
-      <div id="historiqueConsignes"></div>
-    </section>
+    <label for="typeArret">Type :</label>
+    <select id="typeArret">
+      <option value="">Sélectionner...</option>
+      <option>Découpe</option>
+      <option>Packing</option>
+      <option>MEC</option>
+    </select>
 
-    <!-- ====== PERSONNEL ====== -->
-    <section id="page-personnel" class="page">
-      <h2>Personnel</h2>
-      <input id="nomPersonnel" placeholder="Nom" />
-      <input id="motifPersonnel" placeholder="Motif" />
-      <input id="commentairePersonnel" placeholder="Commentaire" />
-      <button onclick="ajouterPersonnel()">Enregistrer</button>
-      <div id="historiquePersonnel"></div>
-    </section>
-  </main>
+    <label for="motifArret">Motif :</label>
+    <input id="motifArret" placeholder="Motif d'arrêt..." />
+    <button onclick="ajouterArret()">Ajouter arrêt</button>
 
+    <h3>Historique des arrêts</h3>
+    <div id="historiqueArrets"></div>
+  </section>
+
+  <!-- PAGE ORGANISATION -->
+  <section id="page-organisation" class="page">
+    <h2>Consignes et Organisation</h2>
+    <textarea id="consigne" placeholder="Nouvelle consigne..."></textarea>
+    <button onclick="enregistrerConsigne()">Enregistrer consigne</button>
+    <div id="historiqueConsignes"></div>
+  </section>
+
+  <!-- PAGE PERSONNEL -->
+  <section id="page-personnel" class="page">
+    <h2>Personnel</h2>
+    <label>Nom :</label>
+    <input id="nomPersonnel" placeholder="Nom du salarié" />
+    <label>Motif :</label>
+    <input id="motifPersonnel" placeholder="Absence / Retard / Départ..." />
+    <label>Commentaire :</label>
+    <input id="commentairePersonnel" placeholder="Commentaire..." />
+    <button onclick="ajouterPersonnel()">Ajouter</button>
+    <h3>Historique</h3>
+    <div id="historiquePersonnel"></div>
+  </section>
+
+  <!-- Scripts -->
   <script src="app.js"></script>
+
+  <!-- Enregistrement du Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js");
+      });
+    }
+  </script>
 </body>
 </html>
