@@ -1,5 +1,6 @@
-const CACHE_NAME = "synthese-ppnc-v1";
-const ASSETS = [
+const CACHE_NAME = "synthese-atelier-v1";
+const urlsToCache = [
+  "./",
   "./index.html",
   "./style.css",
   "./app.js",
@@ -8,36 +9,32 @@ const ASSETS = [
   "./icons/icon-512.png"
 ];
 
-// Installation du service worker
-self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+// Installation du Service Worker et mise en cache initiale
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log("📦 Mise en cache initiale");
+      return cache.addAll(urlsToCache);
     })
   );
 });
 
-// Activation et nettoyage
-self.addEventListener("activate", (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+// Activation et suppression des anciens caches
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(keys.map(key => {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      }));
+    })
   );
 });
 
-// Gestion des requêtes
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches.match(e.request).then((resp) => {
-      return (
-        resp ||
-        fetch(e.request).then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
-          return response;
-        })
-      );
+// Interception des requêtes réseau
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
     })
   );
 });
