@@ -1,19 +1,19 @@
 {
   "name": "Synthèse Atelier PPNC",
   "short_name": "Atelier PPNC",
-  "description": "Application de suivi des lignes de production PPNC (Râpé, T2, RT, Omori, etc.)",
+  "description": "Application interne de suivi de production, arrêts et personnel Lactalis PPNC.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f5faff",
-  "theme_color": "#1a73e8",
+  "background_color": "#f3f8ff",
+  "theme_color": "#007bff",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
