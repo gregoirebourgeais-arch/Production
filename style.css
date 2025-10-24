@@ -1,267 +1,273 @@
-/* -------------------------------
-   Style général — Synthèse Atelier PPNC
--------------------------------- */
-* {
-  box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-}
+/* ==============================
+   SYNTHÈSE ATELIER PPNC - STYLE GLOBAL
+   Version complète, stable et professionnelle
+============================== */
 
+/* --- Structure globale --- */
 body {
+  font-family: "Segoe UI", Roboto, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f5f9ff;
-  color: #001b44;
+  background-color: #f3f8ff;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* -------------------------------
-   Header
--------------------------------- */
+h1, h2, h3 {
+  margin: 0 0 10px;
+  font-weight: 600;
+  color: #004d9d;
+}
+
+label {
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccd;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: none;
+}
+
+/* --- En-tête --- */
 .app-header {
-  background: linear-gradient(90deg, #007bff 0%, #5dade2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #007bff, #00aaff);
   color: white;
-  padding: 10px;
-  text-align: center;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-  border-radius: 0 0 20px 20px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .logo-zone {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
 }
 
 .logo {
-  height: 45px;
-  border-radius: 6px;
-  background: white;
-  padding: 3px;
+  height: 40px;
+  width: auto;
 }
 
-.app-header h1 {
-  margin: 5px 0;
-  font-size: 1.3rem;
-  font-weight: 700;
+.clock, .team {
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.clock {
-  font-size: 0.9rem;
-  margin-top: 4px;
-}
-
-.team {
-  font-size: 0.85rem;
-  opacity: 0.9;
-}
-
-/* -------------------------------
-   Navigation principale
--------------------------------- */
+/* --- Navigation --- */
 .main-nav {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin: 10px;
+  justify-content: space-around;
+  background-color: #eaf2ff;
+  padding: 10px;
+  border-bottom: 2px solid #cce0ff;
 }
 
 .nav-btn {
-  background: white;
-  color: #004085;
-  border: 2px solid #007bff;
-  border-radius: 12px;
-  padding: 8px 15px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.25s ease-in-out;
-}
-
-.nav-btn:hover {
-  background: #007bff;
-  color: white;
-  transform: scale(1.05);
-}
-
-/* -------------------------------
-   Lignes
--------------------------------- */
-.lignes-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.line-btn {
+  flex: 1;
   background-color: #007bff;
-  border: none;
   color: white;
-  border-radius: 22px;
-  padding: 8px 18px;
-  font-weight: 600;
+  border: none;
+  margin: 0 4px;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
 }
 
-.line-btn:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
+.nav-btn:hover, .nav-btn.active {
+  background-color: #005ecb;
 }
 
-/* -------------------------------
-   Sections
--------------------------------- */
+/* --- Section / Carte --- */
 .section {
   display: none;
-  padding: 10px;
-  animation: fadeIn 0.5s ease-in-out;
+  padding: 15px;
+  animation: fadeIn 0.3s ease;
 }
 
 .section.active {
   display: block;
 }
 
-.hidden {
-  display: none !important;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* -------------------------------
-   Cartes
--------------------------------- */
 .card {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
   padding: 15px;
   margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.card h2,
-.card h3 {
-  text-align: center;
-  color: #003366;
-  margin-top: 0;
-}
-
-/* -------------------------------
-   Inputs et sélecteurs
--------------------------------- */
-label {
-  display: block;
-  margin: 8px 0 3px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.input,
-textarea,
-select {
-  width: 100%;
-  border: 1px solid #007bff66;
-  border-radius: 10px;
-  padding: 8px;
-  font-size: 0.9rem;
-  background: #f8fbff;
-  transition: 0.2s;
-}
-
-.input:focus,
-textarea:focus,
-select:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 5px #007bff55;
-}
-
-/* -------------------------------
-   Boutons
--------------------------------- */
-.btn {
-  display: inline-block;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn.primary {
-  background: #007bff;
-  color: white;
-}
-
-.btn.primary:hover {
-  background: #0056b3;
-}
-
-.btn.secondary {
-  background: #f0f0f0;
-  color: #333;
-}
-
-.btn.secondary:hover {
-  background: #ddd;
-}
-
-/* Ligne entre les boutons */
 .row {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .gap {
-  gap: 12px;
+  margin-top: 10px;
 }
 
-/* -------------------------------
-   Historique
--------------------------------- */
-#prod-history,
-#arret-list,
-#org-list,
-#perso-list {
-  background: #f9fcff;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  max-height: 400px;
+/* --- Boutons --- */
+.btn {
+  cursor: pointer;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.btn.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn.secondary {
+  background-color: #e2ecff;
+  color: #004d9d;
+  border: 1px solid #aacfff;
+}
+
+.btn.primary:hover {
+  background-color: #0066d1;
+}
+
+.btn.secondary:hover {
+  background-color: #d0e2ff;
+}
+
+/* --- Historique --- */
+#prod-history, #arret-list, #org-list, #perso-list {
+  font-size: 14px;
+  line-height: 1.5em;
+  max-height: 300px;
   overflow-y: auto;
-  border: 1px solid #007bff33;
+  padding: 6px;
+  background-color: #f8fbff;
+  border-radius: 8px;
+  border: 1px solid #dde6f5;
 }
 
-#prod-history div,
-#arret-list div,
-#org-list div,
-#perso-list div {
-  border-bottom: 1px solid #e5efff;
-  padding: 4px 0;
+/* --- Calculatrice flottante --- */
+.calc-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007bff;
+  color: white;
+  font-size: 24px;
+  border-radius: 50%;
+  border: none;
+  width: 55px;
+  height: 55px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
 }
 
-/* -------------------------------
-   Footer
--------------------------------- */
-footer {
-  text-align: center;
+.calc-btn:hover {
+  transform: scale(1.1);
+}
+
+#calc-float {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 230px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   padding: 10px;
-  font-size: 0.8rem;
-  color: #666;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+
+#calc-screen {
+  width: 100%;
+  height: 40px;
+  background: #f4f7ff;
+  text-align: right;
+  padding: 8px;
+  font-size: 18px;
+  border-radius: 6px;
+  border: 1px solid #ccd;
+  margin-bottom: 6px;
+}
+
+#calc-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+#calc-buttons button {
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  background: #007bff;
+  color: white;
+  transition: 0.2s;
+}
+
+#calc-buttons button:hover {
+  background: #005ecb;
+}
+
+.calc-hidden {
+  display: none;
+}
+
+/* --- Footer --- */
+footer {
+  margin-top: auto;
+  text-align: center;
+  font-size: 13px;
+  padding: 10px;
+  background-color: #eaf2ff;
+  color: #004d9d;
+  border-top: 2px solid #cce0ff;
+}
+
+/* --- Animation --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  .main-nav {
+    flex-wrap: wrap;
+  }
+  .nav-btn {
+    flex: 45%;
+  }
+  #calc-float {
+    width: 90%;
+    right: 5%;
+  }
 }
