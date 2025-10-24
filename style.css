@@ -1,273 +1,270 @@
-/* ==============================
-   SYNTHÈSE ATELIER PPNC - STYLE GLOBAL
-   Version complète, stable et professionnelle
-============================== */
-
-/* --- Structure globale --- */
-body {
-  font-family: "Segoe UI", Roboto, sans-serif;
+/* 🌐 RESET */
+* {
   margin: 0;
   padding: 0;
-  background-color: #f3f8ff;
-  color: #222;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(180deg, #eaf3ff, #d5e8ff);
+  color: #003366;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
-h1, h2, h3 {
-  margin: 0 0 10px;
-  font-weight: 600;
-  color: #004d9d;
-}
-
-label {
-  font-weight: 500;
-  margin-top: 6px;
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border: 1px solid #ccd;
-  border-radius: 6px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-textarea {
-  resize: none;
-}
-
-/* --- En-tête --- */
-.app-header {
+/* 🧭 HEADER */
+header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(90deg, #007bff, #00aaff);
+  justify-content: center;
+  background: #cce0ff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+  height: 50px;
+  margin-right: 15px;
+}
+
+header h1 {
+  font-size: 1.6em;
+  color: #003366;
+  text-align: center;
+}
+
+/* 🧭 MENU LATÉRAL */
+nav#menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 90px;
+  height: 100%;
+  background: #007bff;
   color: white;
-  padding: 10px 16px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.logo-zone {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  padding-top: 100px;
+  z-index: 20;
+  transition: width 0.3s;
 }
 
-.logo {
-  height: 40px;
-  width: auto;
+nav#menu:hover {
+  width: 160px;
 }
 
-.clock, .team {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* --- Navigation --- */
-.main-nav {
-  display: flex;
-  justify-content: space-around;
-  background-color: #eaf2ff;
-  padding: 10px;
-  border-bottom: 2px solid #cce0ff;
-}
-
-.nav-btn {
-  flex: 1;
-  background-color: #007bff;
+nav#menu button {
+  background: transparent;
   color: white;
   border: none;
-  margin: 0 4px;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 15px;
-  font-weight: 500;
+  margin: 12px 0;
+  font-size: 0.9em;
   cursor: pointer;
-  transition: background-color 0.3s;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.3s;
 }
 
-.nav-btn:hover, .nav-btn.active {
-  background-color: #005ecb;
+nav#menu button:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* --- Section / Carte --- */
-.section {
+/* 🧩 PAGES */
+main {
+  margin-left: 90px;
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.page {
   display: none;
-  padding: 15px;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.4s ease;
 }
 
-.section.active {
+.page.active {
   display: block;
 }
 
-.card {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+h2 {
+  margin-bottom: 15px;
+  color: #002b5c;
+}
+
+/* 🧾 FORMULAIRES */
+form {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+form input, form select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #aac7ff;
+  border-radius: 6px;
+  font-size: 1em;
+}
+
+form button {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+form button:hover {
+  background: #005dc1;
+}
+
+/* 🧮 CALCULATRICE */
+#openCalc {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5em;
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.calculator {
+  display: none;
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
   background: white;
   border-radius: 15px;
-  padding: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.gap {
-  margin-top: 10px;
-}
-
-/* --- Boutons --- */
-.btn {
-  cursor: pointer;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 15px;
-}
-
-.btn.primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn.secondary {
-  background-color: #e2ecff;
-  color: #004d9d;
-  border: 1px solid #aacfff;
-}
-
-.btn.primary:hover {
-  background-color: #0066d1;
-}
-
-.btn.secondary:hover {
-  background-color: #d0e2ff;
-}
-
-/* --- Historique --- */
-#prod-history, #arret-list, #org-list, #perso-list {
-  font-size: 14px;
-  line-height: 1.5em;
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 6px;
-  background-color: #f8fbff;
-  border-radius: 8px;
-  border: 1px solid #dde6f5;
-}
-
-/* --- Calculatrice flottante --- */
-.calc-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #007bff;
-  color: white;
-  font-size: 24px;
-  border-radius: 50%;
-  border: none;
-  width: 55px;
-  height: 55px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  transition: transform 0.2s;
-}
-
-.calc-btn:hover {
-  transform: scale(1.1);
-}
-
-#calc-float {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 230px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   padding: 10px;
-  display: none;
-  flex-direction: column;
-  align-items: center;
+  width: 240px;
+  z-index: 100;
 }
 
-#calc-screen {
+.calculator input {
   width: 100%;
   height: 40px;
-  background: #f4f7ff;
+  margin-bottom: 10px;
   text-align: right;
-  padding: 8px;
-  font-size: 18px;
-  border-radius: 6px;
-  border: 1px solid #ccd;
-  margin-bottom: 6px;
+  padding-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
-#calc-buttons {
+.calc-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
+  gap: 5px;
 }
 
-#calc-buttons button {
-  padding: 8px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
+.calc-buttons button {
   background: #007bff;
   color: white;
-  transition: 0.2s;
-}
-
-#calc-buttons button:hover {
-  background: #005ecb;
-}
-
-.calc-hidden {
-  display: none;
-}
-
-/* --- Footer --- */
-footer {
-  margin-top: auto;
-  text-align: center;
-  font-size: 13px;
+  border: none;
+  border-radius: 8px;
   padding: 10px;
-  background-color: #eaf2ff;
-  color: #004d9d;
-  border-top: 2px solid #cce0ff;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-/* --- Animation --- */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.calc-buttons button:hover {
+  background: #005dc1;
 }
 
-/* --- Responsive --- */
-@media (max-width: 600px) {
-  .app-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
+.calc-buttons .close {
+  grid-column: span 4;
+  background: #ccc;
+  color: black;
+}
+
+/* 📈 GRAPHIQUES */
+canvas {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 📊 TABLEAUX ET CARTES */
+#atelierSummary {
+  margin-top: 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#atelierSummary table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#atelierSummary th, #atelierSummary td {
+  padding: 10px;
+  border-bottom: 1px solid #cce0ff;
+  text-align: left;
+}
+
+.export {
+  display: block;
+  margin: 20px auto;
+  background: #003366;
+  color: white;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  transition: background 0.3s;
+}
+
+.export:hover {
+  background: #005dc1;
+}
+
+/* 🧱 RESPONSIVE */
+@media (max-width: 768px) {
+  nav#menu {
+    width: 70px;
   }
-  .main-nav {
-    flex-wrap: wrap;
+  nav#menu:hover {
+    width: 120px;
   }
-  .nav-btn {
-    flex: 45%;
+  main {
+    margin-left: 70px;
   }
-  #calc-float {
-    width: 90%;
-    right: 5%;
+  header h1 {
+    font-size: 1.3em;
   }
 }
