@@ -428,7 +428,7 @@ function escapeHtml(s){
 }
 
 /* =========================
-   BOOT
+   BOOT (version corrigée)
 ========================= */
 function tickHeader(){
   const h = qs("#header-clock");
@@ -442,10 +442,26 @@ function tickHeader(){
 }
 setInterval(tickHeader, 1000);
 
-document.addEventListener("DOMContentLoaded", ()=>{
-  initNav();
+// >>> VERSION FIXEE : assure l’attachement des boutons à chaque rechargement
+function initAll(){
+  initNav();                // boutons menu & lignes
   setCurrentLine(LIGNES[0]);
-  mountProdForm();
-  mountOrganisation();
-  tickHeader();
+  mountProdForm();          // formulaire prod
+  mountOrganisation();      // page consignes
+  tickHeader();             // horloge & équipe
+}
+
+// Exécution dès que le DOM est prêt (y compris après actualisation)
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAll);
+} else {
+  initAll();
+}
+
+// Réattache tout si l’utilisateur revient sur la page (visibilité restaurée)
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    initAll();
+  }
+});
 });
