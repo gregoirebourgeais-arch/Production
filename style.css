@@ -1,238 +1,267 @@
-/* --- Reset et style global --- */
+/* -------------------------------
+   Style général — Synthèse Atelier PPNC
+-------------------------------- */
 * {
   box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, sans-serif;
-  margin: 0;
-  padding: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 body {
-  background-color: #f5faff;
-  color: #0b2d59;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f9ff;
+  color: #001b44;
 }
 
-/* --- En-tête --- */
-header {
-  background-color: #d9ecff;
-  color: #003366;
+/* -------------------------------
+   Header
+-------------------------------- */
+.app-header {
+  background: linear-gradient(90deg, #007bff 0%, #5dade2 100%);
+  color: white;
+  padding: 10px;
   text-align: center;
-  padding: 15px;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-  position: relative;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 20px 20px;
 }
 
-header .logo {
-  width: 70px;
-  position: absolute;
-  left: 10px;
-  top: 10px;
+.logo-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-#dateTimeDisplay {
-  font-size: 0.9em;
-  margin-top: 5px;
-  color: #003366;
+.logo {
+  height: 45px;
+  border-radius: 6px;
+  background: white;
+  padding: 3px;
 }
 
-/* --- Menu principal --- */
-.side-menu {
+.app-header h1 {
+  margin: 5px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.clock {
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.team {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+/* -------------------------------
+   Navigation principale
+-------------------------------- */
+.main-nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 5px;
-  background-color: #eaf4ff;
-  padding: 10px;
-  border-bottom: 2px solid #cde2ff;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  gap: 8px;
+  margin: 10px;
 }
 
-.side-menu button {
-  background-color: #1a73e8;
-  color: white;
-  border: none;
-  border-radius: 20px;
+.nav-btn {
+  background: white;
+  color: #004085;
+  border: 2px solid #007bff;
+  border-radius: 12px;
   padding: 8px 15px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s ease-in-out;
 }
 
-.side-menu button:hover {
-  background-color: #135fc4;
+.nav-btn:hover {
+  background: #007bff;
+  color: white;
+  transform: scale(1.05);
 }
 
-/* --- Pages --- */
-main {
-  flex-grow: 1;
-  padding: 15px;
+/* -------------------------------
+   Lignes
+-------------------------------- */
+.lignes-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.page {
+.line-btn {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 22px;
+  padding: 8px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.line-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* -------------------------------
+   Sections
+-------------------------------- */
+.section {
   display: none;
+  padding: 10px;
   animation: fadeIn 0.5s ease-in-out;
 }
 
-.page.active {
+.section.active {
   display: block;
 }
 
-/* --- Formulaires --- */
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.hidden {
+  display: none !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------
+   Cartes
+-------------------------------- */
+.card {
   background: white;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
-label {
-  font-weight: bold;
-  color: #0b2d59;
-}
-
-input, select, textarea, button {
-  padding: 8px;
-  border-radius: 10px;
-  border: 1px solid #b3d4fc;
-  outline: none;
-  font-size: 1em;
-}
-
-textarea {
-  resize: vertical;
-}
-
-button {
-  background-color: #1a73e8;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button:hover {
-  background-color: #135fc4;
-}
-
-/* --- Graphiques --- */
-canvas {
-  width: 100%;
-  max-height: 300px;
-  margin-top: 15px;
-}
-
-/* --- Historique --- */
-#historiqueArrets, #historiqueConsignes, #historiquePersonnel, #atelierHistorique {
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 15px;
-}
-
-#historiqueArrets div, #historiqueConsignes div, #historiquePersonnel div {
-  border-bottom: 1px solid #cde2ff;
-  padding: 6px 0;
-}
-
-/* --- Calculatrice --- */
-.calculator {
-  position: fixed;
-  bottom: 70px;
-  right: 15px;
-  background-color: #ffffff;
-  border: 2px solid #cde2ff;
-  border-radius: 15px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  padding: 10px;
-  z-index: 1000;
-}
-
-.hidden {
-  display: none;
-}
-
-.calc-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-top: 5px;
-}
-
-.calc-buttons button {
-  background-color: #e8f2ff;
-  border: 1px solid #b3d4fc;
-  font-size: 1.1em;
-  font-weight: bold;
+.card h2,
+.card h3 {
+  text-align: center;
   color: #003366;
+  margin-top: 0;
+}
+
+/* -------------------------------
+   Inputs et sélecteurs
+-------------------------------- */
+label {
+  display: block;
+  margin: 8px 0 3px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #007bff66;
   border-radius: 10px;
   padding: 8px;
+  font-size: 0.9rem;
+  background: #f8fbff;
+  transition: 0.2s;
 }
 
-.calc-buttons button:hover {
-  background-color: #d6eaff;
+.input:focus,
+textarea:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px #007bff55;
 }
 
-#calcDisplay {
-  width: 100%;
-  height: 40px;
+/* -------------------------------
+   Boutons
+-------------------------------- */
+.btn {
+  display: inline-block;
   border: none;
-  text-align: right;
-  font-size: 1.2em;
-  margin-bottom: 5px;
-}
-
-/* --- Bouton flottant --- */
-.floating-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #1a73e8;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 28px;
-  font-weight: bold;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s ease-in-out;
-  z-index: 1000;
+  transition: 0.2s;
 }
 
-.floating-btn:hover {
-  transform: scale(1.1);
+.btn.primary {
+  background: #007bff;
+  color: white;
 }
 
-/* --- Animation douce --- */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.btn.primary:hover {
+  background: #0056b3;
 }
 
-/* --- Adaptation mobile --- */
-@media (max-width: 600px) {
-  header h1 {
-    font-size: 1.2em;
-  }
+.btn.secondary {
+  background: #f0f0f0;
+  color: #333;
+}
 
-  .side-menu {
-    flex-wrap: wrap;
-    gap: 4px;
-  }
+.btn.secondary:hover {
+  background: #ddd;
+}
 
-  .side-menu button {
-    font-size: 0.8em;
-    padding: 6px 10px;
-  }
+/* Ligne entre les boutons */
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gap {
+  gap: 12px;
+}
+
+/* -------------------------------
+   Historique
+-------------------------------- */
+#prod-history,
+#arret-list,
+#org-list,
+#perso-list {
+  background: #f9fcff;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #007bff33;
+}
+
+#prod-history div,
+#arret-list div,
+#org-list div,
+#perso-list div {
+  border-bottom: 1px solid #e5efff;
+  padding: 4px 0;
+}
+
+/* -------------------------------
+   Footer
+-------------------------------- */
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 0.8rem;
+  color: #666;
 }
