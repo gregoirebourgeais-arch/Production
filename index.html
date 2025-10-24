@@ -82,17 +82,52 @@
     <div id="historiqueArrets"></div>
   </section>
 
-  <!-- Organisation -->
-  <section id="organisation" class="page">
+<!-- ORGANISATION -->
+<section id="section-organisation" class="section hidden">
+  <div class="card">
     <h2>Organisation / Consignes</h2>
-    <div class="form-container">
-      <label>Nouvelle consigne :</label>
-      <textarea id="consigneTexte" placeholder="Renseigner la consigne..."></textarea>
-      <label><input type="checkbox" id="consigneValidee"> Consigne réalisée</label>
-      <button onclick="saveConsigne()">💾 Enregistrer</button>
+
+    <div class="grid-2">
+      <div>
+        <label for="org-ligne">Ligne :</label>
+        <select id="org-ligne" class="input">
+          <option value="Râpé">Râpé</option>
+          <option value="T2">T2</option>
+          <option value="RT">RT</option>
+          <option value="Omori">Omori</option>
+          <option value="T1">T1</option>
+          <option value="Sticks">Sticks</option>
+          <option value="Emballage">Emballage</option>
+          <option value="Dés">Dés</option>
+          <option value="Filets">Filets</option>
+          <option value="Prédécoupés">Prédécoupés</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="org-consigne">Nouvelle consigne :</label>
+        <textarea id="org-consigne" class="input" rows="2" placeholder="Renseigner la consigne…"></textarea>
+      </div>
     </div>
-    <div id="historiqueConsignes"></div>
-  </section>
+
+    <div class="row gap">
+      <label class="checkbox">
+        <input type="checkbox" id="org-done" />
+        <span>Consigne réalisée</span>
+      </label>
+
+      <button id="org-save" class="btn primary">
+        💾 Enregistrer
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Historique Consignes</h3>
+    <div id="org-list" class="list"></div>
+  </div>
+</section>
+<!-- /ORGANISATION -->
 
   <!-- Personnel -->
   <section id="personnel" class="page">
