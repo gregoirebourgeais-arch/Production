@@ -1,51 +1,38 @@
-/* ==============================
-   Service Worker - Synthèse Atelier PPNC
-   Permet la mise en cache et le mode offline
-============================== */
-
-const CACHE_NAME = "synthese-ppnc-v1";
-const FILES_TO_CACHE = [
+const CACHE_NAME = "synthese-atelier-cache-v1";
+const urlsToCache = [
+  "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./Lactalis2023Logo.svg",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png"
 ];
 
-self.addEventListener("install", (event) => {
+// ✅ INSTALLATION DU SERVICE WORKER
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log("🧩 Mise en cache des fichiers");
-      return cache.addAll(FILES_TO_CACHE);
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
     })
   );
 });
 
-self.addEventListener("fetch", (event) => {
+// ✅ MISE À JOUR / ACTIVATION
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(key => key !== CACHE_NAME && caches.delete(key)))
+    )
+  );
+});
+
+// ✅ INTERCEPTION DES REQUÊTES
+self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return (
-        response ||
-        fetch(event.request).catch(() =>
-          caches.match("./index.html")
-        )
-      );
-    })
-  );
-});
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log("🧹 Suppression de l'ancien cache :", key);
-            return caches.delete(key);
-          }
-        })
-      )
+    caches.match(event.request).then(response =>
+      response || fetch(event.request).catch(() => caches.match("./index.html"))
     )
   );
 });
