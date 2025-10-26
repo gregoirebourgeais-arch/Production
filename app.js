@@ -2,266 +2,211 @@
 document.addEventListener("DOMContentLoaded", () => {
   updateDateTime();
   setInterval(updateDateTime, 1000);
-  loadHistoriqueGlobal();
+
+  // Navigation
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => showPage(btn.dataset.page));
+  });
+
+  // Clonage dynamique des pages lignes
+  const lignes = ["T2","RT","Omori","T1","Sticks","Emballage","Dés","Filets","Prédécoupés"];
+  const ref = document.getElementById("rapé");
+  lignes.forEach(nom => {
+    const clone = ref.cloneNode(true);
+    clone.id = nom.toLowerCase();
+    clone.querySelector("h2").textContent = `Ligne ${nom}`;
+    clone.querySelector(".bloc-ligne").dataset.ligne = nom;
+    document.getElementById("content").appendChild(clone);
+  });
+
+  // Gestion événements
+  document.querySelectorAll(".btn-enregistrer").forEach(b => b.addEventListener("click", saveLigne));
+  document.getElementById("exportExcel").addEventListener("click", exportExcel);
+  document.getElementById("saveArret").addEventListener("click", saveArret);
+  document.getElementById("saveConsigne").addEventListener("click", saveConsigne);
+  document.getElementById("savePersonnel").addEventListener("click", savePersonnel);
+
+  // Données initiales
+  loadAll();
 });
 
-// === HORLOGE ===
+// === DATE ET HEURE ===
 function updateDateTime() {
   const now = new Date();
-  const options = { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" };
-  document.getElementById("currentDateTime").textContent = now.toLocaleDateString("fr-FR", options);
+  document.getElementById("dateTime").textContent = now.toLocaleString("fr-FR", {
+    weekday: "long", day: "2-digit", month: "long", year: "numeric",
+    hour: "2-digit", minute: "2-digit"
+  });
 }
 
 // === NAVIGATION ===
-function showPage(pageId) {
+function showPage(id) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(pageId).classList.add("active");
-
-  document.querySelectorAll(".sidebar-nav button").forEach(btn => btn.classList.remove("active"));
-  const activeBtn = [...document.querySelectorAll(".sidebar-nav button")].find(b => b.getAttribute("onclick")?.includes(pageId));
-  if (activeBtn) activeBtn.classList.add("active");
+  document.getElementById(id).classList.add("active");
 }
 
-function showLigne(nom) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  const page = document.getElementById("pageLigne");
-  page.classList.add("active");
-  document.getElementById("nomLigne").textContent = `Ligne ${nom}`;
-  page.dataset.ligne = nom;
-  loadHistoriqueLigne(nom);
-}
-
-// === CALCULS CADENCE ET FIN ESTIMÉE ===
-function majFinEstimee() {
-  const qte = parseFloat(document.getElementById("qteLigne").value) || 0;
-  const restant = parseFloat(document.getElementById("restantLigne").value) || 0;
-  const debut = document.getElementById("debutLigne").value;
-  const fin = document.getElementById("finLigne").value;
-  let cadence = 0;
+// === LIGNES ===
+function saveLigne(e) {
+  const bloc = e.target.closest(".bloc-ligne");
+  const ligne = bloc.dataset.ligne;
+  const debut = bloc.querySelector(".heure-debut").value;
+  const fin = bloc.querySelector(".heure-fin").value;
+  const qte = parseFloat(bloc.querySelector(".quantite-realisee").value) || 0;
+  const restant = parseFloat(bloc.querySelector(".quantite-restante").value) || 0;
+  const cadenceManu = parseFloat(bloc.querySelector(".cadence-manuelle").value) || 0;
+  let cadenceCalc = 0;
 
   if (debut && fin && qte > 0) {
-    const [h1, m1] = debut.split(":").map(Number);
-    const [h2, m2] = fin.split(":").map(Number);
-    let duree = (h2 * 60 + m2) - (h1 * 60 + m1);
-    if (duree <= 0) duree += 24 * 60;
-    cadence = (qte / duree) * 60;
+    const [h1,m1] = debut.split(":").map(Number);
+    const [h2,m2] = fin.split(":").map(Number);
+    let diff = (h2*60+m2)-(h1*60+m1);
+    if (diff<=0) diff+=1440;
+    cadenceCalc = (qte/diff)*60;
+  } else if (cadenceManu>0) {
+    cadenceCalc = cadenceManu;
   }
 
-  document.getElementById("cadenceMoy").textContent = cadence.toFixed(1);
+  bloc.querySelector(".cadence-calculee").textContent = cadenceCalc.toFixed(1);
 
-  if (restant > 0 && cadence > 0) {
-    const tempsRestantH = restant / cadence;
-    const heures = Math.floor(tempsRestantH);
-    const minutes = Math.round((tempsRestantH - heures) * 60);
-    document.getElementById("finEstimee").textContent = `${heures}h ${minutes}min restantes`;
-  } else {
-    document.getElementById("finEstimee").textContent = "-";
+  // Temps restant
+  if (restant>0 && cadenceCalc>0) {
+    const tempsH = restant/cadenceCalc;
+    const h = Math.floor(tempsH);
+    const m = Math.round((tempsH-h)*60);
+    bloc.querySelector(".fin-estimee").textContent = `${h}h ${m}min restantes`;
   }
-}
 
-// === ENREGISTREMENT LIGNE ===
-function enregistrerLigne() {
-  const nom = document.getElementById("nomLigne").textContent.replace("Ligne ", "");
   const data = {
     date: new Date().toLocaleString("fr-FR"),
-    debut: document.getElementById("debutLigne").value,
-    fin: document.getElementById("finLigne").value,
-    qte: parseFloat(document.getElementById("qteLigne").value) || 0,
-    restant: parseFloat(document.getElementById("restantLigne").value) || 0,
-    cadence: parseFloat(document.getElementById("cadenceMoy").textContent) || 0,
+    debut, fin, qte, restant,
+    cadence: cadenceCalc
   };
-
-  if (!data.qte && !data.restant) return alert("Veuillez saisir au moins une quantité.");
-
-  let historique = JSON.parse(localStorage.getItem(`ligne_${nom}`)) || [];
-  historique.push(data);
-  localStorage.setItem(`ligne_${nom}`, JSON.stringify(historique));
-
-  // Nettoyage des champs après enregistrement
-  document.getElementById("qteLigne").value = "";
-  document.getElementById("restantLigne").value = "";
-  document.getElementById("cadenceMoy").textContent = "0";
-  document.getElementById("finEstimee").textContent = "-";
-
-  loadHistoriqueLigne(nom);
-  alert("Enregistrement effectué ✅");
+  const hist = JSON.parse(localStorage.getItem("ligne_"+ligne))||[];
+  hist.push(data);
+  localStorage.setItem("ligne_"+ligne,JSON.stringify(hist));
+  afficherHistoriqueLigne(bloc,ligne);
+  bloc.querySelectorAll("input").forEach(i=>i.value="");
 }
 
-// === HISTORIQUE LIGNE ===
-function loadHistoriqueLigne(nom) {
-  const div = document.getElementById("historiqueLigne");
-  const data = JSON.parse(localStorage.getItem(`ligne_${nom}`)) || [];
-  if (data.length === 0) {
-    div.innerHTML = "<p>Aucun enregistrement.</p>";
-    return;
-  }
+function afficherHistoriqueLigne(bloc,ligne) {
+  const hist = JSON.parse(localStorage.getItem("ligne_"+ligne))||[];
+  const ul = bloc.parentElement.querySelector(".historique-ligne");
+  ul.innerHTML = hist.map(h=>`<li>${h.date} — ${h.qte} colis — ${h.cadence.toFixed(1)} c/h</li>`).join("")||"<li>Aucun enregistrement</li>";
 
-  let html = `<table><tr><th>Date</th><th>Début</th><th>Fin</th><th>Qté</th><th>Restant</th><th>Cadence</th></tr>`;
-  data.forEach(d => {
-    html += `<tr>
-      <td>${d.date}</td><td>${d.debut}</td><td>${d.fin}</td>
-      <td>${d.qte}</td><td>${d.restant}</td><td>${d.cadence.toFixed(1)}</td>
-    </tr>`;
+  // Graphe
+  const ctx = bloc.parentElement.querySelector(".graph-ligne");
+  if(!ctx) return;
+  const labels = hist.map(h=>h.date.split(" ")[1]);
+  const data = hist.map(h=>h.cadence);
+  new Chart(ctx, {
+    type: "line",
+    data: { labels, datasets:[{ label:"Cadence", data, borderColor:"#0078d7", tension:0.3, fill:false }] },
+    options:{ responsive:true, plugins:{legend:{display:false}} }
   });
-  html += "</table>";
-  div.innerHTML = html;
 }
 
 // === ARRÊTS ===
-function enregistrerArret() {
-  const ligne = document.getElementById("ligneArret").value;
-  const type = document.getElementById("typeArret").value;
-  const motif = document.getElementById("motifArret").value.trim();
-  if (!ligne || !motif) return alert("Veuillez renseigner la ligne et le motif.");
-
-  const data = {
-    date: new Date().toLocaleString("fr-FR"),
-    ligne, type, motif
-  };
-
-  let hist = JSON.parse(localStorage.getItem("arrets")) || [];
-  hist.push(data);
-  localStorage.setItem("arrets", JSON.stringify(hist));
-
-  document.getElementById("motifArret").value = "";
-  loadHistoriqueArrets();
+function saveArret(){
+  const ligne=document.getElementById("arret-ligne").value;
+  const type=document.getElementById("arret-type").value;
+  const com=document.getElementById("arret-commentaire").value.trim();
+  if(!ligne||!type||!com) return alert("Renseignez tous les champs.");
+  const hist=JSON.parse(localStorage.getItem("arrets"))||[];
+  hist.push({date:new Date().toLocaleString("fr-FR"),ligne,type,com});
+  localStorage.setItem("arrets",JSON.stringify(hist));
+  document.getElementById("arret-commentaire").value="";
+  afficherArrets();
 }
-
-function loadHistoriqueArrets() {
-  const div1 = document.getElementById("historiqueArrets");
-  const div2 = document.getElementById("historiqueArrets2");
-  const data = JSON.parse(localStorage.getItem("arrets")) || [];
-
-  let html = `<table><tr><th>Date</th><th>Ligne</th><th>Type</th><th>Motif</th></tr>`;
-  data.forEach(a => {
-    html += `<tr><td>${a.date}</td><td>${a.ligne}</td><td>${a.type}</td><td>${a.motif}</td></tr>`;
-  });
-  html += "</table>";
-
-  div1.innerHTML = html;
-  div2.innerHTML = html;
+function afficherArrets(){
+  const data=JSON.parse(localStorage.getItem("arrets"))||[];
+  const ul=document.getElementById("historiqueArrets");
+  ul.innerHTML=data.map(a=>`<li>${a.date} — ${a.ligne} (${a.type}) : ${a.com}</li>`).join("")||"<li>Aucun arrêt</li>";
 }
 
 // === CONSIGNES ===
-function enregistrerConsigne() {
-  const texte = document.getElementById("nouvelleConsigne").value.trim();
-  const realisee = document.getElementById("consigneRealisee").checked;
-  if (!texte) return alert("Veuillez saisir une consigne.");
-
-  let hist = JSON.parse(localStorage.getItem("consignes")) || [];
-  hist.push({ date: new Date().toLocaleString("fr-FR"), texte, realisee });
-  localStorage.setItem("consignes", JSON.stringify(hist));
-
-  document.getElementById("nouvelleConsigne").value = "";
-  document.getElementById("consigneRealisee").checked = false;
-  loadConsignes();
+function saveConsigne(){
+  const txt=document.getElementById("nouvelleConsigne").value.trim();
+  const real=document.getElementById("consigneRealisee").checked;
+  if(!txt) return alert("Saisissez une consigne.");
+  const hist=JSON.parse(localStorage.getItem("consignes"))||[];
+  hist.push({date:new Date().toLocaleString("fr-FR"),txt,real});
+  localStorage.setItem("consignes",JSON.stringify(hist));
+  document.getElementById("nouvelleConsigne").value="";
+  document.getElementById("consigneRealisee").checked=false;
+  afficherConsignes();
 }
-
-function loadConsignes() {
-  const div = document.getElementById("historiqueConsignes");
-  const data = JSON.parse(localStorage.getItem("consignes")) || [];
-  let html = `<table><tr><th>Date</th><th>Consigne</th><th>Réalisée</th></tr>`;
-  data.forEach(c => {
-    html += `<tr><td>${c.date}</td><td>${c.texte}</td><td>${c.realisee ? "✅" : "❌"}</td></tr>`;
-  });
-  html += "</table>";
-  div.innerHTML = html;
+function afficherConsignes(){
+  const hist=JSON.parse(localStorage.getItem("consignes"))||[];
+  const ul=document.getElementById("historiqueConsignes");
+  ul.innerHTML=hist.map(c=>`<li>${c.date} — ${c.txt} ${c.real?"✅":"❌"}</li>`).join("")||"<li>Aucune consigne</li>";
 }
 
 // === PERSONNEL ===
-function enregistrerPersonnel() {
-  const nom = document.getElementById("nomPersonnel").value.trim();
-  const poste = document.getElementById("postePersonnel").value.trim();
-  if (!nom) return alert("Veuillez renseigner le nom.");
-
-  const data = { date: new Date().toLocaleString("fr-FR"), nom, poste };
-  let hist = JSON.parse(localStorage.getItem("personnel")) || [];
-  hist.push(data);
-  localStorage.setItem("personnel", JSON.stringify(hist));
-
-  document.getElementById("nomPersonnel").value = "";
-  document.getElementById("postePersonnel").value = "";
-  loadPersonnel();
+function savePersonnel(){
+  const nom=document.getElementById("nomPersonnel").value.trim();
+  const motif=document.getElementById("motifPersonnel").value.trim();
+  const com=document.getElementById("commentairePersonnel").value.trim();
+  if(!nom||!motif) return alert("Complétez les champs Nom et Motif.");
+  const hist=JSON.parse(localStorage.getItem("personnel"))||[];
+  hist.push({date:new Date().toLocaleString("fr-FR"),nom,motif,com});
+  localStorage.setItem("personnel",JSON.stringify(hist));
+  document.getElementById("nomPersonnel").value="";
+  document.getElementById("motifPersonnel").value="";
+  document.getElementById("commentairePersonnel").value="";
+  afficherPersonnel();
 }
-
-function loadPersonnel() {
-  const div = document.getElementById("historiquePersonnel");
-  const data = JSON.parse(localStorage.getItem("personnel")) || [];
-  let html = `<table><tr><th>Date</th><th>Nom</th><th>Poste</th></tr>`;
-  data.forEach(p => {
-    html += `<tr><td>${p.date}</td><td>${p.nom}</td><td>${p.poste}</td></tr>`;
-  });
-  html += "</table>";
-  div.innerHTML = html;
+function afficherPersonnel(){
+  const hist=JSON.parse(localStorage.getItem("personnel"))||[];
+  const ul=document.getElementById("historiquePersonnel");
+  ul.innerHTML=hist.map(p=>`<li>${p.date} — ${p.nom} (${p.motif}) : ${p.com}</li>`).join("")||"<li>Aucun enregistrement</li>";
 }
 
 // === EXPORT EXCEL ===
-function exportExcel() {
-  const wb = XLSX.utils.book_new();
-  const data = {
-    Production: collectAll("ligne_"),
-    Arrêts: JSON.parse(localStorage.getItem("arrets")) || [],
-    Organisation: JSON.parse(localStorage.getItem("consignes")) || [],
-    Personnel: JSON.parse(localStorage.getItem("personnel")) || []
+function exportExcel(){
+  const wb=XLSX.utils.book_new();
+  const all={
+    Production:collect("ligne_"),
+    Arrets:JSON.parse(localStorage.getItem("arrets"))||[],
+    Consignes:JSON.parse(localStorage.getItem("consignes"))||[],
+    Personnel:JSON.parse(localStorage.getItem("personnel"))||[]
   };
-
-  for (const [nom, arr] of Object.entries(data)) {
-    const ws = XLSX.utils.json_to_sheet(arr);
-    XLSX.utils.book_append_sheet(wb, ws, nom);
+  for(const [n,arr] of Object.entries(all)){
+    const ws=XLSX.utils.json_to_sheet(arr);
+    XLSX.utils.book_append_sheet(wb,ws,n);
   }
-
-  const nomFichier = `Synthese_PPNC_${new Date().toLocaleDateString("fr-FR").replace(/\//g, "-")}.xlsx`;
-  XLSX.writeFile(wb, nomFichier);
+  XLSX.writeFile(wb,`Atelier_PPNC_${new Date().toLocaleDateString("fr-FR").replace(/\//g,"-")}.xlsx`);
 }
-
-function collectAll(prefix) {
-  const res = [];
-  for (let key in localStorage) {
-    if (key.startsWith(prefix)) {
-      const arr = JSON.parse(localStorage.getItem(key)) || [];
-      arr.forEach(a => res.push({ ligne: key.replace(prefix, ""), ...a }));
+function collect(prefix){
+  const all=[];
+  for(const k in localStorage){
+    if(k.startsWith(prefix)){
+      const arr=JSON.parse(localStorage.getItem(k))||[];
+      arr.forEach(a=>all.push({ligne:k.replace(prefix,""),...a}));
     }
   }
-  return res;
+  return all;
 }
 
-// === CALCULATRICE ===
-function openCalculator() {
-  const calc = document.getElementById("calculator");
-  if (calc) calc.remove();
-  else createCalculator();
+// === PAGE ATELIER ===
+function afficherAtelier(){
+  const ctx=document.getElementById("atelierChart");
+  if(!ctx) return;
+  const datasets=[];
+  const couleurs=["#0078d7","#00a2ff","#0094d8","#0082c3","#006bb0","#005fa3","#004c99","#003f8a","#002d72","#0069a5"];
+  const lignes=["Râpé","T2","RT","Omori","T1","Sticks","Emballage","Dés","Filets","Prédécoupés"];
+  lignes.forEach((l,i)=>{
+    const data=JSON.parse(localStorage.getItem("ligne_"+l))||[];
+    const labels=data.map(d=>d.date.split(" ")[1]);
+    const valeurs=data.map(d=>d.cadence);
+    datasets.push({label:l,data:valeurs,borderColor:couleurs[i],fill:false,tension:0.3});
+  });
+  new Chart(ctx,{type:"line",data:{labels:[],datasets},options:{responsive:true,plugins:{legend:{position:"bottom"}}}});
 }
 
-function createCalculator() {
-  const div = document.createElement("div");
-  div.id = "calculator";
-  div.innerHTML = `
-    <input type="text" id="calcDisplay" readonly />
-    <div class="calc-buttons">
-      ${[7,8,9,"/"].map(b=>`<button onclick="calcPress('${b}')">${b}</button>`).join("")}
-      ${[4,5,6,"*"].map(b=>`<button onclick="calcPress('${b}')">${b}</button>`).join("")}
-      ${[1,2,3,"-"].map(b=>`<button onclick="calcPress('${b}')">${b}</button>`).join("")}
-      ${[0,".","=","+"].map(b=>`<button onclick="calcPress('${b}')">${b}</button>`).join("")}
-      <button onclick="closeCalc()">Fermer</button>
-    </div>`;
-  document.body.appendChild(div);
-}
-
-function calcPress(val) {
-  const display = document.getElementById("calcDisplay");
-  if (val === "=") {
-    try { display.value = eval(display.value); } catch { display.value = "Erreur"; }
-  } else display.value += val;
-}
-
-function closeCalc() {
-  const calc = document.getElementById("calculator");
-  if (calc) calc.remove();
-}
-
-// === HISTORIQUE GLOBAL (Atelier) ===
-function loadHistoriqueGlobal() {
-  loadHistoriqueArrets();
-  loadConsignes();
-  loadPersonnel();
+// === INITIALISATION DES HISTORIQUES ===
+function loadAll(){
+  afficherArrets();
+  afficherConsignes();
+  afficherPersonnel();
+  afficherAtelier();
 }
