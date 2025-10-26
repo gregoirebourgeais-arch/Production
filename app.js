@@ -326,4 +326,4 @@ function exportGlobalExcel() {
   a.href = URL.createObjectURL(blob);
   a.download = `Synthese_Atelier_${new Date().toISOString().slice(0, 16)}.csv`;
   a.click();
-     }
+    }
