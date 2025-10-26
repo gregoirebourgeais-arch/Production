@@ -1,17 +1,18 @@
-const CACHE_NAME = "atelier-ppnc-v1";
+const CACHE_NAME = "atelier-ppnc-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./Lactalis2023Logo.svg"
 ];
 
 // Installation du Service Worker
-self.addEventListener("install", (e) => {
-  e.waitUntil(
+self.addEventListener("install", (event) => {
+  event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
     })
@@ -19,9 +20,9 @@ self.addEventListener("install", (e) => {
   self.skipWaiting();
 });
 
-// Activation et nettoyage ancien cache
-self.addEventListener("activate", (e) => {
-  e.waitUntil(
+// Activation et suppression des anciens caches
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.map((k) => k !== CACHE_NAME && caches.delete(k)))
     )
@@ -29,16 +30,16 @@ self.addEventListener("activate", (e) => {
   self.clients.claim();
 });
 
-// Interception des requêtes
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => {
+// Gestion du cache et du mode hors-ligne
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
       return (
-        res ||
-        fetch(e.request).then((response) => {
+        response ||
+        fetch(event.request).then((res) => {
           return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, response.clone());
-            return response;
+            cache.put(event.request, res.clone());
+            return res;
           });
         })
       );
