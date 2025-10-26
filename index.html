@@ -4,55 +4,83 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Synthèse Atelier PPNC</title>
-  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
 </head>
 
 <body>
-  <header>
-    <img src="Lactalis2023Logo.svg" alt="Logo Lactalis" class="logo" />
-    <h1>Synthèse Atelier PPNC</h1>
-  </header>
-
+  <!-- 🧭 MENU VERTICAL -->
   <nav id="menu">
+    <img src="Lactalis2023Logo.svg" alt="Lactalis Logo" class="logo" />
     <button onclick="showPage('atelier')">🏭 Atelier</button>
-    <button onclick="showPage('production')">🧀 Production</button>
-    <button onclick="showPage('arrets')">⏱️ Arrêts</button>
+    <button onclick="showPage('production')">📦 Production</button>
+    <button onclick="showPage('arrets')">⏸️ Arrêts</button>
     <button onclick="showPage('organisation')">📋 Organisation</button>
-    <button onclick="showPage('personnel')">👷‍♂️ Personnel</button>
+    <button onclick="showPage('personnel')">👷 Personnel</button>
   </nav>
 
+  <!-- 📋 CONTENU PRINCIPAL -->
   <main>
     <!-- 🏭 PAGE ATELIER -->
     <section id="atelier" class="page active">
-      <h2>Vue d'ensemble Atelier</h2>
-      <canvas id="globalChart"></canvas>
-      <div id="atelierSummary"></div>
-      <button class="export" onclick="exportGlobalExcel()">📤 Export global Excel</button>
+      <header>
+        <h1>Vue d'ensemble Atelier PPNC</h1>
+      </header>
+
+      <canvas id="globalChart" height="150"></canvas>
+
+      <section id="atelierSummary">
+        <h2>Résumé des lignes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Ligne</th>
+              <th>Quantité totale</th>
+              <th>Cadence moyenne</th>
+              <th>Fin estimée</th>
+            </tr>
+          </thead>
+          <tbody id="atelierTable"></tbody>
+        </table>
+      </section>
+
+      <section id="atelierHistorique">
+        <h2>Historique des arrêts</h2>
+        <div id="arretHistorique"></div>
+      </section>
+
+      <section id="atelierConsignes">
+        <h2>Consignes récentes</h2>
+        <div id="consignesListe"></div>
+      </section>
+
+      <section id="atelierPersonnel">
+        <h2>Suivi du personnel</h2>
+        <div id="personnelHistorique"></div>
+      </section>
+
+      <button class="export" onclick="exportGlobalExcel()">📤 Exporter Excel global</button>
     </section>
 
-    <!-- 🧀 PAGE PRODUCTION -->
+    <!-- 📦 PAGE PRODUCTION -->
     <section id="production" class="page">
-      <h2>Production par ligne</h2>
+      <h2>Production</h2>
       <div id="productionLines"></div>
     </section>
 
-    <!-- ⏱️ PAGE ARRÊTS -->
+    <!-- ⏸️ PAGE ARRÊTS -->
     <section id="arrets" class="page">
-      <h2>Gestion des arrêts</h2>
-      <form id="arretForm" onsubmit="saveArret(event)">
-        <label>Ligne :</label>
+      <h2>Arrêts de lignes</h2>
+      <form onsubmit="saveArret(event)">
+        <label>Ligne concernée :</label>
         <select id="arretLigne">
-          <option>Râpé</option>
-          <option>T2</option>
-          <option>RT</option>
-          <option>OMORI</option>
-          <option>Sticks</option>
-          <option>Emballage</option>
-          <option>Dés</option>
-          <option>Filets</option>
-          <option>Prédécoupés</option>
+          <option value="">-- Choisir une ligne --</option>
         </select>
         <label>Type d'arrêt :</label>
         <select id="arretType">
@@ -60,32 +88,30 @@
           <option>Packing</option>
           <option>MEC</option>
         </select>
-        <label>Durée (min) :</label>
-        <input type="number" id="arretDuree" placeholder="minutes" required />
+        <label>Durée (minutes) :</label>
+        <input type="number" id="arretDuree" placeholder="Durée..." required />
         <label>Commentaire :</label>
         <input type="text" id="arretCommentaire" placeholder="Commentaire..." />
         <button type="submit">Enregistrer</button>
       </form>
       <div id="arretHistorique"></div>
-      <button class="export" onclick="exportArrets()">📤 Export Arrêts Excel</button>
     </section>
 
     <!-- 📋 PAGE ORGANISATION -->
     <section id="organisation" class="page">
-      <h2>Consignes et Organisation</h2>
-      <form id="consigneForm" onsubmit="saveConsigne(event)">
-        <label>Consigne :</label>
-        <input type="text" id="consigneText" required />
-        <button type="submit">Ajouter</button>
+      <h2>Consignes</h2>
+      <form onsubmit="saveConsigne(event)">
+        <label>Nouvelle consigne :</label>
+        <input type="text" id="consigneText" placeholder="Saisir la consigne..." required />
+        <button type="submit">Enregistrer</button>
       </form>
       <div id="consignesListe"></div>
-      <button class="export" onclick="exportOrganisation()">📤 Export Organisation Excel</button>
     </section>
 
-    <!-- 👷‍♂️ PAGE PERSONNEL -->
+    <!-- 👷 PAGE PERSONNEL -->
     <section id="personnel" class="page">
-      <h2>Suivi du Personnel</h2>
-      <form id="personnelForm" onsubmit="savePersonnel(event)">
+      <h2>Suivi du personnel</h2>
+      <form onsubmit="savePersonnel(event)">
         <label>Nom :</label>
         <input type="text" id="personnelNom" required />
         <label>Motif :</label>
@@ -100,11 +126,11 @@
         <button type="submit">Enregistrer</button>
       </form>
       <div id="personnelHistorique"></div>
-      <button class="export" onclick="exportPersonnel()">📤 Export Personnel Excel</button>
     </section>
   </main>
 
   <!-- 🧮 CALCULATRICE FLOTTANTE -->
+  <button id="openCalc" onclick="toggleCalculator()">🧮</button>
   <div id="calculator" class="calculator">
     <input type="text" id="calcDisplay" readonly />
     <div class="calc-buttons">
@@ -127,8 +153,6 @@
       <button class="close" onclick="toggleCalculator()">Fermer</button>
     </div>
   </div>
-
-  <button id="openCalc" onclick="toggleCalculator()">🧮</button>
 
   <script src="app.js"></script>
 </body>
