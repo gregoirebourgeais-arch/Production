@@ -1,265 +1,195 @@
-/* === RESET GLOBAL === */
+/* ======= STYLE GLOBAL ======= */
+:root {
+  --bleu-lactalis: #007bff;
+  --bleu-clair: #e8f2ff;
+  --bleu-fonce: #004a99;
+  --blanc: #ffffff;
+  --gris-clair: #f5f7fa;
+  --ombre: rgba(0, 0, 0, 0.1);
+  --arrondi: 12px;
+}
+
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 body {
-  display: flex;
-  background: linear-gradient(180deg, #eaf3ff, #d5e8ff);
-  color: #003366;
-  height: 100vh;
-  overflow: hidden;
+  margin: 0;
+  background-color: var(--bleu-clair);
+  color: #001a33;
 }
 
-/* === MENU LATÉRAL === */
-nav#menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 90px;
-  height: 100%;
-  background: #007bff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 15px;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
-  transition: width 0.3s ease;
-  overflow-x: hidden;
-  z-index: 100;
+/* ======= HEADER ======= */
+header {
+  background: linear-gradient(90deg, var(--bleu-lactalis), var(--bleu-fonce));
+  color: var(--blanc);
+  text-align: center;
+  padding: 15px 10px;
+  border-bottom: 4px solid #cce0ff;
 }
 
-nav#menu:hover {
-  width: 160px;
-}
-
-nav#menu .logo {
-  width: 60px;
+header img.logo {
+  width: 80px;
   height: auto;
-  margin-bottom: 25px;
+  margin-bottom: 8px;
 }
 
-nav#menu button {
-  width: 100%;
-  padding: 12px 8px;
-  background: transparent;
-  color: white;
+header h1 {
+  font-size: 1.6em;
+  margin: 0;
+  font-weight: 700;
+}
+
+header p {
+  margin: 4px 0 0;
+  font-size: 0.95em;
+}
+
+/* ======= NAVIGATION ======= */
+.main-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: #f8fbff;
+  padding: 10px;
+  box-shadow: 0 3px 6px var(--ombre);
+}
+
+.nav-btn {
+  background: var(--bleu-lactalis);
+  color: var(--blanc);
   border: none;
+  margin: 5px;
+  padding: 10px 15px;
+  border-radius: 25px;
+  font-size: 1em;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 8px;
-  font-size: 0.9em;
-  transition: background 0.3s;
+  transition: all 0.2s ease;
 }
 
-nav#menu button:hover {
-  background: rgba(255, 255, 255, 0.25);
+.nav-btn:hover,
+.nav-btn.active {
+  background: var(--bleu-fonce);
+  transform: scale(1.05);
 }
 
-/* === CONTENU PRINCIPAL === */
-main {
-  flex: 1;
-  margin-left: 90px;
-  padding: 20px;
-  overflow-y: auto;
-  height: 100vh;
-}
-
+/* ======= PAGES ======= */
 .page {
   display: none;
-  animation: fadeIn 0.3s ease;
+  padding: 20px;
 }
 
 .page.active {
   display: block;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-h1, h2 {
-  color: #002b5c;
+h2 {
+  color: var(--bleu-fonce);
+  text-align: center;
+  font-size: 1.5em;
   margin-bottom: 15px;
 }
 
-/* === FORMULAIRES === */
-form {
-  background: white;
-  border-radius: 12px;
+h3 {
+  color: var(--bleu-lactalis);
+  font-size: 1.2em;
+  border-bottom: 2px solid var(--bleu-lactalis);
+  padding-bottom: 5px;
+  margin-top: 25px;
+}
+
+/* ======= CARTES / BLOCS ======= */
+#lignesContainer > div,
+section > div {
+  background: var(--blanc);
+  border-radius: var(--arrondi);
   padding: 15px;
-  margin-bottom: 25px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+  box-shadow: 0 2px 8px var(--ombre);
 }
 
-form label {
-  display: block;
-  margin-top: 10px;
-  font-weight: bold;
-  color: #003366;
-}
-
-form input, form select {
+/* ======= FORMULAIRES ======= */
+input,
+select,
+textarea {
   width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #aac7ff;
-  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 6px 0 12px;
+  border: 1px solid #ccc;
+  border-radius: var(--arrondi);
   font-size: 1em;
 }
 
-form button {
-  background: #007bff;
-  color: white;
+textarea {
+  resize: vertical;
+}
+
+button {
+  background-color: var(--bleu-lactalis);
+  color: var(--blanc);
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  margin-top: 15px;
+  padding: 10px 15px;
+  border-radius: var(--arrondi);
+  font-size: 1em;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: var(--bleu-fonce);
+}
+
+/* ======= TABLEAUX / HISTORIQUES ======= */
+#historiqueProduction div,
+#historiqueArrets div,
+#historiqueConsignes div,
+#historiquePersonnel div {
+  background: var(--gris-clair);
+  padding: 8px;
+  border-radius: var(--arrondi);
+  margin-bottom: 8px;
+  font-size: 0.95em;
+  box-shadow: inset 0 0 3px var(--ombre);
+}
+
+#historiqueConsignes .done {
+  color: green;
   font-weight: bold;
-  transition: background 0.3s;
 }
 
-form button:hover {
-  background: #005dc1;
-}
-
-/* === TABLEAUX === */
-table {
+/* ======= GRAPHIQUE ======= */
+canvas {
   width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  max-width: 600px;
+  margin: 15px auto;
+  display: block;
 }
 
-table th, table td {
-  text-align: left;
-  padding: 10px;
-  border-bottom: 1px solid #cce0ff;
-}
-
-table th {
-  background: #cce0ff;
-  color: #003366;
-}
-
-table tr:hover {
-  background: #f0f6ff;
-}
-
-/* === CALCULATRICE FLOTTANTE === */
-#openCalc {
+/* ======= FAB (Calculatrice) ======= */
+#fab {
   position: fixed;
   bottom: 25px;
   right: 25px;
-  background: #007bff;
-  color: white;
-  border: none;
+  background: var(--bleu-lactalis);
   border-radius: 50%;
-  font-size: 1.5em;
   width: 60px;
   height: 60px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  z-index: 200;
-}
-
-.calculator {
-  display: none;
-  position: fixed;
-  bottom: 100px;
-  right: 25px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  padding: 10px;
-  width: 240px;
-  z-index: 100;
-}
-
-.calculator input {
-  width: 100%;
-  height: 40px;
-  margin-bottom: 10px;
-  text-align: right;
-  padding-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1em;
-}
-
-.calc-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-}
-
-.calc-buttons button {
-  background: #007bff;
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.3s;
+  font-size: 1.5em;
+  box-shadow: 0 4px 8px var(--ombre);
 }
 
-.calc-buttons button:hover {
-  background: #005dc1;
+#fab:hover {
+  background: var(--bleu-fonce);
+  transform: scale(1.05);
 }
 
-.calc-buttons .close {
-  grid-column: span 4;
-  background: #ccc;
-  color: black;
-}
-
-/* === GRAPHIQUES === */
-canvas {
-  background: #eaf3ff;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* === BOUTON EXPORT === */
-.export {
-  display: block;
-  margin: 25px auto;
-  background: #003366;
-  color: white;
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s;
-}
-
-.export:hover {
-  background: #005dc1;
-}
-
-/* === RESPONSIVE === */
+/* ======= RESPONSIVE ======= */
 @media (max-width: 768px) {
-  nav#menu {
-    width: 70px;
+  .nav-btn {
+    flex: 1 1 40%;
   }
-  nav#menu:hover {
-    width: 120px;
-  }
-  main {
-    margin-left: 70px;
-    padding: 15px;
-  }
-  form button {
-    width: 100%;
-  }
-  }
+}
