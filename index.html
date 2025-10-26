@@ -10,37 +10,77 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <header>
-    <img src="Lactalis2023Logo.svg" alt="Logo Lactalis" class="logo" />
-    <h1>Synthèse Atelier PPNC</h1>
-    <p id="currentDateTime"></p>
-  </header>
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <img src="Lactalis2023Logo.svg" alt="Logo Lactalis" class="logo" />
+      <h2>Atelier PPNC</h2>
+    </div>
 
-  <nav class="main-nav">
-    <button class="nav-btn" onclick="showPage('atelier')">Atelier</button>
-    <button class="nav-btn" onclick="showPage('arrets')">Arrêts</button>
-    <button class="nav-btn" onclick="showPage('organisation')">Organisation</button>
-    <button class="nav-btn" onclick="showPage('personnel')">Personnel</button>
-    <button class="nav-btn" onclick="showPage('export')">Export</button>
-  </nav>
+    <nav class="sidebar-nav">
+      <button onclick="showPage('atelier')" class="nav-btn active">🏠 Atelier</button>
+      <hr />
+      <p class="menu-section">Lignes de production</p>
+      <button onclick="showLigne('Râpé')">Râpé</button>
+      <button onclick="showLigne('T2')">T2</button>
+      <button onclick="showLigne('RT')">RT</button>
+      <button onclick="showLigne('Omori')">Omori</button>
+      <button onclick="showLigne('T1')">T1</button>
+      <button onclick="showLigne('Sticks')">Sticks</button>
+      <button onclick="showLigne('Emballage')">Emballage</button>
+      <button onclick="showLigne('Dés')">Dés</button>
+      <button onclick="showLigne('Filets')">Filets</button>
+      <button onclick="showLigne('Prédécoupés')">Prédécoupés</button>
+      <hr />
+      <p class="menu-section">Autres pages</p>
+      <button onclick="showPage('arrets')">Arrêts</button>
+      <button onclick="showPage('organisation')">Organisation</button>
+      <button onclick="showPage('personnel')">Personnel</button>
+      <button onclick="showPage('export')">Export</button>
+    </nav>
+  </aside>
 
-  <main>
-    <!-- Page Atelier -->
+  <main id="content">
+    <header>
+      <h1>Synthèse Atelier PPNC</h1>
+      <p id="currentDateTime"></p>
+    </header>
+
+    <!-- PAGE ATELIER -->
     <section id="atelier" class="page active">
-      <h2>Production</h2>
-
-      <div id="lignesContainer">
-        <!-- Lignes dynamiques injectées ici -->
-      </div>
+      <h2>Vue d'ensemble Atelier</h2>
+      <canvas id="graphGlobal"></canvas>
 
       <h3>Historique production</h3>
       <div id="historiqueProduction"></div>
 
-      <h3>Graphique comparatif des lignes</h3>
-      <canvas id="graphGlobal"></canvas>
+      <h3>Historique des arrêts</h3>
+      <div id="historiqueArrets"></div>
     </section>
 
-    <!-- Page Arrêts -->
+    <!-- PAGE LIGNE -->
+    <section id="pageLigne" class="page">
+      <h2 id="nomLigne">Ligne</h2>
+      <div class="ligne-bloc">
+        <label>Heure début :</label>
+        <input type="time" id="debutLigne" />
+        <label>Heure fin :</label>
+        <input type="time" id="finLigne" />
+        <label>Quantité produite :</label>
+        <input type="number" id="qteLigne" placeholder="Quantité..." />
+        <label>Quantité restante :</label>
+        <input type="number" id="restantLigne" placeholder="Restant..." oninput="majFinEstimee()" />
+        <label>Cadence manuelle (colis/h) :</label>
+        <input type="number" id="cadenceManuelle" placeholder="Saisir cadence..." />
+        <p>⏱ Cadence moyenne : <span id="cadenceMoy">0</span> colis/h</p>
+        <p>⏰ Temps restant estimé : <span id="finEstimee">-</span></p>
+        <button onclick="enregistrerLigne()">💾 Enregistrer</button>
+      </div>
+
+      <h3>Historique de la ligne</h3>
+      <div id="historiqueLigne"></div>
+    </section>
+
+    <!-- PAGE ARRÊTS -->
     <section id="arrets" class="page">
       <h2>Gestion des arrêts</h2>
       <label>Ligne :</label>
@@ -69,12 +109,12 @@
       <button onclick="enregistrerArret()">Enregistrer</button>
 
       <h3>Historique des arrêts</h3>
-      <div id="historiqueArrets"></div>
+      <div id="historiqueArrets2"></div>
     </section>
 
-    <!-- Page Organisation -->
+    <!-- PAGE ORGANISATION -->
     <section id="organisation" class="page">
-      <h2>Organisation / Consignes</h2>
+      <h2>Consignes / Organisation</h2>
       <input type="text" id="nouvelleConsigne" placeholder="Renseigner la consigne..." />
       <label><input type="checkbox" id="consigneRealisee" /> Consigne réalisée</label>
       <button onclick="enregistrerConsigne()">💾 Enregistrer</button>
@@ -83,7 +123,7 @@
       <div id="historiqueConsignes"></div>
     </section>
 
-    <!-- Page Personnel -->
+    <!-- PAGE PERSONNEL -->
     <section id="personnel" class="page">
       <h2>Personnel</h2>
       <input type="text" id="nomPersonnel" placeholder="Nom..." />
@@ -94,10 +134,10 @@
       <div id="historiquePersonnel"></div>
     </section>
 
-    <!-- Page Export -->
+    <!-- PAGE EXPORT -->
     <section id="export" class="page">
       <h2>Export Excel</h2>
-      <p>Exporter toutes les données enregistrées (production, arrêts, consignes, personnel) :</p>
+      <p>Exporter toutes les données (production, arrêts, consignes, personnel) :</p>
       <button onclick="exportExcel()">📤 Exporter vers Excel</button>
     </section>
   </main>
