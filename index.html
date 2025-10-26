@@ -6,39 +6,47 @@
   <title>Atelier PPNC</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
-  <script defer src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js");
+      });
+    }
+  </script>
 </head>
 
 <body>
+  <!-- MENU LATÉRAL -->
   <nav id="sidebar">
     <div class="logo-container">
-      <img src="Lactalis2023Logo.svg" alt="Logo Lactalis" class="logo" />
+      <img src="icons/icon-192.png" class="logo" alt="Lactalis Logo" />
       <h1>Atelier PPNC</h1>
     </div>
-
     <ul class="menu">
-      <li><button onclick="navigateTo('atelier')">🏭 Atelier</button></li>
-      <li><button onclick="navigateTo('production')">⚙️ Production</button></li>
-      <li><button onclick="navigateTo('arrets')">⏱️ Arrêts</button></li>
-      <li><button onclick="navigateTo('organisation')">🗒️ Organisation</button></li>
-      <li><button onclick="navigateTo('personnel')">👥 Personnel</button></li>
+      <li><button onclick="navigateTo('atelierPage')">🏭 Atelier</button></li>
+      <li><button onclick="navigateTo('productionPage')">⚙️ Production</button></li>
+      <li><button onclick="navigateTo('arretsPage')">⏱️ Arrêts</button></li>
+      <li><button onclick="navigateTo('organisationPage')">📝 Organisation</button></li>
+      <li><button onclick="navigateTo('personnelPage')">👥 Personnel</button></li>
     </ul>
   </nav>
 
-  <main id="content">
-    <!-- Page Atelier -->
-    <section id="atelier" class="page active">
-      <h2>Vue d’ensemble Atelier</h2>
-      <div id="atelierSummary">
-        <canvas id="atelierChart"></canvas>
-        <div id="atelierHistory"></div>
-        <button onclick="exportAll()">📊 Export Global Excel</button>
-      </div>
+  <!-- CONTENU PRINCIPAL -->
+  <div id="content">
+    <div id="headerTime"></div>
+
+    <!-- PAGE ATELIER -->
+    <section id="atelierPage" class="page active">
+      <h2>Vue d'ensemble Atelier</h2>
+      <canvas id="atelierChart" height="100"></canvas>
+      <button onclick="exportAll()">📊 Export Excel</button>
+      <div id="atelierHistorique"></div>
     </section>
 
-    <!-- Page Production -->
-    <section id="production" class="page">
-      <h2>Lignes de Production</h2>
+    <!-- PAGE PRODUCTION -->
+    <section id="productionPage" class="page">
+      <h2>Production</h2>
       <div class="lines-grid">
         <button onclick="openLine('Râpé')">Râpé</button>
         <button onclick="openLine('T2')">T2</button>
@@ -52,72 +60,65 @@
         <button onclick="openLine('Prédécoupés')">Prédécoupés</button>
       </div>
 
-      <!-- Conteneur des pages de ligne -->
-      <div id="lineContainer"></div>
+      <div id="lineFormContainer"></div>
     </section>
 
-    <!-- Page Arrêts -->
-    <section id="arrets" class="page">
-      <h2>Gestion des Arrêts</h2>
-      <form id="arretForm">
+    <!-- PAGE ARRÊTS -->
+    <section id="arretsPage" class="page">
+      <h2>Arrêts de ligne</h2>
+      <form id="arretForm" onsubmit="event.preventDefault(); saveArret();">
         <label>Ligne :</label>
-        <select id="arretLine">
-          <option value="">-- Choisir une ligne --</option>
-          <option>Râpé</option><option>T2</option><option>RT</option>
-          <option>T1</option><option>OMORI</option><option>Sticks</option>
-          <option>Emballage</option><option>Dés</option><option>Filets</option><option>Prédécoupés</option>
+        <select id="arretLine" required>
+          <option value="">Sélectionner...</option>
+          <option>Râpé</option><option>T2</option><option>RT</option><option>T1</option>
+          <option>OMORI</option><option>Sticks</option><option>Emballage</option>
+          <option>Dés</option><option>Filets</option><option>Prédécoupés</option>
         </select>
-
         <label>Zone :</label>
         <select id="arretZone">
-          <option value="">-- Sélectionner --</option>
-          <option>Découpe</option>
-          <option>Packing</option>
-          <option>MEC</option>
+          <option value="Découpe">Découpe</option>
+          <option value="Packing">Packing</option>
+          <option value="MEC">MEC</option>
         </select>
-
         <label>Durée (min) :</label>
-        <input type="number" id="arretDuree" placeholder="Durée de l'arrêt" />
-
+        <input id="arretDuree" type="number" required />
         <label>Commentaire :</label>
-        <textarea id="arretComment" placeholder="Détail de l'arrêt..."></textarea>
-
-        <button type="button" onclick="saveArret()">💾 Enregistrer</button>
+        <textarea id="arretComment"></textarea>
+        <button type="submit">💾 Enregistrer</button>
       </form>
       <div id="arretHistorique"></div>
     </section>
 
-    <!-- Page Organisation -->
-    <section id="organisation" class="page">
-      <h2>Consignes</h2>
-      <form id="consigneForm">
-        <label>Nouvelle consigne :</label>
-        <textarea id="consigneTexte" placeholder="Écrire la consigne ici..."></textarea>
-        <button type="button" onclick="saveConsigne()">💾 Enregistrer</button>
+    <!-- PAGE ORGANISATION -->
+    <section id="organisationPage" class="page">
+      <h2>Organisation & Consignes</h2>
+      <form id="consigneForm" onsubmit="event.preventDefault(); saveConsigne();">
+        <label>Consigne :</label>
+        <textarea id="consigneTexte" required></textarea>
+        <button type="submit">💾 Ajouter Consigne</button>
       </form>
       <div id="consigneHistorique"></div>
     </section>
 
-    <!-- Page Personnel -->
-    <section id="personnel" class="page">
-      <h2>Suivi du Personnel</h2>
-      <form id="personnelForm">
+    <!-- PAGE PERSONNEL -->
+    <section id="personnelPage" class="page">
+      <h2>Personnel</h2>
+      <form id="personnelForm" onsubmit="event.preventDefault(); savePersonnel();">
         <label>Nom :</label>
-        <input type="text" id="persNom" placeholder="Nom du salarié" />
+        <input id="persNom" required />
         <label>Motif :</label>
-        <select id="persMotif">
-          <option value="">-- Sélectionner --</option>
-          <option>Absence</option>
-          <option>Retard</option>
-          <option>Départ</option>
-          <option>Autre</option>
+        <select id="persMotif" required>
+          <option>Absence</option><option>Retard</option>
+          <option>Départ</option><option>Autre</option>
         </select>
         <label>Commentaire :</label>
-        <textarea id="persComment" placeholder="Commentaire..."></textarea>
-        <button type="button" onclick="savePersonnel()">💾 Enregistrer</button>
+        <textarea id="persComment"></textarea>
+        <button type="submit">💾 Enregistrer</button>
       </form>
       <div id="personnelHistorique"></div>
     </section>
-  </main>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
