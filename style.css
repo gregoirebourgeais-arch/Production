@@ -1,4 +1,4 @@
-/* 🌐 RESET */
+/* === RESET GLOBAL === */
 * {
   margin: 0;
   padding: 0;
@@ -7,35 +7,14 @@
 }
 
 body {
+  display: flex;
   background: linear-gradient(180deg, #eaf3ff, #d5e8ff);
   color: #003366;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* 🧭 HEADER */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #cce0ff;
-  padding: 10px 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-header .logo {
-  height: 50px;
-  margin-right: 15px;
-}
-
-header h1 {
-  font-size: 1.6em;
-  color: #003366;
-  text-align: center;
-}
-
-/* 🧭 MENU LATÉRAL */
+/* === MENU LATÉRAL === */
 nav#menu {
   position: fixed;
   top: 0;
@@ -43,30 +22,35 @@ nav#menu {
   width: 90px;
   height: 100%;
   background: #007bff;
-  color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 100px;
-  z-index: 20;
-  transition: width 0.3s;
+  padding-top: 15px;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  z-index: 100;
 }
 
 nav#menu:hover {
   width: 160px;
 }
 
+nav#menu .logo {
+  width: 60px;
+  height: auto;
+  margin-bottom: 25px;
+}
+
 nav#menu button {
+  width: 100%;
+  padding: 12px 8px;
   background: transparent;
   color: white;
   border: none;
-  margin: 12px 0;
-  font-size: 0.9em;
   cursor: pointer;
-  width: 100%;
-  text-align: center;
-  padding: 10px;
   border-radius: 8px;
+  font-size: 0.9em;
   transition: background 0.3s;
 }
 
@@ -74,17 +58,18 @@ nav#menu button:hover {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* 🧩 PAGES */
+/* === CONTENU PRINCIPAL === */
 main {
+  flex: 1;
   margin-left: 90px;
   padding: 20px;
-  flex: 1;
   overflow-y: auto;
+  height: 100vh;
 }
 
 .page {
   display: none;
-  animation: fadeIn 0.4s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 .page.active {
@@ -92,28 +77,29 @@ main {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-h2 {
-  margin-bottom: 15px;
+h1, h2 {
   color: #002b5c;
+  margin-bottom: 15px;
 }
 
-/* 🧾 FORMULAIRES */
+/* === FORMULAIRES === */
 form {
   background: white;
   border-radius: 12px;
   padding: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 form label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
+  color: #003366;
 }
 
 form input, form select {
@@ -141,7 +127,32 @@ form button:hover {
   background: #005dc1;
 }
 
-/* 🧮 CALCULATRICE */
+/* === TABLEAUX === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+table th, table td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #cce0ff;
+}
+
+table th {
+  background: #cce0ff;
+  color: #003366;
+}
+
+table tr:hover {
+  background: #f0f6ff;
+}
+
+/* === CALCULATRICE FLOTTANTE === */
 #openCalc {
   position: fixed;
   bottom: 25px;
@@ -155,6 +166,7 @@ form button:hover {
   height: 60px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+  z-index: 200;
 }
 
 .calculator {
@@ -178,6 +190,7 @@ form button:hover {
   padding-right: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  font-size: 1em;
 }
 
 .calc-buttons {
@@ -207,37 +220,18 @@ form button:hover {
   color: black;
 }
 
-/* 📈 GRAPHIQUES */
+/* === GRAPHIQUES === */
 canvas {
-  background: rgba(255, 255, 255, 0.7);
+  background: #eaf3ff;
   border-radius: 12px;
   padding: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* 📊 TABLEAUX ET CARTES */
-#atelierSummary {
-  margin-top: 20px;
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-#atelierSummary table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-#atelierSummary th, #atelierSummary td {
-  padding: 10px;
-  border-bottom: 1px solid #cce0ff;
-  text-align: left;
-}
-
+/* === BOUTON EXPORT === */
 .export {
   display: block;
-  margin: 20px auto;
+  margin: 25px auto;
   background: #003366;
   color: white;
   border-radius: 10px;
@@ -245,7 +239,7 @@ canvas {
   font-weight: bold;
   cursor: pointer;
   border: none;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
   transition: background 0.3s;
 }
 
@@ -253,7 +247,7 @@ canvas {
   background: #005dc1;
 }
 
-/* 🧱 RESPONSIVE */
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
   nav#menu {
     width: 70px;
@@ -263,8 +257,9 @@ canvas {
   }
   main {
     margin-left: 70px;
+    padding: 15px;
   }
-  header h1 {
-    font-size: 1.3em;
+  form button {
+    width: 100%;
   }
-}
+  }
