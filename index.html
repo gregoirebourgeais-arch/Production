@@ -3,119 +3,128 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Synthèse Atelier PPNC</title>
+  <title>Atelier PPNC</title>
+  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="icon" href="icon-192.png" />
 </head>
+
 <body>
-  <header class="header">
-    <img src="logo-lactalis.png" alt="Logo Lactalis" class="logo" />
-    <div class="header-text">
-      <h1>Synthèse Atelier PPNC</h1>
-      <div id="dateHeure"></div>
-    </div>
+  <header>
+    <h1>Atelier PPNC</h1>
+    <nav class="top-menu">
+      <button onclick="showSection('atelier')">🏭 Atelier</button>
+      <button onclick="showSection('production')">📦 Production</button>
+      <button onclick="showSection('arrets')">⏸️ Arrêts</button>
+      <button onclick="showSection('organisation')">📋 Organisation</button>
+      <button onclick="showSection('personnel')">👥 Personnel</button>
+    </nav>
   </header>
 
-  <nav class="nav-bar" id="navBar">
-    <button onclick="showPage('atelier')" class="nav-btn">🏠 Atelier</button>
-    <button onclick="showPage('production')" class="nav-btn">📦 Production</button>
-    <button onclick="showPage('arrets')" class="nav-btn">⏱️ Arrêts</button>
-    <button onclick="showPage('organisation')" class="nav-btn">🗒️ Organisation</button>
-    <button onclick="showPage('personnel')" class="nav-btn">👥 Personnel</button>
-    <button onclick="exportExcelGlobal()" class="nav-btn">📊 Export</button>
-  </nav>
+  <!-- 🏭 SECTION ATELIER -->
+  <section id="atelier" class="page active">
+    <h2>Vue d’ensemble Atelier</h2>
+    <canvas id="atelierChart"></canvas>
 
-  <main>
-    <!-- Page Atelier -->
-    <section id="atelier" class="page active">
-      <h2>Vue Atelier</h2>
-      <canvas id="atelierChart"></canvas>
-      <div id="classementArrets" class="card">
-        <h3>Arrêts (classement par durée)</h3>
-        <div id="listeClassementArrets">Aucun arrêt</div>
-      </div>
-      <button class="export-btn" onclick="exportExcelGlobal()">📈 Export Excel global</button>
-    </section>
+    <div id="atelierResume"></div>
 
-    <!-- Page Production -->
-    <section id="production" class="page">
-      <h2>Production</h2>
-      <div class="ligne-buttons">
-        <button onclick="selectLigne('Râpé')">Râpé</button>
-        <button onclick="selectLigne('T2')">T2</button>
-        <button onclick="selectLigne('RT')">RT</button>
-        <button onclick="selectLigne('OMORI')">OMORI</button>
-        <button onclick="selectLigne('T1')">T1</button>
-        <button onclick="selectLigne('Sticks')">Sticks</button>
-        <button onclick="selectLigne('Emballage')">Emballage</button>
-        <button onclick="selectLigne('Dés')">Dés</button>
-        <button onclick="selectLigne('Filets')">Filets</button>
-        <button onclick="selectLigne('Prédécoupés')">Prédécoupés</button>
-      </div>
+    <button class="export-btn" onclick="exportGlobalExcel()">📊 Export Excel global</button>
+  </section>
 
-      <div id="zoneLigne" class="card">
-        <h3 id="titreLigne">Sélectionnez une ligne</h3>
-        <div id="formLigne"></div>
-        <div class="chart-container">
-          <canvas id="lineChart"></canvas>
-        </div>
-        <div id="historiqueLigne"></div>
-      </div>
-    </section>
+  <!-- 📦 SECTION PRODUCTION -->
+  <section id="production" class="page">
+    <h2>Suivi de production</h2>
+    <div id="ligneButtons"></div>
+    <div id="ligneContainer"></div>
+  </section>
 
-    <!-- Page Arrêts -->
-    <section id="arrets" class="page">
-      <h2>Arrêts</h2>
-      <div class="card">
-        <label>Ligne :</label>
-        <select id="arretLigne">
-          <option value="">-- Sélectionnez --</option>
-          <option>Râpé</option><option>T2</option><option>RT</option>
-          <option>OMORI</option><option>T1</option><option>Sticks</option>
-          <option>Emballage</option><option>Dés</option><option>Filets</option>
-          <option>Prédécoupés</option>
-        </select>
-        <label>Zone :</label>
-        <select id="arretZone">
-          <option>Découpe</option>
-          <option>Packing</option>
-          <option>MEC</option>
-        </select>
-        <label>Durée (min) :</label>
-        <input type="number" id="arretDuree" />
-        <button onclick="ajouterArret()">Enregistrer</button>
-      </div>
-      <div id="historiqueArrets" class="card"></div>
-    </section>
+  <!-- ⏸️ SECTION ARRÊTS -->
+  <section id="arrets" class="page">
+    <h2>Enregistrement des arrêts</h2>
+    <form id="arretForm" onsubmit="saveArret(event)">
+      <label>Ligne :</label>
+      <select id="arretLigne">
+        <option value="Râpé">Râpé</option>
+        <option value="T2">T2</option>
+        <option value="RT">RT</option>
+        <option value="OMORI T1">OMORI T1</option>
+        <option value="Sticks">Sticks</option>
+        <option value="Emballage">Emballage</option>
+        <option value="Dés">Dés</option>
+        <option value="Filets">Filets</option>
+        <option value="Prédécoupés">Prédécoupés</option>
+      </select>
 
-    <!-- Page Organisation -->
-    <section id="organisation" class="page">
-      <h2>Organisation / Consignes</h2>
-      <div class="card">
-        <input id="consigneTexte" placeholder="Renseigner la consigne..." />
-        <label><input type="checkbox" id="consigneValidee" /> Consigne réalisée</label>
-        <button onclick="ajouterConsigne()">💾 Enregistrer</button>
-      </div>
-      <div id="historiqueConsignes" class="card"></div>
-    </section>
+      <label>Type :</label>
+      <select id="arretType">
+        <option value="Découpe">Découpe</option>
+        <option value="Packing">Packing</option>
+        <option value="MEC">MEC</option>
+      </select>
 
-    <!-- Page Personnel -->
-    <section id="personnel" class="page">
-      <h2>Personnel</h2>
-      <div class="card">
-        <input id="nomPersonnel" placeholder="Nom..." />
-        <input id="motifPersonnel" placeholder="Motif..." />
-        <textarea id="commentairePersonnel" placeholder="Commentaire..."></textarea>
-        <button onclick="ajouterPersonnel()">💾 Enregistrer</button>
-      </div>
-      <div id="historiquePersonnel" class="card"></div>
-    </section>
-  </main>
+      <label>Durée (min) :</label>
+      <input type="number" id="arretDuree" required />
 
-  <footer>
-    <p>Synthèse Atelier Lactalis © 2025</p>
-  </footer>
+      <label>Commentaire :</label>
+      <textarea id="arretCommentaire" placeholder="Ajouter un commentaire..."></textarea>
+
+      <button type="submit">💾 Enregistrer l’arrêt</button>
+    </form>
+
+    <h3>Historique des arrêts</h3>
+    <div id="arretHistorique"></div>
+  </section>
+
+  <!-- 📋 SECTION ORGANISATION -->
+  <section id="organisation" class="page">
+    <h2>Consignes et organisation</h2>
+    <form id="consigneForm" onsubmit="saveConsigne(event)">
+      <label>Consigne :</label>
+      <textarea id="consigneTexte" required></textarea>
+      <button type="submit">💾 Enregistrer</button>
+    </form>
+
+    <h3>Historique des consignes</h3>
+    <div id="consigneHistorique"></div>
+  </section>
+
+  <!-- 👥 SECTION PERSONNEL -->
+  <section id="personnel" class="page">
+    <h2>Gestion du personnel</h2>
+    <form id="personnelForm" onsubmit="savePersonnel(event)">
+      <label>Nom :</label>
+      <input type="text" id="persoNom" required />
+
+      <label>Motif :</label>
+      <select id="persoMotif">
+        <option value="Absence">Absence</option>
+        <option value="Retard">Retard</option>
+        <option value="Départ anticipé">Départ anticipé</option>
+        <option value="Autre">Autre</option>
+      </select>
+
+      <label>Commentaire :</label>
+      <textarea id="persoCommentaire"></textarea>
+
+      <button type="submit">💾 Enregistrer</button>
+    </form>
+
+    <h3>Historique du personnel</h3>
+    <div id="personnelHistorique"></div>
+  </section>
+
+  <!-- 🧮 CALCULATRICE FLOTTANTE -->
+  <div id="calculator" class="calculator hidden">
+    <div class="calc-header">
+      <span>🧮 Calculatrice</span>
+      <button onclick="toggleCalculator()">❌</button>
+    </div>
+    <input type="text" id="calcDisplay" readonly />
+    <div id="calcButtons"></div>
+  </div>
+
+  <button id="calcToggle" class="calc-toggle" onclick="toggleCalculator()">🧮</button>
 
   <script src="app.js"></script>
 </body>
