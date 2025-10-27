@@ -1,49 +1,20 @@
 {
   "name": "Atelier PPNC",
   "short_name": "PPNC",
+  "description": "Application de suivi de production, arrêts et organisation - Atelier Lactalis",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f6f9fc",
+  "background_color": "#f5f9ff",
   "theme_color": "#007bff",
-  "description": "Application de gestion de production Atelier PPNC",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "icons/icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-96.png",
-      "sizes": "96x96",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-128.png",
-      "sizes": "128x128",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-144.png",
-      "sizes": "144x144",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-256.png",
-      "sizes": "256x256",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-384.png",
-      "sizes": "384x384",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
