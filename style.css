@@ -1,196 +1,212 @@
-/* === STYLE GLOBAL ATELIER PPNC === */
-body {
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  margin: 0;
-  background: #f4f8ff;
-  color: #062b5c;
+/* -----------------------------
+   STYLE GÉNÉRAL
+------------------------------ */
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-/* HEADER */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f5f9ff;
+  color: #002a5c;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* -----------------------------
+   EN-TÊTE
+------------------------------ */
 .header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  background: #007bff;
+  background-color: #0072ce;
   color: white;
-  padding: 8px;
+  padding: 10px;
   text-align: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-.header .logo {
-  height: 40px;
-  width: auto;
+.logo {
+  height: 45px;
+  margin-right: 10px;
 }
 
-.header h1 {
+.header-info h1 {
+  font-size: 1.4em;
   margin: 0;
-  font-size: 1.3em;
-  font-weight: bold;
 }
 
-.header p {
-  margin: 3px 0 0;
-  font-size: 0.8em;
+.header-info p {
+  font-size: 0.9em;
+  margin: 2px 0 0 0;
 }
 
-/* MENU */
+/* -----------------------------
+   MENU DE NAVIGATION
+------------------------------ */
 .menu {
-  text-align: center;
-  margin: 15px auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: #e9f1ff;
+  padding: 10px;
+  gap: 8px;
 }
 
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  width: 90%;
-  margin: 0 auto;
-}
-
-.menu-grid button {
-  background: #007bff;
-  color: white;
+.menu button {
+  background-color: #0072ce;
   border: none;
-  padding: 12px 0;
   border-radius: 25px;
-  font-size: 1em;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  font-size: 0.95em;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-in-out;
 }
 
-.menu-grid button:hover {
-  background: #0056b3;
-  transform: scale(1.03);
+.menu button:hover {
+  background-color: #005fa3;
+  transform: translateY(-2px);
 }
 
-/* PAGE */
+/* -----------------------------
+   SECTIONS / PAGES
+------------------------------ */
 .page {
   display: none;
   padding: 15px;
+  animation: fadeIn 0.4s ease;
 }
 
 .page.active {
   display: block;
 }
 
-/* FORMULAIRES ET CARTES */
-.card {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-label {
-  display: block;
+h2 {
+  text-align: center;
+  color: #003366;
+  font-size: 1.4em;
   margin-top: 10px;
-  font-weight: bold;
 }
 
-input, select {
+/* -----------------------------
+   BOUTONS DE LIGNES
+------------------------------ */
+.line-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  margin: 10px 0 20px;
+}
+
+.line-buttons button {
+  background-color: #0072ce;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  font-weight: 600;
+  padding: 10px;
+  font-size: 0.95em;
+  transition: all 0.2s ease-in-out;
+}
+
+.line-buttons button:hover {
+  background-color: #005fa3;
+  transform: scale(1.03);
+}
+
+/* -----------------------------
+   FORMULAIRES
+------------------------------ */
+input, select, textarea {
   width: 100%;
+  margin: 6px 0;
   padding: 8px;
-  border: 1px solid #ccc;
   border-radius: 8px;
-  margin-top: 5px;
+  border: 1px solid #c7d6ee;
+  font-size: 0.95em;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
 }
 
 button {
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 10px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-button:hover {
-  background: #0056b3;
-}
-
-/* LIGNES DE PRODUCTION */
-.lines-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  text-align: center;
-  margin: 10px auto;
-  width: 90%;
-}
-
-.lines-grid button {
-  background: #007bff;
-  color: white;
+section button {
+  background-color: #0072ce;
   border: none;
-  border-radius: 20px;
-  padding: 12px 0;
-  font-size: 1em;
+  border-radius: 10px;
+  color: white;
+  padding: 10px 15px;
+  margin-top: 5px;
+  font-weight: 600;
   transition: 0.2s;
 }
 
-.lines-grid button:hover {
-  background: #0056b3;
+section button:hover {
+  background-color: #005fa3;
 }
 
-/* HISTORIQUES */
-#historiqueProduction,
-#historiqueArrets,
-#historiqueConsignes,
-#historiquePersonnel,
-#atelierHistoriques {
+/* -----------------------------
+   HISTORIQUES
+------------------------------ */
+.historique-global {
+  margin-top: 20px;
   background: white;
   border-radius: 15px;
   padding: 10px;
-  margin-top: 15px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.historique-item {
-  background: #eef3ff;
-  border-left: 5px solid #007bff;
-  margin: 6px 0;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 0.9em;
+.historique-global h3 {
+  color: #003366;
+  border-bottom: 2px solid #0072ce;
+  padding-bottom: 4px;
 }
 
-/* CALCULATRICE FLOTTANTE */
+/* -----------------------------
+   CALCULATRICE FLOTTANTE
+------------------------------ */
 .floating-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: #007bff;
-  color: white;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  border: none;
+  background-color: #0072ce;
+  color: white;
   font-size: 1.5em;
-  width: 55px;
-  height: 55px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-  cursor: pointer;
-  transition: 0.3s;
-  z-index: 1000;
+  border: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  transition: 0.2s;
 }
 
 .floating-btn:hover {
-  background: #0056b3;
+  background-color: #005fa3;
+  transform: scale(1.05);
 }
 
+/* Calculatrice */
 .calculator {
   position: fixed;
-  bottom: 85px;
+  bottom: 90px;
   right: 20px;
   background: white;
   border-radius: 15px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-  width: 240px;
   padding: 10px;
-  z-index: 1001;
-  touch-action: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  width: 210px;
+  z-index: 999;
 }
 
 .calculator.hidden {
@@ -200,54 +216,68 @@ button:hover {
 #calcDisplay {
   width: 100%;
   height: 40px;
+  font-size: 1.1em;
   text-align: right;
-  font-size: 1.2em;
-  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  padding-right: 6px;
 }
 
-.calc-grid {
+#calcKeys {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 
-.calc-grid button {
-  background: #007bff;
-  color: white;
-  border: none;
+#calcKeys button {
+  padding: 8px;
   border-radius: 8px;
-  padding: 10px;
   font-size: 1em;
+  background-color: #e8f0ff;
+  border: 1px solid #aac8ff;
   transition: 0.2s;
 }
 
-.calc-grid button:hover {
-  background: #0056b3;
+#calcKeys button:hover {
+  background-color: #d0e3ff;
 }
 
-/* CHART */
+/* -----------------------------
+   CHART
+------------------------------ */
 canvas {
-  background: #fff;
+  background: white;
   border-radius: 10px;
   padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
 }
 
-/* FOOTER */
-footer {
-  text-align: center;
-  font-size: 0.8em;
-  color: #333;
-  padding: 10px;
-  margin-top: 20px;
+/* -----------------------------
+   ANIMATIONS
+------------------------------ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* RESPONSIVE */
+/* -----------------------------
+   RESPONSIVE
+------------------------------ */
 @media (max-width: 600px) {
-  .menu-grid {
-    grid-template-columns: 1fr;
+  .menu {
+    flex-direction: column;
+    gap: 6px;
   }
-  .lines-grid {
-    grid-template-columns: 1fr;
+
+  .floating-btn {
+    bottom: 15px;
+    right: 15px;
   }
-}
+
+  .calculator {
+    bottom: 80px;
+    right: 15px;
+  }
+  }
