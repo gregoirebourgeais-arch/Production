@@ -4,14 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atelier PPNC</title>
-
-  <!-- Feuille de style -->
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#007bff">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="style.css" />
+  <meta name="theme-color" content="#007bff">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-  <!-- Librairies externes -->
+  <!-- Styles et librairies -->
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -25,6 +23,7 @@
     </div>
   </header>
 
+  <!-- Navigation -->
   <nav class="menu">
     <button onclick="openPage('atelier')" class="btn-menu">🏭 Atelier</button>
     <button onclick="openPage('production')" class="btn-menu">📦 Production</button>
@@ -34,10 +33,12 @@
     <button onclick="exportAllData()" class="btn-menu export">📊 Export Excel</button>
   </nav>
 
+  <!-- Contenu principal -->
   <main id="content">
     <!-- Page Atelier -->
     <section id="atelier" class="page active">
       <h2>Vue d'ensemble Atelier</h2>
+      <p id="horloge"></p>
       <canvas id="atelierChart"></canvas>
 
       <div class="historique-container">
@@ -75,10 +76,10 @@
       <div class="form-production">
         <h3 id="ligneTitle">Ligne :</h3>
         <label>Heure de début :</label>
-        <input type="time" id="heureDebut" />
+        <input type="time" id="heureDebut" step="60" />
 
         <label>Heure de fin :</label>
-        <input type="time" id="heureFin" />
+        <input type="time" id="heureFin" step="60" />
 
         <label>Quantité produite :</label>
         <input type="number" id="quantiteProduite" />
@@ -89,10 +90,13 @@
         <label>Cadence manuelle (colis/h) :</label>
         <input type="number" id="cadenceManuelle" oninput="updateFinEstimee()" />
 
-        <p id="finEstimee">Fin estimée : --</p>
+        <p id="finEstimee">⏱️ Temps restant : --</p>
 
         <button onclick="enregistrerProduction()">💾 Enregistrer</button>
         <button onclick="resetForm()">🔄 Remise à zéro</button>
+
+        <h4>Historique Ligne</h4>
+        <ul id="historiqueLigne"></ul>
       </div>
     </section>
 
@@ -120,10 +124,16 @@
         <option>MEC</option>
       </select>
 
+      <label>Durée (minutes) :</label>
+      <input type="number" id="dureeArret" placeholder="Durée de l'arrêt" />
+
       <label>Commentaire :</label>
       <textarea id="commentaireArret"></textarea>
 
       <button onclick="enregistrerArret()">💾 Enregistrer</button>
+
+      <h4>Historique des arrêts</h4>
+      <ul id="historiqueArretsPage"></ul>
     </section>
 
     <!-- Page Organisation -->
@@ -131,13 +141,29 @@
       <h2>Organisation</h2>
       <textarea id="consigne" placeholder="Nouvelle consigne..."></textarea>
       <button onclick="enregistrerConsigne()">💾 Enregistrer</button>
+
+      <h4>Historique des consignes</h4>
+      <ul id="historiqueConsignes"></ul>
     </section>
 
     <!-- Page Personnel -->
     <section id="personnel" class="page">
       <h2>Personnel</h2>
-      <textarea id="personnelNote" placeholder="Observation du personnel..."></textarea>
+      <label>Nom :</label>
+      <input id="nomPersonnel" placeholder="Nom du salarié..." />
+      <label>Motif :</label>
+      <select id="motifPersonnel">
+        <option>Absence</option>
+        <option>Retard</option>
+        <option>Départ</option>
+        <option>Autre</option>
+      </select>
+      <label>Commentaire :</label>
+      <textarea id="commentairePersonnel"></textarea>
       <button onclick="enregistrerPersonnel()">💾 Enregistrer</button>
+
+      <h4>Historique Personnel</h4>
+      <ul id="historiquePersonnelPage"></ul>
     </section>
   </main>
 
