@@ -4,129 +4,189 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atelier PPNC</title>
+
+  <!-- Manifest PWA -->
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Export Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <header>
-    <h1>Atelier PPNC</h1>
-    <div id="infos-temps">
-      <span id="date"></span> | 
-      <span id="semaine"></span> | 
-      <span id="equipe"></span> | 
-      <span id="heure"></span>
-    </div>
+  <!-- Bandeau supérieur -->
+  <header class="topbar">
+    <div class="app-title">Atelier PPNC</div>
+    <div id="dateTimeDisplay"></div>
+    <div id="equipeDisplay"></div>
   </header>
 
-  <nav id="menu">
-    <button onclick="ouvrirPage('atelier')">Atelier</button>
-    <button onclick="ouvrirPage('râpé')">Râpé</button>
-    <button onclick="ouvrirPage('t2')">T2</button>
-    <button onclick="ouvrirPage('rt')">RT</button>
-    <button onclick="ouvrirPage('omori')">OMORI</button>
-    <button onclick="ouvrirPage('t1')">T1</button>
-    <button onclick="ouvrirPage('sticks')">Sticks</button>
-    <button onclick="ouvrirPage('emballage')">Emballage</button>
-    <button onclick="ouvrirPage('dés')">Dés</button>
-    <button onclick="ouvrirPage('filets')">Filets</button>
-    <button onclick="ouvrirPage('prédécoupé')">Prédécoupé</button>
-    <button onclick="ouvrirPage('arrets')">Arrêts</button>
-    <button onclick="ouvrirPage('organisation')">Organisation</button>
-    <button onclick="ouvrirPage('personnel')">Personnel</button>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <button class="nav-btn" onclick="openPage('atelier')">Atelier</button>
+    <button class="nav-btn" onclick="openPage('arrets')">Arrêts</button>
+    <button class="nav-btn" onclick="openPage('organisation')">Organisation</button>
+    <button class="nav-btn" onclick="openPage('personnel')">Personnel</button>
   </nav>
 
-  <main id="contenu">
-    <!-- Section Atelier -->
+  <!-- Pages -->
+  <main>
+    <!-- PAGE ATELIER -->
     <section id="atelier" class="page active">
-      <h2>Vue d’ensemble de l’atelier</h2>
-      <canvas id="graphiqueAtelier"></canvas>
-      <div id="resumeAtelier"></div>
+      <h2>Vue d'ensemble Atelier</h2>
+      <div class="atelier-content">
+        <canvas id="atelierChart"></canvas>
+        <div id="atelierHistoriques"></div>
+      </div>
+
+      <h3>Lignes de production</h3>
+      <div class="ligne-buttons">
+        <button onclick="openPage('Rape')">Râpé</button>
+        <button onclick="openPage('T2')">T2</button>
+        <button onclick="openPage('RT')">RT</button>
+        <button onclick="openPage('T1')">T1</button>
+        <button onclick="openPage('Omori')">Omori</button>
+        <button onclick="openPage('Sticks')">Sticks</button>
+        <button onclick="openPage('Emballage')">Emballage</button>
+        <button onclick="openPage('Des')">Dés</button>
+        <button onclick="openPage('Filets')">Filets</button>
+        <button onclick="openPage('Predecoupes')">Prédécoupés</button>
+      </div>
     </section>
 
-    <!-- Pages lignes -->
-    <section id="râpé" class="page"><h2>Ligne Râpé</h2></section>
-    <section id="t2" class="page"><h2>Ligne T2</h2></section>
-    <section id="rt" class="page"><h2>Ligne RT</h2></section>
-    <section id="omori" class="page"><h2>Ligne OMORI</h2></section>
-    <section id="t1" class="page"><h2>Ligne T1</h2></section>
-    <section id="sticks" class="page"><h2>Ligne Sticks</h2></section>
-    <section id="emballage" class="page"><h2>Ligne Emballage</h2></section>
-    <section id="dés" class="page"><h2>Ligne Dés</h2></section>
-    <section id="filets" class="page"><h2>Ligne Filets</h2></section>
-    <section id="prédécoupé" class="page"><h2>Ligne Prédécoupé</h2></section>
+    <!-- PAGES DES LIGNES -->
+    <section id="Rape" class="page lignePage">
+      <h2>Ligne Râpé</h2>
+      <div class="ligneForm">
+        <label>Quantité produite :</label>
+        <input id="quantiteRape" type="number" placeholder="Quantité..." />
+        <label>Quantité restante :</label>
+        <input id="restantRape" type="number" placeholder="Quantité restante..." oninput="updateFinEstimee('Rape')" />
+        <label>Cadence manuelle :</label>
+        <input id="cadenceManuelleRape" type="number" placeholder="Cadence manuelle..." oninput="updateFinEstimee('Rape')" />
 
-    <!-- Page Arrêts -->
+        <div id="finEstimeeRape" class="finEstimee">Fin estimée : --</div>
+
+        <button onclick="enregistrerLigne('Rape')">💾 Enregistrer</button>
+        <button onclick="annulerDernier('Rape')">↩️ Annuler</button>
+        <button onclick="resetLigne('Rape')">🔄 Remise à zéro</button>
+
+        <canvas id="chartRape"></canvas>
+        <div id="historiqueRape" class="historique"></div>
+      </div>
+    </section>
+
+    <!-- Exemple générique : les autres lignes sont similaires -->
+    <section id="T2" class="page lignePage">
+      <h2>Ligne T2</h2>
+      <div class="ligneForm">
+        <label>Quantité produite :</label>
+        <input id="quantiteT2" type="number" />
+        <label>Quantité restante :</label>
+        <input id="restantT2" type="number" oninput="updateFinEstimee('T2')" />
+        <label>Cadence manuelle :</label>
+        <input id="cadenceManuelleT2" type="number" oninput="updateFinEstimee('T2')" />
+
+        <div id="finEstimeeT2" class="finEstimee">Fin estimée : --</div>
+
+        <button onclick="enregistrerLigne('T2')">💾 Enregistrer</button>
+        <button onclick="annulerDernier('T2')">↩️ Annuler</button>
+        <button onclick="resetLigne('T2')">🔄 Remise à zéro</button>
+
+        <canvas id="chartT2"></canvas>
+        <div id="historiqueT2" class="historique"></div>
+      </div>
+    </section>
+
+    <!-- PAGE ARRETS -->
     <section id="arrets" class="page">
-      <h2>Arrêts</h2>
-      <form id="formArret">
-        <label>Ligne :</label>
-        <select id="ligneArret">
-          <option value="">Choisir</option>
-          <option>Râpé</option><option>T2</option><option>RT</option>
-          <option>OMORI</option><option>T1</option><option>Sticks</option>
-          <option>Emballage</option><option>Dés</option><option>Filets</option>
-          <option>Prédécoupé</option>
-        </select>
-        <label>Type :</label>
-        <select id="typeArret">
-          <option>Découpe</option><option>Packing</option><option>MEC</option>
-        </select>
-        <label>Durée (min) :</label>
-        <input id="tempsArret" type="number" />
-        <label>Commentaire :</label>
-        <input id="commentArret" type="text" />
-        <button type="button" onclick="enregistrerArret()">Enregistrer</button>
-      </form>
-      <div id="historiqueArrets"></div>
+      <h2>Arrêts de ligne</h2>
+      <label>Ligne concernée :</label>
+      <select id="ligneArret">
+        <option value="Rape">Râpé</option>
+        <option value="T2">T2</option>
+        <option value="RT">RT</option>
+        <option value="T1">T1</option>
+        <option value="Omori">Omori</option>
+        <option value="Sticks">Sticks</option>
+        <option value="Emballage">Emballage</option>
+        <option value="Des">Dés</option>
+        <option value="Filets">Filets</option>
+        <option value="Predecoupes">Prédécoupés</option>
+      </select>
+      <label>Type :</label>
+      <select id="typeArret">
+        <option value="Découpe">Découpe</option>
+        <option value="Packing">Packing</option>
+        <option value="MEC">MEC</option>
+      </select>
+      <label>Durée (min) :</label>
+      <input id="dureeArret" type="number" />
+      <label>Commentaire :</label>
+      <input id="commentArret" type="text" />
+      <button onclick="enregistrerArret()">💾 Enregistrer</button>
+      <div id="historiqueArrets" class="historique"></div>
     </section>
 
-    <!-- Page Organisation -->
+    <!-- PAGE ORGANISATION -->
     <section id="organisation" class="page">
-      <h2>Organisation / Consignes</h2>
-      <form id="formOrganisation">
-        <label>Consigne :</label>
-        <input id="texteConsigne" type="text" />
-        <button type="button" onclick="enregistrerConsigne()">Enregistrer</button>
-      </form>
-      <div id="historiqueOrganisation"></div>
+      <h2>Consignes & Organisation</h2>
+      <label>Nouvelle consigne :</label>
+      <textarea id="consigneTexte" placeholder="Écrire une consigne..."></textarea>
+      <button onclick="ajouterConsigne()">💾 Enregistrer</button>
+      <div id="listeConsignes" class="historique"></div>
     </section>
 
-    <!-- Page Personnel -->
+    <!-- PAGE PERSONNEL -->
     <section id="personnel" class="page">
-      <h2>Personnel</h2>
-      <form id="formPersonnel">
-        <label>Nom :</label>
-        <input id="nomPersonnel" type="text" />
-        <label>Motif :</label>
-        <select id="motifPersonnel">
-          <option>Absence</option><option>Retard</option>
-          <option>Départ</option><option>Autre</option>
-        </select>
-        <label>Commentaire :</label>
-        <input id="commentPersonnel" type="text" />
-        <button type="button" onclick="enregistrerPersonnel()">Enregistrer</button>
-      </form>
-      <div id="historiquePersonnel"></div>
+      <h2>Suivi du personnel</h2>
+      <label>Nom :</label>
+      <input id="nomPersonnel" type="text" placeholder="Nom..." />
+      <label>Motif :</label>
+      <select id="motifPersonnel">
+        <option value="Absence">Absence</option>
+        <option value="Retard">Retard</option>
+        <option value="Départ">Départ</option>
+        <option value="Autre">Autre</option>
+      </select>
+      <label>Commentaire :</label>
+      <input id="commentPersonnel" type="text" />
+      <button onclick="enregistrerPersonnel()">💾 Enregistrer</button>
+      <div id="historiquePersonnel" class="historique"></div>
     </section>
   </main>
 
-  <div id="calculatrice" class="draggable">
-    <input id="calcResultat" readonly />
-    <div id="calcBoutons"></div>
+  <!-- Calculatrice flottante -->
+  <div id="calcBtn" onclick="toggleCalculator()">🧮</div>
+  <div id="calculator" class="calculator">
+    <input type="text" id="calcScreen" readonly />
+    <div class="calc-buttons">
+      <button onclick="press('7')">7</button>
+      <button onclick="press('8')">8</button>
+      <button onclick="press('9')">9</button>
+      <button onclick="press('/')">÷</button>
+      <button onclick="press('4')">4</button>
+      <button onclick="press('5')">5</button>
+      <button onclick="press('6')">6</button>
+      <button onclick="press('*')">×</button>
+      <button onclick="press('1')">1</button>
+      <button onclick="press('2')">2</button>
+      <button onclick="press('3')">3</button>
+      <button onclick="press('-')">−</button>
+      <button onclick="press('0')">0</button>
+      <button onclick="press('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="press('+')">+</button>
+      <button onclick="clearCalc()">C</button>
+      <button onclick="toggleCalculator()">Fermer</button>
+    </div>
   </div>
 
   <script src="app.js"></script>
-  <script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("service-worker.js")
-        .then(() => console.log("✅ Service Worker enregistré"))
-        .catch(err => console.error("Erreur SW :", err));
-    });
-  }
-  </script>
 </body>
 </html>
