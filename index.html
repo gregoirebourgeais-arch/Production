@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atelier PPNC</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
   <header>
-    <img src="logo-lactalis.png" alt="Logo Lactalis" class="logo">
-    <h1>Atelier PPNC</h1>
+    <img src="logo-lactalis.png" alt="Logo Lactalis" class="logo" />
+    <div class="header-text">
+      <h1>Atelier PPNC</h1>
+      <p id="dateHeure"></p>
+    </div>
   </header>
 
   <nav id="mainMenu">
@@ -25,21 +29,21 @@
   <main>
     <!-- Atelier -->
     <section id="atelier" class="page active">
-      <h2>Vue d'ensemble Atelier</h2>
+      <h2>Vue d’ensemble Atelier</h2>
       <canvas id="atelierChart"></canvas>
       <button onclick="exportExcel()" class="export-btn">📊 Export Excel global</button>
     </section>
 
     <!-- Production -->
     <section id="production" class="page">
-      <h2>Production</h2>
+      <h2>Production par ligne</h2>
       <div id="ligneButtons"></div>
       <div id="ligneContent"></div>
     </section>
 
     <!-- Arrêts -->
     <section id="arrets" class="page">
-      <h2>Arrêts</h2>
+      <h2>Arrêts de production</h2>
       <form id="arretForm">
         <label>Ligne :</label>
         <select id="arretLigne">
@@ -54,8 +58,8 @@
           <option>Découpe</option><option>Packing</option><option>MEC</option>
         </select>
 
-        <label>Durée (minutes) :</label>
-        <input type="number" id="arretDuree">
+        <label>Durée (min)</label>
+        <input type="number" id="arretDuree" />
 
         <label>Commentaire :</label>
         <textarea id="arretCommentaire"></textarea>
@@ -65,7 +69,9 @@
 
       <h3>Historique des arrêts</h3>
       <table id="arretsTable">
-        <thead><tr><th>Ligne</th><th>Zone</th><th>Durée</th><th>Commentaire</th></tr></thead>
+        <thead>
+          <tr><th>Ligne</th><th>Zone</th><th>Durée</th><th>Commentaire</th></tr>
+        </thead>
         <tbody></tbody>
       </table>
     </section>
@@ -75,13 +81,16 @@
       <h2>Organisation / Consignes</h2>
       <form id="consigneForm">
         <label>Nouvelle consigne :</label>
-        <input id="newConsigne" placeholder="Renseigner la consigne...">
-        <label><input type="checkbox" id="consigneRealisee"> Consigne réalisée</label>
+        <input id="newConsigne" placeholder="Renseigner la consigne…" />
+        <label><input type="checkbox" id="consigneRealisee" /> Consigne réalisée</label>
         <button type="button" onclick="saveConsigne()">💾 Enregistrer</button>
       </form>
+
       <h3>Historique Consignes</h3>
       <table id="consignesTable">
-        <thead><tr><th>Date</th><th>Texte</th><th>État</th></tr></thead>
+        <thead>
+          <tr><th>Date</th><th>Texte</th><th>État</th></tr>
+        </thead>
         <tbody></tbody>
       </table>
     </section>
@@ -89,14 +98,28 @@
     <!-- Personnel -->
     <section id="personnel" class="page">
       <h2>Personnel</h2>
-      <p>Suivi du personnel à venir.</p>
+      <form id="persoForm">
+        <label>Nom :</label>
+        <input id="persoNom" placeholder="Nom…" />
+        <label>Motif :</label>
+        <input id="persoMotif" placeholder="Motif…" />
+        <label>Commentaire :</label>
+        <textarea id="persoCommentaire" placeholder="Commentaire…"></textarea>
+        <button type="button" onclick="savePersonnel()">💾 Enregistrer</button>
+      </form>
+
+      <h3>Historique du personnel</h3>
+      <table id="persoTable">
+        <thead><tr><th>Date</th><th>Nom</th><th>Motif</th><th>Commentaire</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </section>
   </main>
 
   <!-- Calculatrice flottante -->
   <button id="floatCalcBtn" title="Ouvrir la calculatrice">🧮</button>
   <div id="calculator" class="hidden">
-    <input type="text" id="calcDisplay" readonly>
+    <input type="text" id="calcDisplay" readonly />
     <div id="calcButtons"></div>
     <button class="closeCalc" onclick="toggleCalc()">Fermer</button>
   </div>
