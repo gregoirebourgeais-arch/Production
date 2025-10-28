@@ -5,155 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atelier PPNC</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
+
 <body>
   <header>
     <h1>Atelier PPNC</h1>
+    <div id="infos-temps">
+      <span id="date"></span> | 
+      <span id="semaine"></span> | 
+      <span id="equipe"></span> | 
+      <span id="heure"></span>
+    </div>
   </header>
 
-  <nav class="navbar">
-    <button onclick="openPage('atelier')">Atelier</button>
-    <button onclick="openPage('production')">Production</button>
-    <button onclick="openPage('arrets')">Arrêts</button>
-    <button onclick="openPage('organisation')">Organisation</button>
-    <button onclick="openPage('personnel')">Personnel</button>
+  <nav id="menu">
+    <button onclick="ouvrirPage('atelier')">Atelier</button>
+    <button onclick="ouvrirPage('râpé')">Râpé</button>
+    <button onclick="ouvrirPage('t2')">T2</button>
+    <button onclick="ouvrirPage('rt')">RT</button>
+    <button onclick="ouvrirPage('omori')">OMORI</button>
+    <button onclick="ouvrirPage('t1')">T1</button>
+    <button onclick="ouvrirPage('sticks')">Sticks</button>
+    <button onclick="ouvrirPage('emballage')">Emballage</button>
+    <button onclick="ouvrirPage('dés')">Dés</button>
+    <button onclick="ouvrirPage('filets')">Filets</button>
+    <button onclick="ouvrirPage('prédécoupé')">Prédécoupé</button>
+    <button onclick="ouvrirPage('arrets')">Arrêts</button>
+    <button onclick="ouvrirPage('organisation')">Organisation</button>
+    <button onclick="ouvrirPage('personnel')">Personnel</button>
   </nav>
 
-  <main>
-    <!-- === PAGE ATELIER === -->
+  <main id="contenu">
+    <!-- Section Atelier -->
     <section id="atelier" class="page active">
-      <h2>Vue d’ensemble atelier</h2>
-      <canvas id="graphiqueAtelier" height="180"></canvas>
+      <h2>Vue d’ensemble de l’atelier</h2>
+      <canvas id="graphiqueAtelier"></canvas>
       <div id="resumeAtelier"></div>
-      <button onclick="exportExcel()">📊 Export Excel</button>
     </section>
 
-    <!-- === PAGE PRODUCTION === -->
-    <section id="production" class="page">
-      <h2>Production</h2>
-      <div class="ligne-buttons">
-        <button onclick="openLigne('Râpé')">Râpé</button>
-        <button onclick="openLigne('T2')">T2</button>
-        <button onclick="openLigne('RT')">RT</button>
-        <button onclick="openLigne('OMORI')">OMORI</button>
-        <button onclick="openLigne('T1')">T1</button>
-        <button onclick="openLigne('Sticks')">Sticks</button>
-        <button onclick="openLigne('Emballage')">Emballage</button>
-        <button onclick="openLigne('Dés')">Dés</button>
-        <button onclick="openLigne('Filets')">Filets</button>
-        <button onclick="openLigne('Prédécoupés')">Prédécoupés</button>
-      </div>
-      <div id="ligneFormContainer"></div>
-    </section>
+    <!-- Pages lignes -->
+    <section id="râpé" class="page"><h2>Ligne Râpé</h2></section>
+    <section id="t2" class="page"><h2>Ligne T2</h2></section>
+    <section id="rt" class="page"><h2>Ligne RT</h2></section>
+    <section id="omori" class="page"><h2>Ligne OMORI</h2></section>
+    <section id="t1" class="page"><h2>Ligne T1</h2></section>
+    <section id="sticks" class="page"><h2>Ligne Sticks</h2></section>
+    <section id="emballage" class="page"><h2>Ligne Emballage</h2></section>
+    <section id="dés" class="page"><h2>Ligne Dés</h2></section>
+    <section id="filets" class="page"><h2>Ligne Filets</h2></section>
+    <section id="prédécoupé" class="page"><h2>Ligne Prédécoupé</h2></section>
 
-    <!-- === PAGE ARRÊTS === -->
+    <!-- Page Arrêts -->
     <section id="arrets" class="page">
       <h2>Arrêts</h2>
-      <form id="formArrets" onsubmit="event.preventDefault(); enregistrerArret();">
+      <form id="formArret">
         <label>Ligne :</label>
-        <select id="arretLigne">
-          <option value="">-- Choisir une ligne --</option>
+        <select id="ligneArret">
+          <option value="">Choisir</option>
           <option>Râpé</option><option>T2</option><option>RT</option>
           <option>OMORI</option><option>T1</option><option>Sticks</option>
-          <option>Emballage</option><option>Dés</option><option>Filets</option><option>Prédécoupés</option>
+          <option>Emballage</option><option>Dés</option><option>Filets</option>
+          <option>Prédécoupé</option>
         </select>
-
-        <label>Type d’arrêt :</label>
-        <select id="arretType">
-          <option value="Découpe">Découpe</option>
-          <option value="Packing">Packing</option>
-          <option value="MEC">MEC</option>
+        <label>Type :</label>
+        <select id="typeArret">
+          <option>Découpe</option><option>Packing</option><option>MEC</option>
         </select>
-
         <label>Durée (min) :</label>
-        <input type="number" id="arretDuree" />
-
+        <input id="tempsArret" type="number" />
         <label>Commentaire :</label>
-        <textarea id="arretComment"></textarea>
-
-        <button type="submit">Ajouter</button>
+        <input id="commentArret" type="text" />
+        <button type="button" onclick="enregistrerArret()">Enregistrer</button>
       </form>
-
-      <table id="tableArrets">
-        <thead><tr><th>Ligne</th><th>Type</th><th>Durée</th><th>Commentaire</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <div id="historiqueArrets"></div>
     </section>
 
-    <!-- === PAGE ORGANISATION === -->
+    <!-- Page Organisation -->
     <section id="organisation" class="page">
       <h2>Organisation / Consignes</h2>
-      <form onsubmit="event.preventDefault(); enregistrerConsigne();">
-        <label>Nouvelle consigne :</label>
-        <textarea id="consigneTexte"></textarea>
-        <button type="submit">Enregistrer</button>
+      <form id="formOrganisation">
+        <label>Consigne :</label>
+        <input id="texteConsigne" type="text" />
+        <button type="button" onclick="enregistrerConsigne()">Enregistrer</button>
       </form>
-
-      <table id="tableConsignes">
-        <thead><tr><th>Consigne</th><th>État</th><th>Action</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <div id="historiqueOrganisation"></div>
     </section>
 
-    <!-- === PAGE PERSONNEL === -->
+    <!-- Page Personnel -->
     <section id="personnel" class="page">
       <h2>Personnel</h2>
-      <form id="formPersonnel" onsubmit="event.preventDefault(); enregistrerPersonnel();">
+      <form id="formPersonnel">
         <label>Nom :</label>
-        <input id="persNom" />
+        <input id="nomPersonnel" type="text" />
         <label>Motif :</label>
-        <select id="persMotif">
-          <option>Absence</option>
-          <option>Retard</option>
-          <option>Infirmerie</option>
-          <option>RAH</option>
-          <option>Autre</option>
+        <select id="motifPersonnel">
+          <option>Absence</option><option>Retard</option>
+          <option>Départ</option><option>Autre</option>
         </select>
         <label>Commentaire :</label>
-        <textarea id="persComment"></textarea>
-        <button type="submit">Enregistrer</button>
+        <input id="commentPersonnel" type="text" />
+        <button type="button" onclick="enregistrerPersonnel()">Enregistrer</button>
       </form>
-
-      <table id="tablePersonnel">
-        <thead><tr><th>Nom</th><th>Motif</th><th>Commentaire</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <div id="historiquePersonnel"></div>
     </section>
   </main>
 
-  <!-- === CALCULATRICE FLOTTANTE === -->
-  <button id="openCalc" onclick="toggleCalc()">🧮</button>
-  <div class="calculator">
-    <div id="calc-display"></div>
-    <div class="calc-buttons">
-      <button onclick="press('7')">7</button>
-      <button onclick="press('8')">8</button>
-      <button onclick="press('9')">9</button>
-      <button onclick="press('/')">÷</button>
-      <button onclick="press('4')">4</button>
-      <button onclick="press('5')">5</button>
-      <button onclick="press('6')">6</button>
-      <button onclick="press('*')">×</button>
-      <button onclick="press('1')">1</button>
-      <button onclick="press('2')">2</button>
-      <button onclick="press('3')">3</button>
-      <button onclick="press('-')">−</button>
-      <button onclick="press('0')">0</button>
-      <button onclick="press('.')">.</button>
-      <button onclick="calculate()">=</button>
-      <button onclick="press('+')">+</button>
-      <button class="clear" onclick="clearCalc()">C</button>
-      <button class="close" onclick="toggleCalc()">✖</button>
-    </div>
+  <div id="calculatrice" class="draggable">
+    <input id="calcResultat" readonly />
+    <div id="calcBoutons"></div>
   </div>
 
   <script src="app.js"></script>
