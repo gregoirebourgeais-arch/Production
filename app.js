@@ -17,7 +17,7 @@ window.addEventListener("load", () => {
   loadAllData();
 });
 
-// === VARIABLES GLOBALES ===
+// === VARIABLES ===
 let data = {
   lignes: {},
   arrets: [],
@@ -25,7 +25,7 @@ let data = {
   personnel: []
 };
 
-// === FONCTIONS DE PRODUCTION ===
+// === FONCTIONS LIGNES ===
 function openLigne(nomLigne) {
   const container = document.getElementById("ligneFormContainer");
   container.innerHTML = `
@@ -55,7 +55,6 @@ function openLigne(nomLigne) {
       <canvas id="graph-${nomLigne}" height="150"></canvas>
     </form>
   `;
-
   if (!data.lignes[nomLigne]) data.lignes[nomLigne] = [];
   chargerTemp(nomLigne);
   afficherGraphiqueLigne(nomLigne);
@@ -76,7 +75,7 @@ function chargerTemp(ligne) {
   }
 }
 
-// === ESTIMATION ET CADENCE ===
+// === ESTIMATION + CADENCE ===
 function estimerFin(ligne) {
   const rest = Number(document.getElementById(`rest-${ligne}`).value);
   const cadMan = Number(document.getElementById(`cadMan-${ligne}`).value);
@@ -90,7 +89,7 @@ function estimerFin(ligne) {
   if (rest && cadence > 0) {
     const heures = rest / cadence;
     const minutes = Math.round(heures * 60);
-    elEst.textContent = `Temps restant estimé : ${minutes} min (${cadence.toFixed(1)} colis/h)`;
+    elEst.textContent = `⏱ Temps restant estimé : ${minutes} min (à ${cadence.toFixed(1)} colis/h)`;
   } else {
     elEst.textContent = "";
   }
@@ -102,7 +101,7 @@ function enregistrerLigne(ligne) {
   const qte = Number(document.getElementById(`qte-${ligne}`).value);
   const cadMan = Number(document.getElementById(`cadMan-${ligne}`).value);
 
-  if (!debut || !fin || !qte) return alert("Remplir heure début, fin et quantité");
+  if (!debut || !fin || !qte) return alert("Heure début, fin et quantité requises.");
 
   const t1 = new Date(`1970-01-01T${debut}:00`);
   const t2 = new Date(`1970-01-01T${fin}:00`);
@@ -111,7 +110,6 @@ function enregistrerLigne(ligne) {
 
   const cadence = cadMan || (qte / diffH);
   const rest = Number(document.getElementById(`rest-${ligne}`).value) || 0;
-
   const rec = { debut, fin, qte, cadence, rest, date: new Date().toLocaleString() };
   data.lignes[ligne].push(rec);
   saveData();
@@ -120,7 +118,7 @@ function enregistrerLigne(ligne) {
   document.getElementById(`rest-${ligne}`).value = "";
   localStorage.removeItem(`temp_${ligne}`);
   afficherGraphiqueLigne(ligne);
-  alert("Enregistrement effectué !");
+  alert("✅ Enregistrement effectué !");
 }
 
 function supprimerDernier(ligne) {
@@ -132,7 +130,7 @@ function supprimerDernier(ligne) {
 }
 
 function resetLigne(ligne) {
-  if (confirm("Réinitialiser les données de cette ligne ?")) {
+  if (confirm("Remettre à zéro les données de cette ligne ?")) {
     data.lignes[ligne] = [];
     saveData();
     afficherGraphiqueLigne(ligne);
@@ -154,7 +152,7 @@ function afficherGraphiqueLigne(ligne) {
         label: `Cadence ${ligne}`,
         data: vals,
         borderColor: "#0082c8",
-        tension: 0.2,
+        tension: 0.3,
         fill: false
       }]
     },
@@ -162,7 +160,6 @@ function afficherGraphiqueLigne(ligne) {
   });
 }
 
-// === PAGE ATELIER ===
 function updateAtelier() {
   const ctx = document.getElementById("graphiqueAtelier");
   const lignes = Object.keys(data.lignes);
@@ -174,24 +171,15 @@ function updateAtelier() {
     tension: 0.3
   }));
   const labels = data.lignes[lignes[0]]?.map(r => r.date.split(",")[0]) || [];
-
   new Chart(ctx, {
     type: "line",
     data: { labels, datasets },
     options: { responsive: true, plugins: { legend: { position: "bottom" } } }
   });
-
-  const resume = document.getElementById("resumeAtelier");
-  resume.innerHTML = "";
-  lignes.forEach(l => {
-    const arrêts = data.arrets.filter(a => a.ligne === l);
-    const total = arrêts.reduce((a, b) => a + Number(b.duree), 0);
-    resume.innerHTML += `<p><b>${l}</b> — ${data.lignes[l].length} enregistrements — ${total} min arrêt</p>`;
-  });
 }
 
 function getColor(l) {
-  const couleurs = ["#0082c8", "#00bfa5", "#f44336", "#ff9800", "#9c27b0", "#3f51b5", "#009688", "#795548", "#607d8b"];
+  const couleurs = ["#0082c8","#00bfa5","#f44336","#ff9800","#9c27b0","#3f51b5","#009688","#795548","#607d8b"];
   const index = Math.abs(l.charCodeAt(0) + l.length) % couleurs.length;
   return couleurs[index];
 }
@@ -202,7 +190,7 @@ function enregistrerArret() {
   const type = document.getElementById("arretType").value;
   const duree = document.getElementById("arretDuree").value;
   const comment = document.getElementById("arretComment").value;
-  if (!ligne || !duree) return alert("Ligne et durée obligatoires");
+  if (!ligne || !duree) return alert("Ligne et durée requises");
   data.arrets.push({ ligne, type, duree, comment });
   saveData();
   updateArrets();
@@ -211,7 +199,9 @@ function enregistrerArret() {
 
 function updateArrets() {
   const tbody = document.querySelector("#tableArrets tbody");
-  tbody.innerHTML = data.arrets.map(a => `<tr><td>${a.ligne}</td><td>${a.type}</td><td>${a.duree}</td><td>${a.comment}</td></tr>`).join("");
+  tbody.innerHTML = data.arrets
+    .map(a => `<tr><td>${a.ligne}</td><td>${a.type}</td><td>${a.duree}</td><td>${a.comment}</td></tr>`)
+    .join("");
 }
 
 // === ORGANISATION ===
@@ -232,14 +222,12 @@ function toggleConsigne(i) {
 
 function updateConsignes() {
   const tbody = document.querySelector("#tableConsignes tbody");
-  tbody.innerHTML = data.consignes
-    .map((c, i) => `
-      <tr>
-        <td>${c.texte}</td>
-        <td>${c.valide ? "✅" : "❌"}</td>
-        <td><button onclick="toggleConsigne(${i})">${c.valide ? "Annuler" : "Valider"}</button></td>
-      </tr>
-    `).join("");
+  tbody.innerHTML = data.consignes.map((c, i) => `
+    <tr>
+      <td>${c.texte}</td>
+      <td>${c.valide ? "✅" : "❌"}</td>
+      <td><button onclick="toggleConsigne(${i})">${c.valide ? "Annuler" : "Valider"}</button></td>
+    </tr>`).join("");
 }
 
 // === PERSONNEL ===
@@ -247,7 +235,7 @@ function enregistrerPersonnel() {
   const nom = document.getElementById("persNom").value;
   const motif = document.getElementById("persMotif").value;
   const comment = document.getElementById("persComment").value;
-  if (!nom) return alert("Nom obligatoire");
+  if (!nom) return alert("Nom requis");
   data.personnel.push({ nom, motif, comment });
   saveData();
   updatePersonnel();
@@ -261,50 +249,41 @@ function updatePersonnel() {
   ).join("");
 }
 
-// === ENREGISTREMENT LOCAL ===
+// === STOCKAGE LOCAL ===
 function saveData() {
   localStorage.setItem("atelier_data", JSON.stringify(data));
 }
-
 function loadAllData() {
   const d = JSON.parse(localStorage.getItem("atelier_data"));
   if (d) data = d;
-  updateArrets();
-  updateConsignes();
-  updatePersonnel();
+  updateArrets(); updateConsignes(); updatePersonnel();
 }
 
 // === EXPORT EXCEL ===
 function exportExcel() {
-  let contenu = [];
-  contenu.push(["=== Production ==="]);
+  let contenu = [["=== Production ==="]];
   for (let l in data.lignes) {
-    contenu.push([l, "Début", "Fin", "Quantité", "Cadence", "Restant"]);
+    contenu.push([l,"Début","Fin","Quantité","Cadence","Restant"]);
     data.lignes[l].forEach(r =>
-      contenu.push(["", r.debut, r.fin, r.qte, r.cadence.toFixed(1), r.rest])
+      contenu.push(["",r.debut,r.fin,r.qte,r.cadence.toFixed(1),r.rest])
     );
   }
-  contenu.push([""]);
-  contenu.push(["=== Arrêts ==="]);
-  data.arrets.forEach(a => contenu.push([a.ligne, a.type, a.duree, a.comment]));
-  contenu.push([""]);
-  contenu.push(["=== Consignes ==="]);
-  data.consignes.forEach(c => contenu.push([c.texte, c.valide ? "Validée" : "Non"]));
-  contenu.push([""]);
-  contenu.push(["=== Personnel ==="]);
-  data.personnel.forEach(p => contenu.push([p.nom, p.motif, p.comment]));
+  contenu.push([""],["=== Arrêts ==="]);
+  data.arrets.forEach(a => contenu.push([a.ligne,a.type,a.duree,a.comment]));
+  contenu.push([""],["=== Consignes ==="]);
+  data.consignes.forEach(c => contenu.push([c.texte,c.valide?"Validée":"Non"]));
+  contenu.push([""],["=== Personnel ==="]);
+  data.personnel.forEach(p => contenu.push([p.nom,p.motif,p.comment]));
 
   const ws = XLSX.utils.aoa_to_sheet(contenu);
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Rapport");
-  XLSX.writeFile(wb, `Rapport_Atelier_${new Date().toLocaleString().replace(/[/:]/g,"-")}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, ws, "Rapport Atelier");
+  XLSX.writeFile(wb, `Atelier_PPNC_${new Date().toLocaleString().replace(/[/:]/g,"-")}.xlsx`);
 }
 
-// === CALCULATRICE ===
+// === CALCULATRICE FLOTTANTE ===
 let calcExpression = "";
-function toggleCalc() {
-  document.querySelector(".calculator").classList.toggle("active");
-}
+function toggleCalc() { document.querySelector(".calculator").classList.toggle("active"); }
 function press(val) {
   calcExpression += val;
   document.getElementById("calc-display").innerText = calcExpression;
@@ -314,11 +293,26 @@ function calculate() {
     calcExpression = eval(calcExpression).toString();
     document.getElementById("calc-display").innerText = calcExpression;
   } catch {
-    calcExpression = "";
-    document.getElementById("calc-display").innerText = "Erreur";
+    calcExpression = ""; document.getElementById("calc-display").innerText = "Erreur";
   }
 }
 function clearCalc() {
   calcExpression = "";
   document.getElementById("calc-display").innerText = "";
 }
+
+// === Déplacement Calculatrice ===
+const calc = document.querySelector(".calculator");
+let offsetX, offsetY, isDown = false;
+calc.addEventListener("mousedown", e => {
+  isDown = true;
+  offsetX = calc.offsetLeft - e.clientX;
+  offsetY = calc.offsetTop - e.clientY;
+});
+document.addEventListener("mouseup", () => isDown = false);
+document.addEventListener("mousemove", e => {
+  if (isDown) {
+    calc.style.left = e.clientX + offsetX + "px";
+    calc.style.top = e.clientY + offsetY + "px";
+  }
+});
