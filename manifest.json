@@ -1,14 +1,11 @@
 {
   "name": "Atelier PPNC",
-  "short_name": "Atelier PPNC",
-  "description": "Application de suivi de production, arrêts, organisation et personnel – Lactalis PPNC",
-  "lang": "fr-FR",
+  "short_name": "PPNC",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "background_color": "#f4f8fc",
   "theme_color": "#007bff",
-  "background_color": "#e8f0ff",
+  "description": "Application Atelier PPNC - suivi de production, arrêts, organisation et personnel",
   "icons": [
     {
       "src": "icons/icon-192.png",
