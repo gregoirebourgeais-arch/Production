@@ -1,3 +1,5 @@
+// === Service Worker Atelier PPNC ===
+// Gère le cache local pour fonctionnement hors ligne
 const CACHE_NAME = "atelier-ppnc-v40";
 const urlsToCache = [
   "./",
@@ -9,43 +11,34 @@ const urlsToCache = [
   "./icon-512.png"
 ];
 
-// Installation du service worker
-self.addEventListener("install", (event) => {
+// Installation du Service Worker
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then(cache => {
+      console.log("Mise en cache des fichiers Atelier PPNC");
       return cache.addAll(urlsToCache);
     })
   );
 });
 
-// Activation et nettoyage des anciens caches
-self.addEventListener("activate", (event) => {
+// Activation et nettoyage ancien cache
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then(keys => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
       );
     })
   );
 });
 
 // Interception des requêtes
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return (
-        response ||
-        fetch(event.request).then((res) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, res.clone());
-            return res;
-          });
-        })
-      );
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
     })
   );
 });
