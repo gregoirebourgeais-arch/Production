@@ -1,44 +1,44 @@
-// === Service Worker Atelier PPNC ===
-// Gère le cache local pour fonctionnement hors ligne
-const CACHE_NAME = "atelier-ppnc-v40";
-const urlsToCache = [
+const CACHE_NAME = "atelier-ppnc-v1";
+const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./manifest.json",
+  "./Lactalis2023Logo.svg",
   "./icon-192.png",
   "./icon-512.png"
 ];
 
 // Installation du Service Worker
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log("Mise en cache des fichiers Atelier PPNC");
-      return cache.addAll(urlsToCache);
-    })
+self.addEventListener("install", (evt) => {
+  evt.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
   );
+  self.skipWaiting();
 });
 
-// Activation et nettoyage ancien cache
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      );
-    })
+// Activation et nettoyage
+self.addEventListener("activate", (evt) => {
+  evt.waitUntil(
+    caches.keys().then((keyList) =>
+      Promise.all(
+        keyList.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      )
+    )
   );
+  self.clients.claim();
 });
 
-// Interception des requêtes
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
+// Interception des requêtes réseau
+self.addEventListener("fetch", (evt) => {
+  evt.respondWith(
+    caches.match(evt.request).then((response) => {
+      return response || fetch(evt.request);
     })
   );
 });
