@@ -1,56 +1,43 @@
-// ================================
-// SERVICE WORKER – Atelier PPNC
-// ================================
+// === SERVICE WORKER Atelier PPNC ===
+// Gère la mise en cache pour le mode hors-ligne et installation PWA
+
 const CACHE_NAME = "atelier-ppnc-v1";
 const ASSETS = [
   "./",
-  "index.html",
-  "style.css",
-  "app.js",
-  "icon-192.png",
-  "icon-512.png",
-  "logo-lactalis.png",
-  "manifest.json",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./manifest.json",
   "https://cdn.jsdelivr.net/npm/chart.js",
   "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
 ];
 
-// ---------- Installation ----------
+// INSTALLATION DU SERVICE WORKER
 self.addEventListener("install", event => {
-  console.log("📦 Installation du service worker…");
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
+  console.log("✅ Service Worker installé et fichiers mis en cache.");
 });
 
-// ---------- Activation ----------
+// ACTIVATION ET MISE À JOUR DU CACHE
 self.addEventListener("activate", event => {
-  console.log("✅ Service Worker activé !");
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     )
   );
+  console.log("♻️ Service Worker activé, anciens caches supprimés.");
 });
 
-// ---------- Fetch (mode hors-ligne) ----------
+// INTERCEPTION DES REQUÊTES
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return (
-        response ||
-        fetch(event.request)
-          .then(res => {
-            // mise en cache à la volée
-            return caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, res.clone());
-              return res;
-            });
-          })
-          .catch(() =>
-            caches.match("index.html") // fallback
-          )
-      );
-    })
+    caches.match(event.request).then(response => response || fetch(event.request))
   );
+});
+
+// INSTALLATION AUTOMATIQUE
+self.addEventListener("message", event => {
+  if (event.data === "skipWaiting") self.skipWaiting();
 });
