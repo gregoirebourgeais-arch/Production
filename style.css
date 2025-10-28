@@ -1,232 +1,235 @@
-body {
+/* === Atelier PPNC - Style complet version marbre améliorée === */
+
+/* Réinitialisation */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f4f9ff;
-  color: #222;
+  padding: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-header {
-  background: #0096d6;
-  color: white;
-  padding: 10px 0;
-  text-align: center;
-  font-size: 1.5em;
-  letter-spacing: 1px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.navbar {
+/* Corps de page */
+body {
+  background: #f5f8ff;
+  color: #002b5c;
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  background: #e8f4fc;
-  border-bottom: 2px solid #0096d6;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* === HEADER === */
+header {
+  background: #007bff;
+  color: white;
+  text-align: center;
+  padding: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-.navbar button {
-  background: white;
-  color: #0096d6;
-  border: 1px solid #0096d6;
-  border-radius: 8px;
-  padding: 8px 15px;
-  margin: 5px;
-  font-size: 1em;
-  transition: 0.3s;
-  cursor: pointer;
+header h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
-.navbar button:hover {
-  background: #0096d6;
+#infos-temps {
+  font-size: 0.85rem;
+  margin-top: 3px;
+}
+
+/* === MENU === */
+#menu {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  background: #eaf2ff;
+  border-bottom: 2px solid #007bff;
+}
+
+#menu button {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  color: #004a99;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#menu button:hover,
+#menu button.active {
+  background: #007bff;
   color: white;
+  border-radius: 6px;
+}
+
+/* === CONTENU === */
+main {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
 }
 
 .page {
   display: none;
-  padding: 20px;
-  animation: fade 0.3s ease-in-out;
+  animation: fadeIn 0.4s ease;
 }
 
 .page.active {
   display: block;
 }
 
-@keyframes fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-h2 {
-  color: #006cae;
-  text-align: center;
-  border-bottom: 2px solid #0096d6;
-  padding-bottom: 5px;
+/* === FORMULAIRES === */
+form {
+  background: white;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-h3 {
-  color: #0096d6;
-  margin-top: 20px;
-}
-
-label {
+form label {
   display: block;
-  margin-top: 10px;
-  font-weight: 500;
+  margin-top: 8px;
+  font-weight: 600;
+  color: #003366;
 }
 
-input, select, textarea {
+form input,
+form select,
+form textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-top: 5px;
-  box-sizing: border-box;
-  font-size: 1em;
+  margin-top: 4px;
+  border-radius: 5px;
+  border: 1px solid #ccd9ff;
+  font-size: 1rem;
 }
 
-textarea {
-  min-height: 60px;
-}
-
-button {
-  border: none;
-  background: #0096d6;
-  color: white;
-  border-radius: 8px;
-  padding: 8px 12px;
+form button {
   margin-top: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1em;
-  transition: 0.3s;
+  transition: background 0.2s;
 }
 
-button:hover {
-  background: #0078b8;
+form button:hover {
+  background: #005fcc;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
+/* === HISTORIQUES === */
+#historiqueArrets,
+#historiqueOrganisation,
+#historiquePersonnel {
+  background: #f0f4ff;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#historiqueArrets div,
+#historiqueOrganisation div,
+#historiquePersonnel div {
+  border-bottom: 1px solid #ccd9ff;
+  padding: 6px 0;
+}
+
+/* === GRAPHIQUE === */
+canvas {
+  width: 100% !important;
+  height: 300px !important;
   background: white;
   border-radius: 8px;
-  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 5px;
 }
 
-th, td {
-  border-bottom: 1px solid #ddd;
-  text-align: center;
-  padding: 8px;
-}
-
-th {
-  background: #0096d6;
-  color: white;
-}
-
-.info {
-  margin: 5px 0;
-  color: #0078b8;
-  font-weight: 500;
-}
-
-/* === Boutons de lignes === */
-.ligne-buttons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.ligne-buttons button {
-  background: #ffffff;
-  border: 2px solid #0096d6;
-  color: #0096d6;
-  border-radius: 10px;
-  font-weight: bold;
-}
-
-.ligne-buttons button:hover {
-  background: #0096d6;
-  color: #fff;
-}
-
-/* === Calculatrice === */
-#openCalc {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
-  background: #0078b8;
-  color: white;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 1.5em;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 3px 5px rgba(0,0,0,0.3);
-  z-index: 20;
-}
-
-.calculator {
+/* === CALCULATRICE === */
+#calculatrice {
   position: fixed;
   bottom: 90px;
   right: 15px;
-  background: #fefefe;
-  border-radius: 12px;
-  border: 2px solid #0096d6;
-  padding: 10px;
+  width: 220px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   display: none;
   flex-direction: column;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   z-index: 20;
-  min-width: 200px;
+  cursor: move;
 }
 
-.calculator.active {
-  display: flex;
-}
-
-#calc-display {
-  background: #e8f4fc;
-  padding: 8px;
-  border-radius: 6px;
-  font-size: 1.2em;
-  margin-bottom: 8px;
+#calculatrice input {
+  border: none;
+  background: #f2f5ff;
   text-align: right;
-  color: #0078b8;
+  padding: 10px;
+  font-size: 1.1rem;
+  border-radius: 8px 8px 0 0;
 }
 
-.calc-buttons {
+#calcBoutons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
+  gap: 6px;
+  padding: 8px;
 }
 
-.calc-buttons button {
-  background: #0096d6;
+#calcBoutons button {
+  padding: 10px;
+  font-size: 1rem;
+  background: #007bff;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 8px;
-  font-size: 1em;
+  border-radius: 5px;
+  transition: background 0.2s;
 }
 
-.calc-buttons button.clear {
-  background: #ff5757;
+#calcBoutons button:hover {
+  background: #005fcc;
 }
 
-.calc-buttons button.close {
-  background: #666;
+/* === BOUTONS FLOTTANTS === */
+.fab {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  background: #007bff;
+  color: white;
+  font-size: 1.8rem;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  border: none;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 15;
 }
 
-/* === Graphiques === */
-canvas {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  margin-top: 10px;
-  width: 100% !important;
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.1rem;
+  }
+  #menu button {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
 }
