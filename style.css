@@ -1,301 +1,240 @@
-/* === STYLE GLOBAL ATELIER PPNC === */
-
-:root {
-  --bleu-lactalis: #007bff;
-  --bleu-clair: #e8f0ff;
-  --bleu-moyen: #0066d6;
-  --blanc: #ffffff;
-  --gris-clair: #f5f7fa;
-  --gris-texte: #333;
-  --arrondi: 18px;
-  --ombre: 0 3px 8px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-}
-
-/* === RESET === */
-* {
-  box-sizing: border-box;
+/* ---------- Style général ---------- */
+body {
   margin: 0;
-  padding: 0;
-}
-
-/* === HEADER === */
-.app-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--bleu-lactalis);
-  color: var(--blanc);
-  padding: 8px 15px;
-  box-shadow: var(--ombre);
-}
-
-.app-header h1 {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.app-header p {
-  font-size: 0.9rem;
-  opacity: 0.9;
-}
-
-.logo {
-  width: 45px;
-  height: 45px;
-  object-fit: contain;
-}
-
-/* === NAVIGATION === */
-.menu {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background-color: #f4f8fc;
+  color: #003366;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 15px;
-  background: var(--bleu-clair);
-  box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.05);
+}
+
+h1, h2, h3, h4 {
+  text-align: center;
+  color: #004a99;
+  margin: 10px 0;
+}
+
+p {
+  margin: 4px 0;
+}
+
+/* ---------- En-tête ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e6f0ff;
+  width: 100%;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.logo {
+  height: 50px;
+  margin-right: 10px;
+}
+
+/* ---------- Navigation ---------- */
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: #007bff;
+  padding: 10px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .btn-menu {
-  width: 85%;
-  background: var(--bleu-lactalis);
-  color: var(--blanc);
+  background: white;
+  color: #007bff;
   border: none;
-  border-radius: var(--arrondi);
-  font-size: 1.1rem;
-  font-weight: 500;
-  padding: 10px 20px;
-  box-shadow: var(--ombre);
-  transition: var(--transition);
+  border-radius: 30px;
+  padding: 8px 15px;
+  margin: 5px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .btn-menu:hover {
-  background: var(--bleu-moyen);
-  transform: translateY(-2px);
+  background: #007bff;
+  color: white;
 }
 
 .btn-menu.export {
-  background: #198754;
+  background: #004a99;
+  color: white;
 }
 
 .btn-menu.export:hover {
-  background: #146c43;
+  background: #002f66;
 }
 
-/* === CONTENU === */
-main {
-  background: var(--gris-clair);
-  min-height: calc(100vh - 150px);
-  padding: 15px;
-}
-
-/* === PAGES === */
+/* ---------- Pages ---------- */
 .page {
   display: none;
-  background: var(--blanc);
-  border-radius: var(--arrondi);
-  padding: 15px;
-  box-shadow: var(--ombre);
-  margin-bottom: 20px;
+  width: 95%;
+  max-width: 1000px;
+  background: white;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .page.active {
   display: block;
 }
 
-.page h2 {
-  color: var(--bleu-moyen);
-  font-size: 1.4rem;
-  margin-bottom: 10px;
-}
-
-/* === FORMULAIRES === */
+/* ---------- Formulaires ---------- */
 label {
   display: block;
-  font-weight: 600;
-  color: var(--gris-texte);
   margin-top: 10px;
-  margin-bottom: 3px;
+  font-weight: bold;
 }
 
-input,
-textarea,
-select {
+input, select, textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: var(--arrondi);
-  font-size: 1rem;
-  margin-bottom: 10px;
-  background: var(--bleu-clair);
+  border: 1px solid #b3d1ff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin-top: 4px;
 }
 
 textarea {
-  resize: vertical;
-  min-height: 80px;
+  min-height: 60px;
 }
 
 button {
+  background-color: #007bff;
+  color: white;
   border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-weight: 600;
   cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s;
 }
 
-/* === LIGNES === */
+button:hover {
+  background-color: #005fcc;
+}
+
+/* ---------- Sélecteur de ligne ---------- */
 .ligne-selector {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  margin: 10px 0;
+  margin: 10px 0 20px;
 }
 
 .ligne-selector button {
-  flex: 1 0 28%;
-  background: var(--bleu-lactalis);
-  color: var(--blanc);
-  padding: 10px;
-  border-radius: var(--arrondi);
-  box-shadow: var(--ombre);
-  font-weight: 500;
-  transition: var(--transition);
+  margin: 6px;
+  background: #eaf2ff;
+  color: #003366;
+  border: 1px solid #99c2ff;
+  border-radius: 30px;
+  padding: 8px 15px;
 }
 
 .ligne-selector button:hover {
-  background: var(--bleu-moyen);
+  background: #007bff;
+  color: white;
 }
 
-/* === FORMULAIRE PRODUCTION === */
-.form-production {
-  background: var(--blanc);
-  border-radius: var(--arrondi);
-  padding: 15px;
-  box-shadow: var(--ombre);
+/* ---------- Historique ---------- */
+ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-.form-production h3 {
-  text-align: center;
-  color: var(--bleu-moyen);
-  margin-bottom: 15px;
-}
-
-.form-production p {
-  background: var(--bleu-clair);
-  padding: 8px;
-  border-radius: var(--arrondi);
-  text-align: center;
-  margin: 10px 0;
-  font-weight: 600;
-}
-
-.form-production button {
-  display: block;
-  width: 100%;
-  background: var(--bleu-lactalis);
-  color: var(--blanc);
-  border: none;
-  border-radius: var(--arrondi);
-  padding: 10px;
-  font-size: 1rem;
-  margin-top: 8px;
-  transition: var(--transition);
-}
-
-.form-production button:hover {
-  background: var(--bleu-moyen);
-}
-
-/* === HISTORIQUES === */
-.historique-container {
-  margin-top: 15px;
-}
-
-.historique-container h3 {
-  color: var(--bleu-moyen);
-  font-size: 1.1rem;
-  margin-top: 15px;
-}
-
-.historique-container ul {
-  list-style: none;
-  margin-top: 5px;
-  background: var(--bleu-clair);
-  border-radius: var(--arrondi);
+ul li {
+  background: #e6f0ff;
+  margin: 5px 0;
   padding: 8px 10px;
-  max-height: 180px;
-  overflow-y: auto;
+  border-radius: 10px;
+  font-size: 14px;
 }
 
-.historique-container li {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 5px 0;
-  font-size: 0.95rem;
-}
-
-/* === GRAPHIQUE === */
-canvas {
-  margin-top: 15px;
-  background: var(--blanc);
-  border-radius: var(--arrondi);
-  box-shadow: var(--ombre);
+/* ---------- Calculatrice ---------- */
+#calculator {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 240px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   padding: 10px;
+  display: none;
 }
 
-/* === CALCULATRICE === */
+#calculator.show {
+  display: block;
+}
+
 #calcToggle {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: var(--bleu-lactalis);
-  color: var(--blanc);
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  box-shadow: var(--ombre);
-  font-size: 1.8rem;
+  background-color: #007bff;
+  color: white;
   border: none;
-  cursor: grab;
-  transition: transform 0.2s;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 22px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
 }
 
-#calcToggle:active {
-  transform: scale(0.9);
-  cursor: grabbing;
+.calculator button {
+  width: 50px;
+  height: 50px;
+  margin: 4px;
+  font-size: 16px;
+  border-radius: 10px;
+  background-color: #e6f0ff;
+  border: 1px solid #99c2ff;
 }
 
-#calculator {
-  position: fixed;
-  bottom: 100px;
-  right: 20px;
-  background: var(--blanc);
-  border-radius: var(--arrondi);
-  box-shadow: var(--ombre);
-  overflow: hidden;
-  z-index: 1000;
+.calculator button:hover {
+  background-color: #007bff;
+  color: white;
 }
 
-.hidden {
-  display: none;
+/* ---------- Graphiques ---------- */
+canvas {
+  background: #f8fbff;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
 }
 
-/* === SCROLL & RESPONSIVE === */
-body {
-  background: var(--gris-clair);
-}
-
-@media (min-width: 768px) {
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
   .menu {
-    flex-direction: row;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .btn-menu {
-    width: auto;
-    min-width: 120px;
+    width: 90%;
+    margin: 6px 0;
   }
 
-  main {
-    padding: 30px;
+  #calculator {
+    bottom: 80px;
+    right: 10px;
+  }
+
+  #calcToggle {
+    right: 10px;
+    bottom: 10px;
   }
 }
