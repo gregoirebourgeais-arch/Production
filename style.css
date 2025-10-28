@@ -1,283 +1,213 @@
-/* -----------------------------
-   STYLE GÉNÉRAL
------------------------------- */
-* {
-  box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-}
-
+/* --- STYLES GÉNÉRAUX --- */
 body {
   margin: 0;
-  padding: 0;
+  font-family: "Segoe UI", Roboto, sans-serif;
   background-color: #f5f9ff;
-  color: #002a5c;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  color: #1e2a38;
+  overflow-x: hidden;
 }
 
-/* -----------------------------
-   EN-TÊTE
------------------------------- */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+h1, h2, h3 {
+  color: #004b9c;
+  margin: 10px 0;
+}
+
+button {
+  background-color: #0072ce;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #005da8;
+  transform: scale(1.03);
+}
+
+/* --- EN-TÊTE --- */
+header {
   background-color: #0072ce;
   color: white;
   padding: 10px;
   text-align: center;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.logo {
-  height: 45px;
-  margin-right: 10px;
-}
-
-.header-info h1 {
-  font-size: 1.4em;
-  margin: 0;
-}
-
-.header-info p {
+#datetime, #team {
   font-size: 0.9em;
-  margin: 2px 0 0 0;
 }
 
-/* -----------------------------
-   MENU DE NAVIGATION
------------------------------- */
-.menu {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  background-color: #e9f1ff;
-  padding: 10px;
-  gap: 8px;
+/* --- MENU LATÉRAL --- */
+#sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 210px;
+  height: 100%;
+  background-color: #e3efff;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  overflow-y: auto;
+  padding-top: 10px;
+  transition: 0.3s;
 }
 
-.menu button {
-  background-color: #0072ce;
-  border: none;
-  border-radius: 25px;
-  color: white;
-  font-weight: 600;
-  padding: 10px 20px;
-  font-size: 0.95em;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+#sidebar ul {
+  list-style: none;
+  padding: 0;
 }
 
-.menu button:hover {
-  background-color: #005fa3;
-  transform: translateY(-2px);
+#sidebar ul li {
+  margin: 10px 0;
+  text-align: center;
 }
 
-/* -----------------------------
-   SECTIONS / PAGES
------------------------------- */
+#sidebar ul li button {
+  width: 80%;
+}
+
+/* --- CONTENU --- */
+main {
+  margin-left: 230px;
+  padding: 15px;
+}
+
 .page {
   display: none;
-  padding: 15px;
-  animation: fadeIn 0.4s ease;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .page.active {
   display: block;
 }
 
-h2 {
-  text-align: center;
-  color: #003366;
-  font-size: 1.4em;
-  margin-top: 10px;
-}
-
-/* -----------------------------
-   BOUTONS DE LIGNES
------------------------------- */
-.line-buttons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 8px;
-  margin: 10px 0 20px;
-}
-
-.line-buttons button {
-  background-color: #0072ce;
-  border: none;
-  border-radius: 15px;
-  color: white;
-  font-weight: 600;
-  padding: 10px;
-  font-size: 0.95em;
-  transition: all 0.2s ease-in-out;
-}
-
-.line-buttons button:hover {
-  background-color: #005fa3;
-  transform: scale(1.03);
-}
-
-/* -----------------------------
-   FORMULAIRES
------------------------------- */
-input, select, textarea {
-  width: 100%;
-  margin: 6px 0;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #c7d6ee;
-  font-size: 0.95em;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-button {
-  cursor: pointer;
-}
-
-section button {
-  background-color: #0072ce;
-  border: none;
-  border-radius: 10px;
-  color: white;
-  padding: 10px 15px;
-  margin-top: 5px;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-section button:hover {
-  background-color: #005fa3;
-}
-
-/* -----------------------------
-   HISTORIQUES
------------------------------- */
-.historique-global {
-  margin-top: 20px;
-  background: white;
-  border-radius: 15px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.historique-global h3 {
-  color: #003366;
-  border-bottom: 2px solid #0072ce;
-  padding-bottom: 4px;
-}
-
-/* -----------------------------
-   CALCULATRICE FLOTTANTE
------------------------------- */
-.floating-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background-color: #0072ce;
-  color: white;
-  font-size: 1.5em;
-  border: none;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-  transition: 0.2s;
-}
-
-.floating-btn:hover {
-  background-color: #005fa3;
-  transform: scale(1.05);
-}
-
-/* Calculatrice */
-.calculator {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  background: white;
-  border-radius: 15px;
-  padding: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  width: 210px;
-  z-index: 999;
-}
-
-.calculator.hidden {
-  display: none;
-}
-
-#calcDisplay {
-  width: 100%;
-  height: 40px;
-  font-size: 1.1em;
-  text-align: right;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 6px;
-  padding-right: 6px;
-}
-
-#calcKeys {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-}
-
-#calcKeys button {
-  padding: 8px;
-  border-radius: 8px;
-  font-size: 1em;
-  background-color: #e8f0ff;
-  border: 1px solid #aac8ff;
-  transition: 0.2s;
-}
-
-#calcKeys button:hover {
-  background-color: #d0e3ff;
-}
-
-/* -----------------------------
-   CHART
------------------------------- */
-canvas {
-  background: white;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 15px;
-}
-
-/* -----------------------------
-   ANIMATIONS
------------------------------- */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* -----------------------------
-   RESPONSIVE
------------------------------- */
-@media (max-width: 600px) {
-  .menu {
-    flex-direction: column;
-    gap: 6px;
-  }
+/* --- FORMULAIRES --- */
+label {
+  display: block;
+  margin-top: 8px;
+  font-weight: 600;
+}
 
-  .floating-btn {
-    bottom: 15px;
-    right: 15px;
-  }
+input, select {
+  width: 95%;
+  padding: 6px;
+  margin: 3px 0 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95em;
+}
 
-  .calculator {
-    bottom: 80px;
-    right: 15px;
-  }
-  }
+.lignes-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.lignes-menu button {
+  flex: 1 1 30%;
+  min-width: 80px;
+}
+
+/* --- CHARTS --- */
+canvas {
+  width: 100%;
+  max-width: 700px;
+  margin-top: 15px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* --- HISTORIQUES --- */
+#atelierHistorique, #historiqueLigne, #historiqueArrets,
+#listeConsignes, #historiquePersonnel {
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  margin-top: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#atelierHistorique div, #historiqueLigne div, 
+#historiqueArrets div, #listeConsignes div, #historiquePersonnel div {
+  border-bottom: 1px solid #eee;
+  padding: 5px 0;
+}
+
+/* --- CALCULATRICE FLOTANTE --- */
+#calcIcon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #0072ce;
+  color: white;
+  font-size: 1.6em;
+  padding: 10px 14px;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 999;
+}
+
+#calculator {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background-color: #eaf2ff;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  width: 240px;
+  text-align: center;
+  z-index: 999;
+}
+
+#calculator.hidden {
+  display: none;
+}
+
+#calcDisplay {
+  width: 95%;
+  height: 40px;
+  margin-bottom: 8px;
+  text-align: right;
+  font-size: 1.2em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding-right: 5px;
+}
+
+.calc-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+/* --- SCROLL PERSONNALISÉ --- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #0072ce;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #005da8;
+}
