@@ -1,339 +1,324 @@
-// -------------------------
-// NAVIGATION ENTRE PAGES
-// -------------------------
+// === GESTION DES PAGES ===
 function openPage(pageId) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.getElementById(pageId).classList.add("active");
-  if (pageId === "atelier") majGraphiqueAtelier();
+  if (pageId === "atelier") updateAtelier();
+  saveLastPage(pageId);
 }
 
-// -------------------------
-// STOCKAGE LOCAL
-// -------------------------
-const STORAGE_KEY = "atelierPPNC";
-let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-  production: {},
+function saveLastPage(pageId) {
+  localStorage.setItem("lastPage", pageId);
+}
+
+window.addEventListener("load", () => {
+  const last = localStorage.getItem("lastPage");
+  if (last) openPage(last);
+  else openPage("atelier");
+  loadAllData();
+});
+
+// === VARIABLES GLOBALES ===
+let data = {
+  lignes: {},
   arrets: [],
   consignes: [],
   personnel: []
 };
 
-function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-// -------------------------
-// PAGE PRODUCTION
-// -------------------------
-function openLigne(nom) {
+// === FONCTIONS DE PRODUCTION ===
+function openLigne(nomLigne) {
   const container = document.getElementById("ligneFormContainer");
   container.innerHTML = `
-    <h3>${nom}</h3>
-    <form id="form${nom}">
-      <label>Heure de début :</label>
-      <input type="time" id="debut${nom}" required>
-      
-      <label>Heure de fin :</label>
-      <input type="time" id="fin${nom}" required>
+    <h3>${nomLigne}</h3>
+    <form id="form-${nomLigne}">
+      <label>Heure début :</label>
+      <input type="time" id="debut-${nomLigne}" step="60" />
+      <label>Heure fin :</label>
+      <input type="time" id="fin-${nomLigne}" step="60" />
 
-      <label>Quantité réalisée :</label>
-      <input type="number" id="qte${nom}" placeholder="Colis réalisés">
+      <label>Quantité produite :</label>
+      <input type="number" id="qte-${nomLigne}" placeholder="Quantité" oninput="saveTemp('${nomLigne}')" />
 
       <label>Quantité restante :</label>
-      <input type="number" id="reste${nom}" placeholder="Colis restants" oninput="calculerFin('${nom}')">
+      <input type="number" id="rest-${nomLigne}" placeholder="Quantité restante" oninput="estimerFin('${nomLigne}')" />
 
-      <p id="finEstimee${nom}" class="info"></p>
+      <p id="cadence-${nomLigne}" class="info"></p>
+      <p id="estimation-${nomLigne}" class="info"></p>
 
-      <label>Cadence (colis/h) :</label>
-      <input type="number" id="cadence${nom}" readonly>
+      <label>Cadence manuelle (colis/h) :</label>
+      <input type="number" id="cadMan-${nomLigne}" placeholder="Modifier cadence manuelle" />
 
-      <button type="button" onclick="enregistrerLigne('${nom}')">Enregistrer</button>
-      <button type="button" onclick="supprimerDernier('${nom}')">Annuler dernier enregistrement</button>
-      <h4>Historique ${nom}</h4>
-      <table id="table${nom}">
-        <thead><tr><th>Début</th><th>Fin</th><th>Qté</th><th>Cadence</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <button type="button" onclick="enregistrerLigne('${nomLigne}')">Enregistrer</button>
+      <button type="button" onclick="supprimerDernier('${nomLigne}')">Annuler dernier</button>
+      <button type="button" onclick="resetLigne('${nomLigne}')">Remise à zéro</button>
+
+      <canvas id="graph-${nomLigne}" height="150"></canvas>
     </form>
   `;
-  majTableau(nom);
+
+  if (!data.lignes[nomLigne]) data.lignes[nomLigne] = [];
+  chargerTemp(nomLigne);
+  afficherGraphiqueLigne(nomLigne);
+  container.scrollIntoView({ behavior: "smooth" });
 }
 
-// -------------------------
-// CALCULS AUTOMATIQUES
-// -------------------------
-function calculerCadence(nom) {
-  const debut = document.getElementById(`debut${nom}`).value;
-  const fin = document.getElementById(`fin${nom}`).value;
-  const qte = parseFloat(document.getElementById(`qte${nom}`).value);
-  if (!debut || !fin || !qte) return 0;
+function saveTemp(ligne) {
+  const q = document.getElementById(`qte-${ligne}`).value;
+  const r = document.getElementById(`rest-${ligne}`).value;
+  localStorage.setItem(`temp_${ligne}`, JSON.stringify({ q, r }));
+}
+
+function chargerTemp(ligne) {
+  const temp = JSON.parse(localStorage.getItem(`temp_${ligne}`));
+  if (temp) {
+    if (temp.q) document.getElementById(`qte-${ligne}`).value = temp.q;
+    if (temp.r) document.getElementById(`rest-${ligne}`).value = temp.r;
+  }
+}
+
+// === ESTIMATION ET CADENCE ===
+function estimerFin(ligne) {
+  const rest = Number(document.getElementById(`rest-${ligne}`).value);
+  const cadMan = Number(document.getElementById(`cadMan-${ligne}`).value);
+  const records = data.lignes[ligne] || [];
+  const cadAuto = records.length
+    ? records.reduce((a, b) => a + b.cadence, 0) / records.length
+    : 0;
+  const cadence = cadMan || cadAuto;
+  const elEst = document.getElementById(`estimation-${ligne}`);
+
+  if (rest && cadence > 0) {
+    const heures = rest / cadence;
+    const minutes = Math.round(heures * 60);
+    elEst.textContent = `Temps restant estimé : ${minutes} min (${cadence.toFixed(1)} colis/h)`;
+  } else {
+    elEst.textContent = "";
+  }
+}
+
+function enregistrerLigne(ligne) {
+  const debut = document.getElementById(`debut-${ligne}`).value;
+  const fin = document.getElementById(`fin-${ligne}`).value;
+  const qte = Number(document.getElementById(`qte-${ligne}`).value);
+  const cadMan = Number(document.getElementById(`cadMan-${ligne}`).value);
+
+  if (!debut || !fin || !qte) return alert("Remplir heure début, fin et quantité");
 
   const t1 = new Date(`1970-01-01T${debut}:00`);
   const t2 = new Date(`1970-01-01T${fin}:00`);
   let diffH = (t2 - t1) / 3600000;
   if (diffH <= 0) diffH += 24;
 
-  const cadence = qte / diffH;
-  document.getElementById(`cadence${nom}`).value = cadence.toFixed(2);
-  return cadence;
-}
+  const cadence = cadMan || (qte / diffH);
+  const rest = Number(document.getElementById(`rest-${ligne}`).value) || 0;
 
-function calculerFin(nom) {
-  const reste = parseFloat(document.getElementById(`reste${nom}`).value);
-  const cadence = parseFloat(document.getElementById(`cadence${nom}`).value);
-  const finEl = document.getElementById(`finEstimee${nom}`);
-  if (reste && cadence) {
-    const heures = reste / cadence;
-    const heuresTotales = Math.floor(heures);
-    const minutes = Math.round((heures - heuresTotales) * 60);
-    finEl.textContent = `⏱ Temps restant estimé : ${heuresTotales} h ${minutes} min`;
-  } else {
-    finEl.textContent = "";
-  }
-}
-
-// -------------------------
-// ENREGISTREMENT DES LIGNES
-// -------------------------
-function enregistrerLigne(nom) {
-  const debut = document.getElementById(`debut${nom}`).value;
-  const fin = document.getElementById(`fin${nom}`).value;
-  const qte = parseFloat(document.getElementById(`qte${nom}`).value);
-  const cadence = calculerCadence(nom);
-  const maintenant = new Date().toLocaleString("fr-FR");
-
-  if (!debut || !fin || !qte) {
-    alert("Veuillez remplir tous les champs !");
-    return;
-  }
-
-  if (!data.production[nom]) data.production[nom] = [];
-  data.production[nom].push({ debut, fin, qte, cadence, date: maintenant });
+  const rec = { debut, fin, qte, cadence, rest, date: new Date().toLocaleString() };
+  data.lignes[ligne].push(rec);
   saveData();
-  majTableau(nom);
-  document.getElementById(`form${nom}`).reset();
+
+  document.getElementById(`qte-${ligne}`).value = "";
+  document.getElementById(`rest-${ligne}`).value = "";
+  localStorage.removeItem(`temp_${ligne}`);
+  afficherGraphiqueLigne(ligne);
+  alert("Enregistrement effectué !");
 }
 
-function majTableau(nom) {
-  const tbody = document.querySelector(`#table${nom} tbody`);
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  (data.production[nom] || []).forEach(r => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${r.debut}</td><td>${r.fin}</td><td>${r.qte}</td><td>${r.cadence.toFixed(2)}</td>`;
-    tbody.appendChild(tr);
+function supprimerDernier(ligne) {
+  if (data.lignes[ligne].length > 0) {
+    data.lignes[ligne].pop();
+    saveData();
+    afficherGraphiqueLigne(ligne);
+  }
+}
+
+function resetLigne(ligne) {
+  if (confirm("Réinitialiser les données de cette ligne ?")) {
+    data.lignes[ligne] = [];
+    saveData();
+    afficherGraphiqueLigne(ligne);
+  }
+}
+
+// === GRAPHIQUES ===
+function afficherGraphiqueLigne(ligne) {
+  const ctx = document.getElementById(`graph-${ligne}`);
+  if (!ctx) return;
+  const recs = data.lignes[ligne] || [];
+  const labels = recs.map(r => r.date.split(",")[0]);
+  const vals = recs.map(r => r.cadence);
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: `Cadence ${ligne}`,
+        data: vals,
+        borderColor: "#0082c8",
+        tension: 0.2,
+        fill: false
+      }]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
 }
 
-function supprimerDernier(nom) {
-  if (data.production[nom] && data.production[nom].length > 0) {
-    data.production[nom].pop();
-    saveData();
-    majTableau(nom);
-  }
+// === PAGE ATELIER ===
+function updateAtelier() {
+  const ctx = document.getElementById("graphiqueAtelier");
+  const lignes = Object.keys(data.lignes);
+  const datasets = lignes.map(l => ({
+    label: l,
+    data: data.lignes[l].map(r => r.cadence),
+    borderColor: getColor(l),
+    fill: false,
+    tension: 0.3
+  }));
+  const labels = data.lignes[lignes[0]]?.map(r => r.date.split(",")[0]) || [];
+
+  new Chart(ctx, {
+    type: "line",
+    data: { labels, datasets },
+    options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+  });
+
+  const resume = document.getElementById("resumeAtelier");
+  resume.innerHTML = "";
+  lignes.forEach(l => {
+    const arrêts = data.arrets.filter(a => a.ligne === l);
+    const total = arrêts.reduce((a, b) => a + Number(b.duree), 0);
+    resume.innerHTML += `<p><b>${l}</b> — ${data.lignes[l].length} enregistrements — ${total} min arrêt</p>`;
+  });
 }
 
-// -------------------------
-// PAGE ARRETS
-// -------------------------
-function enregistrerArret() {
-  const ligne = document.getElementById("ligneArret").value;
-  const type = document.getElementById("typeArret").value;
-  const duree = parseFloat(document.getElementById("dureeArret").value);
-  const comment = document.getElementById("commentArret").value;
+function getColor(l) {
+  const couleurs = ["#0082c8", "#00bfa5", "#f44336", "#ff9800", "#9c27b0", "#3f51b5", "#009688", "#795548", "#607d8b"];
+  const index = Math.abs(l.charCodeAt(0) + l.length) % couleurs.length;
+  return couleurs[index];
+}
 
-  if (!ligne || !duree) return alert("Veuillez remplir tous les champs !");
+// === ARRÊTS ===
+function enregistrerArret() {
+  const ligne = document.getElementById("arretLigne").value;
+  const type = document.getElementById("arretType").value;
+  const duree = document.getElementById("arretDuree").value;
+  const comment = document.getElementById("arretComment").value;
+  if (!ligne || !duree) return alert("Ligne et durée obligatoires");
   data.arrets.push({ ligne, type, duree, comment });
   saveData();
-  majArrets();
-  document.getElementById("formArret").reset();
+  updateArrets();
+  document.getElementById("formArrets").reset();
 }
 
-function majArrets() {
+function updateArrets() {
   const tbody = document.querySelector("#tableArrets tbody");
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  data.arrets.forEach(a => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${a.ligne}</td><td>${a.type}</td><td>${a.duree}</td><td>${a.comment}</td>`;
-    tbody.appendChild(tr);
-  });
-  majTableArretsAtelier();
+  tbody.innerHTML = data.arrets.map(a => `<tr><td>${a.ligne}</td><td>${a.type}</td><td>${a.duree}</td><td>${a.comment}</td></tr>`).join("");
 }
 
-function majTableArretsAtelier() {
-  const tbody = document.querySelector("#tableArretsAtelier tbody");
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  data.arrets.forEach(a => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${a.ligne}</td><td>${a.type}</td><td>${a.duree}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// -------------------------
-// PAGE ORGANISATION
-// -------------------------
-function ajouterConsigne() {
-  const texte = document.getElementById("texteConsigne").value;
+// === ORGANISATION ===
+function enregistrerConsigne() {
+  const texte = document.getElementById("consigneTexte").value.trim();
   if (!texte) return;
   data.consignes.push({ texte, valide: false });
   saveData();
-  majConsignes();
-  document.getElementById("formConsigne").reset();
+  updateConsignes();
+  document.getElementById("consigneTexte").value = "";
 }
 
-function majConsignes() {
-  const tbody = document.querySelector("#tableConsignes tbody");
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  data.consignes.forEach((c, i) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${c.texte}</td>
-      <td><input type="checkbox" ${c.valide ? "checked" : ""} onchange="validerConsigne(${i})"></td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function validerConsigne(i) {
+function toggleConsigne(i) {
   data.consignes[i].valide = !data.consignes[i].valide;
   saveData();
+  updateConsignes();
 }
 
-// -------------------------
-// PAGE PERSONNEL
-// -------------------------
-function enregistrerPersonnel() {
-  const nom = document.getElementById("nomPersonnel").value;
-  const motif = document.getElementById("motifPersonnel").value;
-  const comment = document.getElementById("commentPersonnel").value;
+function updateConsignes() {
+  const tbody = document.querySelector("#tableConsignes tbody");
+  tbody.innerHTML = data.consignes
+    .map((c, i) => `
+      <tr>
+        <td>${c.texte}</td>
+        <td>${c.valide ? "✅" : "❌"}</td>
+        <td><button onclick="toggleConsigne(${i})">${c.valide ? "Annuler" : "Valider"}</button></td>
+      </tr>
+    `).join("");
+}
 
-  if (!nom) return alert("Nom requis !");
+// === PERSONNEL ===
+function enregistrerPersonnel() {
+  const nom = document.getElementById("persNom").value;
+  const motif = document.getElementById("persMotif").value;
+  const comment = document.getElementById("persComment").value;
+  if (!nom) return alert("Nom obligatoire");
   data.personnel.push({ nom, motif, comment });
   saveData();
-  majPersonnel();
+  updatePersonnel();
   document.getElementById("formPersonnel").reset();
 }
 
-function majPersonnel() {
+function updatePersonnel() {
   const tbody = document.querySelector("#tablePersonnel tbody");
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  data.personnel.forEach(p => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${p.nom}</td><td>${p.motif}</td><td>${p.comment}</td>`;
-    tbody.appendChild(tr);
-  });
+  tbody.innerHTML = data.personnel.map(p =>
+    `<tr><td>${p.nom}</td><td>${p.motif}</td><td>${p.comment}</td></tr>`
+  ).join("");
 }
 
-// -------------------------
-// GRAPHIQUE ATELIER
-// -------------------------
-let atelierChart;
-
-function majGraphiqueAtelier() {
-  const ctx = document.getElementById("atelierChart");
-  if (!ctx) return;
-  const labels = [];
-  const datasets = [];
-
-  Object.keys(data.production).forEach(ligne => {
-    const records = data.production[ligne];
-    if (records && records.length > 0) {
-      const cadences = records.map(r => r.cadence);
-      const heures = records.map((r, i) => i + 1);
-      datasets.push({
-        label: ligne,
-        data: cadences,
-        borderColor: getRandomColor(),
-        fill: false,
-        tension: 0.2
-      });
-      labels.push(...heures);
-    }
-  });
-
-  if (atelierChart) atelierChart.destroy();
-  atelierChart = new Chart(ctx, {
-    type: "line",
-    data: { labels: [...new Set(labels)], datasets },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: "bottom" },
-        title: { display: true, text: "Évolution des cadences" }
-      }
-    }
-  });
+// === ENREGISTREMENT LOCAL ===
+function saveData() {
+  localStorage.setItem("atelier_data", JSON.stringify(data));
 }
 
-function getRandomColor() {
-  return `hsl(${Math.random() * 360}, 70%, 50%)`;
+function loadAllData() {
+  const d = JSON.parse(localStorage.getItem("atelier_data"));
+  if (d) data = d;
+  updateArrets();
+  updateConsignes();
+  updatePersonnel();
 }
 
-// -------------------------
-// EXPORT EXCEL
-// -------------------------
+// === EXPORT EXCEL ===
 function exportExcel() {
-  let content = "=== Atelier PPNC ===\n\n";
-  Object.keys(data.production).forEach(ligne => {
-    content += `\nLigne ${ligne}\nDébut\tFin\tQté\tCadence\n`;
-    (data.production[ligne] || []).forEach(r => {
-      content += `${r.debut}\t${r.fin}\t${r.qte}\t${r.cadence.toFixed(2)}\n`;
-    });
-  });
-  content += "\n== Arrêts ==\nLigne\tType\tDurée\tCommentaire\n";
-  data.arrets.forEach(a => (content += `${a.ligne}\t${a.type}\t${a.duree}\t${a.comment}\n`));
-  content += "\n== Consignes ==\nConsigne\tValidée\n";
-  data.consignes.forEach(c => (content += `${c.texte}\t${c.valide ? "Oui" : "Non"}\n`));
-  content += "\n== Personnel ==\nNom\tMotif\tCommentaire\n";
-  data.personnel.forEach(p => (content += `${p.nom}\t${p.motif}\t${p.comment}\n`));
+  let contenu = [];
+  contenu.push(["=== Production ==="]);
+  for (let l in data.lignes) {
+    contenu.push([l, "Début", "Fin", "Quantité", "Cadence", "Restant"]);
+    data.lignes[l].forEach(r =>
+      contenu.push(["", r.debut, r.fin, r.qte, r.cadence.toFixed(1), r.rest])
+    );
+  }
+  contenu.push([""]);
+  contenu.push(["=== Arrêts ==="]);
+  data.arrets.forEach(a => contenu.push([a.ligne, a.type, a.duree, a.comment]));
+  contenu.push([""]);
+  contenu.push(["=== Consignes ==="]);
+  data.consignes.forEach(c => contenu.push([c.texte, c.valide ? "Validée" : "Non"]));
+  contenu.push([""]);
+  contenu.push(["=== Personnel ==="]);
+  data.personnel.forEach(p => contenu.push([p.nom, p.motif, p.comment]));
 
-  const blob = new Blob([content], { type: "application/vnd.ms-excel" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `Atelier_PPNC_${new Date().toLocaleString("fr-FR").replace(/[/: ]/g, "_")}.xls`;
-  a.click();
+  const ws = XLSX.utils.aoa_to_sheet(contenu);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Rapport");
+  XLSX.writeFile(wb, `Rapport_Atelier_${new Date().toLocaleString().replace(/[/:]/g,"-")}.xlsx`);
 }
 
-// -------------------------
-// CALCULATRICE FLOTTANTE
-// -------------------------
-const calc = document.createElement("div");
-calc.id = "calculator";
-calc.innerHTML = `
-  <div class="calc-display" id="calcDisplay"></div>
-  <div>
-    ${[7,8,9,"/",4,5,6,"*",1,2,3,"-",0,".","=","+"].map(v => 
-      `<button class='calc-button' onclick='pressCalc("${v}")'>${v}</button>`).join("")}
-    <button class='calc-button' onclick='clearCalc()'>C</button>
-  </div>`;
-document.body.appendChild(calc);
-
-let calcVal = "";
-function pressCalc(v) {
-  if (v === "=") {
-    try { calcVal = eval(calcVal).toString(); }
-    catch { calcVal = "Err"; }
-  } else {
-    calcVal += v;
-  }
-  document.getElementById("calcDisplay").textContent = calcVal;
+// === CALCULATRICE ===
+let calcExpression = "";
+function toggleCalc() {
+  document.querySelector(".calculator").classList.toggle("active");
 }
-function clearCalc() { calcVal = ""; document.getElementById("calcDisplay").textContent = ""; }
-
-document.addEventListener("keydown", e => {
-  if (e.key === "c" && e.ctrlKey) {
-    calc.style.display = calc.style.display === "flex" ? "none" : "flex";
+function press(val) {
+  calcExpression += val;
+  document.getElementById("calc-display").innerText = calcExpression;
+}
+function calculate() {
+  try {
+    calcExpression = eval(calcExpression).toString();
+    document.getElementById("calc-display").innerText = calcExpression;
+  } catch {
+    calcExpression = "";
+    document.getElementById("calc-display").innerText = "Erreur";
   }
-});
-
-// Initialisation
-window.onload = () => {
-  majArrets();
-  majConsignes();
-  majPersonnel();
-};
+}
+function clearCalc() {
+  calcExpression = "";
+  document.getElementById("calc-display").innerText = "";
+}
