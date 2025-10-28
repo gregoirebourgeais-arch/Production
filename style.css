@@ -1,61 +1,60 @@
-/* ==== STYLE GLOBAL ==== */
+/* === Atelier PPNC - Style global === */
+
 body {
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background-color: #f4f8fb;
-  color: #002f5d;
+  font-family: "Segoe UI", sans-serif;
   margin: 0;
-  padding: 0;
+  background-color: #f4f8fb;
+  color: #001f3f;
 }
 
-/* ==== EN-TÊTE ==== */
+/* ===== Header ===== */
 header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #007acc;
+  background: linear-gradient(90deg, #007acc, #0095ff);
   color: white;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  padding: 10px;
 }
-
 header img.logo {
-  height: 45px;
-  margin-right: 12px;
+  height: 40px;
+  margin-right: 10px;
+}
+header h1 {
+  font-size: 1.5em;
+  margin: 0;
 }
 
-/* ==== MENU PRINCIPAL ==== */
+/* ===== Navigation ===== */
 nav#mainMenu {
   display: flex;
   justify-content: space-around;
-  background-color: #e8f3fb;
-  border-bottom: 2px solid #007acc;
   flex-wrap: wrap;
+  background-color: #e8f3ff;
+  padding: 8px;
 }
-
 nav#mainMenu button {
   background-color: #007acc;
   color: white;
   border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin: 6px;
-  cursor: pointer;
-  transition: background 0.3s;
-  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-size: 1em;
+  margin: 5px;
+  transition: 0.3s;
+  min-width: 110px;
 }
-
 nav#mainMenu button:hover {
-  background-color: #005e99;
+  background-color: #005f99;
+  transform: scale(1.05);
 }
 
-/* ==== PAGES ==== */
+/* ===== Pages ===== */
 main {
-  padding: 20px;
+  padding: 15px;
 }
-
 .page {
   display: none;
-  animation: fadeIn 0.4s ease;
+  animation: fadeIn 0.4s;
 }
 .page.active {
   display: block;
@@ -65,93 +64,115 @@ main {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ==== FORMULAIRES ==== */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ===== Titres ===== */
+h2 {
+  color: #003366;
+  text-align: center;
   margin-bottom: 15px;
-  background: white;
-  padding: 15px;
+}
+h3 {
+  color: #004a80;
+  border-bottom: 2px solid #007acc;
+  padding-bottom: 5px;
+}
+
+/* ===== Boutons lignes ===== */
+#ligneButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+#ligneButtons button {
+  background-color: #0088ff;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  margin: 6px;
+  padding: 10px 18px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: 0.3s;
+}
+#ligneButtons button:hover {
+  background-color: #005fa3;
+  transform: scale(1.07);
+}
+
+/* ===== Formulaires ===== */
+form {
+  background-color: white;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 15px;
+  margin-bottom: 20px;
 }
-
 form label {
+  display: block;
   font-weight: bold;
+  margin-top: 10px;
 }
-
-form input, form select {
+form input, form select, form textarea {
+  width: 100%;
   padding: 8px;
-  border: 1px solid #aacbe8;
+  margin-top: 5px;
+  border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 1em;
 }
-
 form button {
   background-color: #007acc;
   color: white;
   border: none;
-  padding: 10px;
-  border-radius: 6px;
+  border-radius: 8px;
+  margin-top: 15px;
+  padding: 10px 15px;
   cursor: pointer;
-  transition: 0.3s;
+  font-size: 1em;
 }
-
 form button:hover {
-  background-color: #005e99;
+  background-color: #005f99;
 }
 
-/* ==== TABLEAUX ==== */
+/* ===== Tables ===== */
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  margin-top: 10px;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-
+table th, table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
 table th {
   background-color: #007acc;
   color: white;
+}
+table tr:nth-child(even) {
+  background-color: #f4f8ff;
+}
+
+/* ===== Graphiques ===== */
+canvas {
+  width: 100% !important;
+  max-height: 260px;
+  margin-top: 10px;
+}
+
+/* ===== Estimations ===== */
+.estimation {
+  background-color: #e8f3ff;
+  border-left: 4px solid #007acc;
   padding: 8px;
-  text-align: left;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-weight: 500;
 }
 
-table td {
-  padding: 6px 8px;
-  border-bottom: 1px solid #d9e7f3;
-}
-
-tr.consigne-validee {
-  background-color: #c2f5c2;
-}
-
-/* ==== BOUTONS DE LIGNES ==== */
-#ligneButtons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 15px;
-}
-
-#ligneButtons button {
-  background-color: #007acc;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: 0.3s;
-}
-#ligneButtons button:hover {
-  background-color: #005e99;
-}
-
-/* ==== CALCULATRICE ==== */
+/* ===== Calculatrice ===== */
 #floatCalcBtn {
   position: fixed;
   bottom: 20px;
@@ -162,14 +183,15 @@ tr.consigne-validee {
   border-radius: 50%;
   width: 60px;
   height: 60px;
-  font-size: 26px;
+  font-size: 24px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   transition: 0.3s;
+  z-index: 1000;
 }
-
 #floatCalcBtn:hover {
-  background-color: #005e99;
+  background-color: #005f99;
+  transform: scale(1.1);
 }
 
 #calculator {
@@ -177,92 +199,77 @@ tr.consigne-validee {
   bottom: 100px;
   right: 20px;
   background: white;
-  border: 2px solid #007acc;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border-radius: 12px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.25);
+  width: 250px;
   padding: 10px;
-  width: 220px;
-  z-index: 1000;
-  user-select: none;
+  z-index: 999;
 }
-
 #calculator.hidden {
   display: none;
 }
-
 #calcDisplay {
   width: 100%;
-  font-size: 1.2em;
-  margin-bottom: 10px;
-  padding: 8px;
+  height: 40px;
+  border: 1px solid #ccc;
   border-radius: 6px;
-  border: 1px solid #aacbe8;
+  font-size: 1.2em;
+  text-align: right;
+  padding-right: 8px;
+  margin-bottom: 8px;
 }
-
 #calcButtons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
 }
-
 #calcButtons button {
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
   background-color: #007acc;
   color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#calcButtons button:hover {
-  background-color: #005e99;
-}
-
-.closeCalc {
-  background: #ff4d4d;
   border: none;
-  color: white;
-  padding: 6px;
   border-radius: 6px;
+  padding: 10px;
+  font-size: 1.1em;
+}
+#calcButtons button:hover {
+  background-color: #005f99;
+}
+.closeCalc {
   width: 100%;
   margin-top: 8px;
-  cursor: pointer;
+  background-color: #ff5050;
 }
 .closeCalc:hover {
-  background: #d93636;
+  background-color: #d43030;
 }
 
-/* ==== ESTIMATION ==== */
-.estimation {
-  font-weight: bold;
-  color: #007acc;
-  background: #e8f3fb;
-  border-left: 4px solid #007acc;
-  padding: 6px 10px;
-  border-radius: 4px;
-  margin-top: 6px;
+/* ===== Export bouton ===== */
+.export-btn {
+  background-color: #00b05c;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.export-btn:hover {
+  background-color: #008f4a;
 }
 
-/* ==== GRAPHIQUES ==== */
-canvas {
-  background: #fff;
-  border-radius: 10px;
-  padding: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* ==== RESPONSIVE ==== */
+/* ===== Responsive ===== */
 @media (max-width: 600px) {
-  nav#mainMenu {
-    flex-direction: column;
+  header h1 {
+    font-size: 1.2em;
   }
-  form {
-    font-size: 14px;
+  nav#mainMenu button {
+    font-size: 0.9em;
+    padding: 8px;
   }
   #floatCalcBtn {
     width: 50px;
     height: 50px;
-    font-size: 22px;
+    font-size: 20px;
   }
 }
