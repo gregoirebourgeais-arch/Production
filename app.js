@@ -263,3 +263,9 @@ function resetForm() {
   document.querySelectorAll("#production input").forEach(i => i.value = "");
   document.getElementById("finEstimee").textContent = "Fin estimée : --";
   }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('service-worker.js')
+    .then(() => console.log("✅ Service Worker enregistré"))
+    .catch(err => console.error("❌ SW erreur:", err));
+}
