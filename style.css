@@ -1,221 +1,195 @@
-/* === STYLES GLOBAUX === */
+/* === Style principal Atelier PPNC === */
+
+:root {
+  --bleu-clair: #007bff;
+  --bleu-pale: #e9f3ff;
+  --gris-clair: #f8f9fa;
+  --texte: #333;
+  --fond: #ffffff;
+  --ombre: rgba(0, 0, 0, 0.1);
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
   margin: 0;
-  padding: 0;
-  background-color: #f2f6fc;
-  color: #0a2240;
-}
-
-h1, h2, h3 {
-  margin: 0.5rem 0;
-  text-align: center;
-  color: #0a2240;
-}
-
-p {
-  margin: 0;
-}
-
-/* === HEADER === */
-header {
+  background: var(--bleu-pale);
+  color: var(--texte);
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-  background: #007bff;
+  min-height: 100vh;
+}
+
+/* === Header === */
+header {
+  background: var(--bleu-clair);
   color: white;
   padding: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-}
-
-header .logo {
-  height: 35px;
-  margin-bottom: 4px;
+  text-align: center;
+  box-shadow: 0 2px 6px var(--ombre);
 }
 
 header h1 {
-  font-size: 1.4rem;
-  margin: 4px 0;
+  margin: 0;
+  font-size: 1.4em;
+  letter-spacing: 0.5px;
 }
 
-header p {
-  font-size: 0.8rem;
+#dateTimeDisplay, #weekDisplay {
+  font-size: 0.85em;
+  opacity: 0.9;
 }
 
-/* === MENU PRINCIPAL === */
-.menu {
+/* === Menu === */
+nav#menu {
   display: flex;
   justify-content: space-around;
-  background: #cfe5ff;
-  padding: 6px;
   flex-wrap: wrap;
+  background: var(--fond);
+  padding: 4px;
+  box-shadow: 0 2px 4px var(--ombre);
 }
 
-.menu button {
-  background: #007bff;
+nav#menu button {
+  background: var(--bleu-clair);
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 16px;
+  border-radius: 50px;
   margin: 4px;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 500;
   cursor: pointer;
-  transition: 0.3s;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
 }
 
-.menu button:hover {
-  background: #005ec7;
+nav#menu button:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
 }
 
-/* === PAGES === */
+/* === Pages === */
 .page {
   display: none;
-  padding: 10px;
+  padding: 12px;
+  animation: fadeIn 0.3s ease;
 }
 
 .page.active {
   display: block;
 }
 
-/* === FORMULAIRES === */
-form {
-  background: white;
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin: 10px auto;
-  max-width: 420px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+main h2 {
+  color: var(--bleu-clair);
+  font-size: 1.3em;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* === Formulaires === */
 label {
   display: block;
-  margin-top: 8px;
   font-weight: 600;
+  margin-top: 10px;
 }
 
 input, select, textarea {
   width: 100%;
-  padding: 6px;
-  margin-top: 4px;
+  padding: 8px;
+  border-radius: var(--radius);
   border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 0.95rem;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-size: 0.95em;
 }
 
 textarea {
   resize: vertical;
-  min-height: 60px;
+  min-height: 80px;
 }
 
 button {
+  background: var(--bleu-clair);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
   cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.3s ease;
 }
 
-/* === BOUTONS ACTION === */
-button[type="button"], .export {
-  display: block;
-  width: 100%;
+button:hover {
+  background: #0056b3;
+}
+
+/* === Lignes Production === */
+#ligneButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+#ligneButtons button {
+  background: var(--bleu-clair);
+  color: white;
+  border: none;
+  border-radius: 40px;
+  margin: 6px;
+  padding: 10px 18px;
+  font-size: 0.9em;
+  transition: 0.3s;
+}
+
+#ligneButtons button:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
+
+#ligneContainer {
   margin-top: 10px;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background-color: #007bff;
-  color: white;
-  font-weight: bold;
-  font-size: 1rem;
-  transition: background-color 0.2s;
+  background: var(--fond);
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px var(--ombre);
 }
 
-button[type="button"]:hover, .export:hover {
-  background-color: #005ec7;
-}
-
-.export {
-  background-color: #198754;
-  width: 60%;
-  margin: 10px auto;
-  font-size: 0.9rem;
-}
-
-.export:hover {
-  background-color: #13693d;
-}
-
-/* === LIGNES DE PRODUCTION === */
-.ligne-selection {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.ligne-selection button {
-  background-color: #007bff;
-  border: none;
-  color: white;
-  border-radius: 8px;
-  margin: 3px;
-  padding: 8px 12px;
-  font-size: 0.9rem;
-}
-
-.ligne-selection button:hover {
-  background-color: #005ec7;
-}
-
-/* === HISTORIQUES === */
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-ul li {
-  background: #fff;
-  margin: 4px 0;
-  padding: 6px 10px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  font-size: 0.9rem;
-}
-
-h3 {
-  margin-top: 1rem;
-  font-size: 1rem;
-  text-align: left;
-  border-bottom: 2px solid #007bff;
-  padding-bottom: 4px;
-}
-
-/* === CALCULATRICE FLOTTANTE === */
+/* === Calculatrice === */
 #calcIcon {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: #007bff;
+  background: var(--bleu-clair);
   color: white;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  cursor: grab;
-  user-select: none;
-  z-index: 9999;
+  font-size: 1.3em;
+  cursor: pointer;
+  box-shadow: 0 3px 8px var(--ombre);
 }
 
 #calculator {
   position: fixed;
-  bottom: 90px;
+  bottom: 80px;
   right: 20px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  background: var(--fond);
+  border-radius: var(--radius);
+  padding: 12px;
+  box-shadow: 0 4px 12px var(--ombre);
   width: 220px;
-  z-index: 9999;
 }
 
 #calculator.hidden {
@@ -224,58 +198,77 @@ h3 {
 
 #calcDisplay {
   width: 100%;
-  height: 35px;
-  margin-bottom: 6px;
+  height: 40px;
   text-align: right;
-  padding: 6px;
+  font-size: 1.1em;
+  margin-bottom: 6px;
+  border-radius: var(--radius);
   border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
+  padding-right: 6px;
 }
 
-.calcButtons {
+.calc-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
 }
 
-.calcButtons button {
-  padding: 8px;
-  border: none;
-  background: #007bff;
+.calc-buttons button {
+  padding: 10px;
+  font-size: 1em;
+  background: var(--bleu-clair);
   color: white;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border: none;
+  border-radius: 8px;
 }
 
-.calcButtons button:hover {
-  background: #005ec7;
-}
-
-.equal {
+.calc-buttons button.wide {
   grid-column: span 4;
-  background-color: #28a745;
+  background: #dc3545;
 }
 
-.equal:hover {
-  background-color: #1e7e34;
+.calc-buttons button:hover {
+  background: #0056b3;
 }
 
-/* === GRAPHIQUE === */
+/* === Graphiques === */
 canvas {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin: 10px auto;
-  display: block;
-  max-width: 90%;
+  width: 100%;
+  max-height: 300px;
+  margin-top: 10px;
+  background: var(--fond);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px var(--ombre);
+  padding: 8px;
 }
 
-/* === FOOTER === */
-footer {
-  text-align: center;
-  font-size: 0.85rem;
-  color: #333;
-  margin-top: 15px;
-  padding-bottom: 15px;
+/* === Listes === */
+ul {
+  list-style: none;
+  padding-left: 0;
+  background: var(--fond);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px var(--ombre);
+  padding: 8px;
+}
+
+ul li {
+  border-bottom: 1px solid #eee;
+  padding: 6px 4px;
+}
+
+ul li:last-child {
+  border-bottom: none;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  nav#menu {
+    flex-direction: column;
+    align-items: center;
+  }
+  #calculator {
+    width: 200px;
+    right: 10px;
+  }
 }
