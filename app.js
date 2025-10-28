@@ -1,286 +1,302 @@
-// === INITIALISATION ===
+// ============================
+//  APP.JS – Atelier PPNC
+// ============================
+
+// ---------- Variables globales ----------
+let currentPage = "atelier";
+let selectedLine = null;
+let storageKey = "atelierPPNCData";
+let data = JSON.parse(localStorage.getItem(storageKey)) || {
+  production: {},
+  arrets: [],
+  consignes: [],
+  personnel: [],
+};
+
+// ---------- Initialisation ----------
 document.addEventListener("DOMContentLoaded", () => {
   updateDateInfo();
-  loadAllData();
-  initCalculator();
-  drawAtelierChart();
   setInterval(updateDateInfo, 60000);
+  openPage("atelier");
+  buildCalculator();
+  renderGlobalHist();
+  buildAtelierChart();
 });
 
-// === DATE / HEURE / ÉQUIPE ===
+// ---------- Mise à jour date / heure / équipe ----------
 function updateDateInfo() {
   const now = new Date();
-  const day = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-  const hours = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-  const week = getWeekNumber(now);
+  const options = { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" };
   const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
-  const team = getTeam(now);
-  document.getElementById('dateInfo').innerText =
-    `${day} à ${hours}\nJour ${dayOfYear} – Semaine ${week} – Équipe ${team}`;
+  const weekNumber = getWeekNumber(now);
+  const equipe = getEquipe(now);
+  document.getElementById("dateInfo").innerText =
+    `${now.toLocaleDateString("fr-FR", options)}\nJour ${dayOfYear} – Semaine ${weekNumber} – Équipe ${equipe}`;
 }
 
 function getWeekNumber(d) {
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+  return weekNo;
 }
 
-function getTeam(now) {
-  const hour = now.getHours();
-  if (hour >= 5 && hour < 13) return "M";
-  if (hour >= 13 && hour < 21) return "S";
+function getEquipe(date) {
+  const h = date.getHours();
+  if (h >= 5 && h < 13) return "M";
+  if (h >= 13 && h < 21) return "S";
   return "N";
 }
 
-// === NAVIGATION ===
-function openPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  if (id === 'atelier') drawAtelierChart();
+// ---------- Navigation ----------
+function openPage(pageId) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(pageId).classList.add("active");
+  currentPage = pageId;
+  if (pageId === "atelier") buildAtelierChart();
+  saveData();
 }
 
-// === PRODUCTION ===
-let selectedLine = null;
-
+// ---------- Sélection ligne ----------
 function selectLine(line) {
   selectedLine = line;
-  const div = document.getElementById('productionForm');
-  div.innerHTML = `
-    <div class="card">
-      <h3>Ligne ${line}</h3>
-      <label>Heure de début :</label>
-      <input type="time" id="startTime">
-      <label>Heure de fin :</label>
-      <input type="time" id="endTime">
-      <label>Quantité produite :</label>
-      <input type="number" id="qteProd">
-      <label>Quantité restante :</label>
-      <input type="number" id="qteRest">
-      <label>Cadence manuelle (colis/h) :</label>
-      <input type="number" id="cadenceManuelle">
-      <div class="card" style="background:#eef3ff; text-align:center;">
-        Fin estimée : <strong id="finEstimee">--</strong>
-      </div>
-      <button onclick="enregistrerProduction()">💾 Enregistrer</button>
-      <button onclick="resetProduction()">♻️ Remise à zéro</button>
-    </div>`;
-  
-  // Ajout calcul auto temps restant
-  ["qteRest", "cadenceManuelle"].forEach(id => {
-    document.getElementById(id).addEventListener("input", updateFinEstimee);
+  document.getElementById("productionForm").innerHTML = `
+    <h3>Ligne ${line}</h3>
+    <label>Heure de début :</label>
+    <input type="time" id="debut${line}" />
+    <label>Heure de fin :</label>
+    <input type="time" id="fin${line}" />
+    <label>Quantité produite :</label>
+    <input type="number" id="qte${line}" />
+    <label>Quantité restante :</label>
+    <input type="number" id="rest${line}" />
+    <label>Cadence manuelle (colis/h) :</label>
+    <input type="number" id="cadence${line}" />
+    <div class="finEstimee">Fin estimée : <span id="estime${line}">--</span></div>
+    <button onclick="saveProduction('${line}')">💾 Enregistrer</button>
+  `;
+}
+
+// ---------- Enregistrer Production ----------
+function saveProduction(line) {
+  const qte = parseFloat(document.getElementById(`qte${line}`).value) || 0;
+  const rest = parseFloat(document.getElementById(`rest${line}`).value) || 0;
+  const cadManuelle = parseFloat(document.getElementById(`cadence${line}`).value) || null;
+  const debut = document.getElementById(`debut${line}`).value;
+  const fin = document.getElementById(`fin${line}`).value;
+  const now = new Date().toLocaleString("fr-FR");
+  const equipe = getEquipe(new Date());
+
+  // Calcul du temps estimé restant
+  let tempsRestant = "--";
+  if (cadManuelle && rest > 0) {
+    const heures = rest / cadManuelle;
+    const totalMin = Math.round(heures * 60);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    tempsRestant = `${h}h${m.toString().padStart(2, "0")}`;
+  } else if (debut && fin && qte > 0) {
+    const [hd, md] = debut.split(":").map(Number);
+    const [hf, mf] = fin.split(":").map(Number);
+    const diffH = hf - hd + (mf - md) / 60;
+    const cadence = qte / diffH;
+    const heures = rest / cadence;
+    const totalMin = Math.round(heures * 60);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    tempsRestant = `${h}h${m.toString().padStart(2, "0")}`;
+  }
+
+  document.getElementById(`estime${line}`).textContent = tempsRestant;
+
+  if (!data.production[line]) data.production[line] = [];
+  data.production[line].push({ date: now, equipe, debut, fin, qte, rest, cadManuelle, tempsRestant });
+  saveData();
+  renderProductionHist();
+  clearProductionInputs(line);
+}
+
+// ---------- Nettoyage formulaire production ----------
+function clearProductionInputs(line) {
+  document.getElementById(`qte${line}`).value = "";
+  document.getElementById(`rest${line}`).value = "";
+  document.getElementById(`cadence${line}`).value = "";
+}
+
+// ---------- Sauvegarde ----------
+function saveData() {
+  localStorage.setItem(storageKey, JSON.stringify(data));
+}
+
+// ---------- Historique production ----------
+function renderProductionHist() {
+  const div = document.getElementById("historiqueProduction");
+  div.innerHTML = "";
+  Object.keys(data.production).forEach(line => {
+    data.production[line].forEach(rec => {
+      const el = document.createElement("div");
+      el.className = "record";
+      el.textContent = `${rec.date} | ${line} | ${rec.qte} colis | Restant ${rec.rest} | Fin estimée ${rec.tempsRestant}`;
+      div.appendChild(el);
+    });
   });
 }
 
-function updateFinEstimee() {
-  const rest = parseFloat(document.getElementById("qteRest").value) || 0;
-  const cadence = parseFloat(document.getElementById("cadenceManuelle").value) || 0;
-  if (rest > 0 && cadence > 0) {
-    const heures = rest / cadence;
-    const fin = new Date();
-    fin.setHours(fin.getHours() + heures);
-    const heureFin = fin.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById("finEstimee").innerText = `${heureFin} (${heures.toFixed(2)} h restantes)`;
-  } else {
-    document.getElementById("finEstimee").innerText = "--";
-  }
-}
-
-function enregistrerProduction() {
-  const data = {
-    ligne: selectedLine,
-    debut: document.getElementById("startTime").value,
-    fin: document.getElementById("endTime").value,
-    qteProd: document.getElementById("qteProd").value,
-    qteRest: document.getElementById("qteRest").value,
-    cadence: document.getElementById("cadenceManuelle").value,
-    equipe: getTeam(new Date()),
-    date: new Date().toLocaleString("fr-FR")
-  };
-
-  if (!data.ligne) return alert("Sélectionnez une ligne !");
-  const list = JSON.parse(localStorage.getItem("production")) || [];
-  list.push(data);
-  localStorage.setItem("production", JSON.stringify(list));
-
-  loadProductionHistorique();
-  resetProduction();
-}
-
-function resetProduction() {
-  document.getElementById("productionForm").querySelectorAll("input").forEach(el => el.value = "");
-  document.getElementById("finEstimee").innerText = "--";
-}
-
-function loadProductionHistorique() {
-  const div = document.getElementById("historiqueProduction");
-  const list = JSON.parse(localStorage.getItem("production")) || [];
-  div.innerHTML = list.slice(-10).reverse().map(x =>
-    `<div class="historique-item">${x.date} - ${x.ligne} : ${x.qteProd} produits, ${x.qteRest} restants, cadence ${x.cadence}/h, équipe ${x.equipe}</div>`
-  ).join("");
-  updateAtelierHistoriques();
-}
-
-// === ARRÊTS ===
+// ---------- Sauvegarde Arrêt ----------
 function saveArret() {
   const ligne = document.getElementById("ligneArret").value;
   const type = document.getElementById("typeArret").value;
-  const duree = document.getElementById("dureeArret").value;
+  const duree = parseInt(document.getElementById("dureeArret").value);
   const commentaire = document.getElementById("commentaireArret").value;
-  if (!ligne || !type || !duree) return alert("Veuillez remplir tous les champs.");
-
-  const data = { ligne, type, duree, commentaire, date: new Date().toLocaleString("fr-FR"), equipe: getTeam(new Date()) };
-  const list = JSON.parse(localStorage.getItem("arrets")) || [];
-  list.push(data);
-  localStorage.setItem("arrets", JSON.stringify(list));
-
-  loadArrets();
-  ["ligneArret","typeArret","dureeArret","commentaireArret"].forEach(id => document.getElementById(id).value = "");
+  if (!ligne || !type || !duree) return alert("Champs manquants !");
+  data.arrets.push({
+    date: new Date().toLocaleString("fr-FR"),
+    equipe: getEquipe(new Date()),
+    ligne, type, duree, commentaire
+  });
+  saveData();
+  renderGlobalHist();
+  alert("Arrêt enregistré !");
+  document.getElementById("dureeArret").value = "";
+  document.getElementById("commentaireArret").value = "";
 }
 
-function loadArrets() {
-  const div = document.getElementById("historiqueArrets");
-  const list = JSON.parse(localStorage.getItem("arrets")) || [];
-  div.innerHTML = list.slice(-10).reverse().map(x =>
-    `<div class="historique-item">${x.date} - ${x.ligne} (${x.type}) ${x.duree} min — ${x.commentaire || ""} (${x.equipe})</div>`
-  ).join("");
-  updateAtelierHistoriques();
-}
-
-// === ORGANISATION ===
+// ---------- Sauvegarde Consigne ----------
 function saveConsigne() {
   const texte = document.getElementById("consigneTexte").value;
   const realisee = document.getElementById("consigneRealisee").checked;
-  if (!texte) return alert("Renseignez une consigne !");
-  const data = { texte, realisee, date: new Date().toLocaleString("fr-FR"), equipe: getTeam(new Date()) };
-  const list = JSON.parse(localStorage.getItem("consignes")) || [];
-  list.push(data);
-  localStorage.setItem("consignes", JSON.stringify(list));
-
-  loadConsignes();
+  if (!texte) return alert("Consigne vide !");
+  data.consignes.push({
+    date: new Date().toLocaleString("fr-FR"),
+    equipe: getEquipe(new Date()),
+    texte,
+    realisee
+  });
+  saveData();
+  renderGlobalHist();
   document.getElementById("consigneTexte").value = "";
   document.getElementById("consigneRealisee").checked = false;
 }
 
-function loadConsignes() {
-  const div = document.getElementById("historiqueConsignes");
-  const list = JSON.parse(localStorage.getItem("consignes")) || [];
-  div.innerHTML = list.slice(-10).reverse().map(x =>
-    `<div class="historique-item">${x.date} — ${x.texte} ${x.realisee ? "✅" : "❌"} (${x.equipe})</div>`
-  ).join("");
-  updateAtelierHistoriques();
-}
-
-// === PERSONNEL ===
+// ---------- Sauvegarde Personnel ----------
 function savePersonnel() {
   const nom = document.getElementById("nomPersonnel").value;
   const poste = document.getElementById("postePersonnel").value;
-  if (!nom || !poste) return alert("Complétez les champs !");
-  const data = { nom, poste, date: new Date().toLocaleString("fr-FR"), equipe: getTeam(new Date()) };
-  const list = JSON.parse(localStorage.getItem("personnel")) || [];
-  list.push(data);
-  localStorage.setItem("personnel", JSON.stringify(list));
-
-  loadPersonnel();
+  if (!nom || !poste) return alert("Champs vides !");
+  data.personnel.push({
+    date: new Date().toLocaleString("fr-FR"),
+    equipe: getEquipe(new Date()),
+    nom, poste
+  });
+  saveData();
+  renderGlobalHist();
   document.getElementById("nomPersonnel").value = "";
   document.getElementById("postePersonnel").value = "";
 }
 
-function loadPersonnel() {
-  const div = document.getElementById("historiquePersonnel");
-  const list = JSON.parse(localStorage.getItem("personnel")) || [];
-  div.innerHTML = list.slice(-10).reverse().map(x =>
-    `<div class="historique-item">${x.date} — ${x.nom} (${x.poste}) — ${x.equipe}</div>`
-  ).join("");
-  updateAtelierHistoriques();
+// ---------- Historique global ----------
+function renderGlobalHist() {
+  document.getElementById("histProduction").innerHTML = formatHist(data.production);
+  document.getElementById("histArrets").innerHTML = data.arrets.map(a => `${a.date} | ${a.ligne} | ${a.type} ${a.duree}min`).join("<br>");
+  document.getElementById("histConsignes").innerHTML = data.consignes.map(c => `${c.date} | ${c.texte} ${c.realisee ? "✅" : "⏳"}`).join("<br>");
+  document.getElementById("histPersonnel").innerHTML = data.personnel.map(p => `${p.date} | ${p.nom} - ${p.poste}`).join("<br>");
 }
 
-// === ATELIER (vue globale + graphiques) ===
-function updateAtelierHistoriques() {
-  const prod = JSON.parse(localStorage.getItem("production")) || [];
-  const arrets = JSON.parse(localStorage.getItem("arrets")) || [];
-  const cons = JSON.parse(localStorage.getItem("consignes")) || [];
-  const pers = JSON.parse(localStorage.getItem("personnel")) || [];
-
-  const div = document.getElementById("atelierHistoriques");
-  div.innerHTML = `
-    <h3>Dernières entrées</h3>
-    <div>${prod.slice(-3).map(x => `<div class='historique-item'>Prod ${x.ligne} : ${x.qteProd}</div>`).join("")}</div>
-    <div>${arrets.slice(-3).map(x => `<div class='historique-item'>Arrêt ${x.ligne} : ${x.duree} min</div>`).join("")}</div>
-    <div>${cons.slice(-2).map(x => `<div class='historique-item'>Consigne : ${x.texte}</div>`).join("")}</div>
-    <div>${pers.slice(-2).map(x => `<div class='historique-item'>Pers : ${x.nom}</div>`).join("")}</div>
-  `;
-  drawAtelierChart();
+function formatHist(production) {
+  let html = "";
+  Object.entries(production).forEach(([line, recs]) => {
+    recs.forEach(r => {
+      html += `${r.date} | ${line} | ${r.qte} colis | ${r.tempsRestant}<br>`;
+    });
+  });
+  return html || "Aucun enregistrement";
 }
 
-function drawAtelierChart() {
-  const prod = JSON.parse(localStorage.getItem("production")) || [];
+// ---------- Graphique multi-lignes ----------
+let atelierChart;
+function buildAtelierChart() {
   const ctx = document.getElementById("atelierChart");
-  if (!ctx) return;
-  const lignes = ["Râpé","T2","RT","OMORI","T1","Sticks","Emballage","Dés","Filets","Prédécoupés"];
-  const data = lignes.map(l => {
-    const total = prod.filter(x => x.ligne === l).reduce((a,b)=>a+parseFloat(b.qteProd||0),0);
-    return total;
-  });
+  const labels = Object.keys(data.production);
+  const datasets = labels.map(line => ({
+    label: line,
+    data: data.production[line].map(r => r.qte),
+    borderColor: getRandomColor(),
+    borderWidth: 2,
+    fill: false,
+    tension: 0.3
+  }));
 
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: lignes,
-      datasets: [{
-        label: "Production cumulée (colis)",
-        data: data,
-        fill: false,
-        borderColor: '#007bff',
-        tension: 0.2
-      }]
-    },
-    options: {
-      scales: { y: { beginAtZero: true } }
-    }
+  if (atelierChart) atelierChart.destroy();
+  atelierChart = new Chart(ctx, {
+    type: "line",
+    data: { labels, datasets },
+    options: { responsive: true, plugins: { legend: { position: "bottom" } } }
   });
 }
 
-// === EXPORT EXCEL ===
+function getRandomColor() {
+  return `hsl(${Math.random() * 360}, 70%, 55%)`;
+}
+
+// ---------- Export Excel ----------
 function exportToExcel() {
   const wb = XLSX.utils.book_new();
-  const sections = ["production","arrets","consignes","personnel"];
-  sections.forEach(s => {
-    const data = JSON.parse(localStorage.getItem(s)) || [];
-    if (data.length) {
-      const ws = XLSX.utils.json_to_sheet(data);
-      XLSX.utils.book_append_sheet(wb, ws, s);
-    }
+
+  // Production
+  const prodSheet = [];
+  Object.entries(data.production).forEach(([line, recs]) => {
+    recs.forEach(r => prodSheet.push({
+      Ligne: line, Date: r.date, Équipe: r.equipe,
+      Début: r.debut, Fin: r.fin,
+      Quantité: r.qte, Restant: r.rest,
+      Cadence: r.cadManuelle, Fin_estimée: r.tempsRestant
+    }));
   });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(prodSheet), "Production");
+
+  // Arrêts
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.arrets), "Arrêts");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.consignes), "Consignes");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data.personnel), "Personnel");
+
   XLSX.writeFile(wb, "Synthese_Atelier_PPNC.xlsx");
 }
 
-// === CALCULATRICE ===
-function initCalculator() {
-  const keys = [
-    "7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+","C"
-  ];
-  const grid = document.getElementById("calcKeys");
-  grid.innerHTML = keys.map(k => `<button>${k}</button>`).join("");
-  grid.querySelectorAll("button").forEach(b => b.addEventListener("click", e => calcInput(e.target.innerText)));
-}
-
+// ---------- Calculatrice ----------
 function toggleCalculator() {
-  const calc = document.getElementById("calculator");
-  calc.classList.toggle("hidden");
+  document.getElementById("calculator").classList.toggle("hidden");
 }
 
-function calcInput(val) {
-  const display = document.getElementById("calcDisplay");
-  if (val === "=") display.value = eval(display.value || 0);
-  else if (val === "C") display.value = "";
-  else display.value += val;
+function buildCalculator() {
+  const keys = ["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+"];
+  const container = document.getElementById("calcKeys");
+  container.innerHTML = "";
+  keys.forEach(k => {
+    const btn = document.createElement("button");
+    btn.textContent = k;
+    btn.onclick = () => handleCalcInput(k);
+    container.appendChild(btn);
+  });
 }
 
-// === CHARGEMENT INITIAL ===
-function loadAllData() {
-  loadProductionHistorique();
-  loadArrets();
-  loadConsignes();
-  loadPersonnel();
-    }
+function handleCalcInput(k) {
+  const disp = document.getElementById("calcDisplay");
+  if (k === "=") {
+    try { disp.value = eval(disp.value); } catch { disp.value = "Erreur"; }
+  } else disp.value += k;
+}
+
+// ---------- Draggable calculatrice ----------
+const calc = document.getElementById("calculator");
+calc?.addEventListener("dragstart", e => {
+  const rect = calc.getBoundingClientRect();
+  e.dataTransfer.setData("text/plain", `${e.clientX - rect.left},${e.clientY - rect.top}`);
+});
+document.addEventListener("dragover", e => e.preventDefault());
+document.addEventListener("drop", e => {
+  e.preventDefault();
+  const dataPos = e.dataTransfer.getData("text/plain").split(",");
+  calc.style.left = `${e.clientX - parseInt(dataPos[0])}px`;
+  calc.style.top = `${e.clientY - parseInt(dataPos[1])}px`;
+});
