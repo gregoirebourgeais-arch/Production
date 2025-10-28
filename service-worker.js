@@ -1,43 +1,63 @@
-// === SERVICE WORKER Atelier PPNC ===
-// Gère la mise en cache pour le mode hors-ligne et installation PWA
+// === SERVICE WORKER – ATELIER PPNC ===
+// Gestion du cache et du mode hors-ligne
 
-const CACHE_NAME = "atelier-ppnc-v1";
-const ASSETS = [
+const CACHE_NAME = "atelier-ppnc-cache-v1";
+const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./manifest.json",
-  "https://cdn.jsdelivr.net/npm/chart.js",
-  "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+  "./icons/icon-192.png",
+  "./icons/icon-512.png"
 ];
 
-// INSTALLATION DU SERVICE WORKER
+// === INSTALLATION ===
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(FILES_TO_CACHE))
+      .then(() => self.skipWaiting())
   );
-  console.log("✅ Service Worker installé et fichiers mis en cache.");
 });
 
-// ACTIVATION ET MISE À JOUR DU CACHE
+// === ACTIVATION ===
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(keys.map(key => {
+        if (key !== CACHE_NAME) {
+          return caches.delete(key);
+        }
+      }))
     )
   );
-  console.log("♻️ Service Worker activé, anciens caches supprimés.");
+  self.clients.claim();
 });
 
-// INTERCEPTION DES REQUÊTES
+// === INTERCEPTION DES REQUÊTES ===
 self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
+    caches.match(event.request).then(response => {
+      // Si trouvé dans le cache → retourne la ressource
+      if (response) return response;
+
+      // Sinon → va la chercher sur le réseau et l’ajoute au cache
+      return fetch(event.request).then(networkResponse => {
+        return caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        });
+      }).catch(() => caches.match("./index.html"));
+    })
   );
 });
 
-// INSTALLATION AUTOMATIQUE
+// === MISE À JOUR FORCÉE DU CACHE ===
 self.addEventListener("message", event => {
-  if (event.data === "skipWaiting") self.skipWaiting();
+  if (event.data === "updateSW") {
+    self.skipWaiting();
+  }
 });
