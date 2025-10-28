@@ -1,258 +1,228 @@
-/* ==== STYLE GLOBAL ==== */
-* {
-  box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, sans-serif;
-}
-
+/* --- STYLE GLOBAL --- */
 body {
+  font-family: "Segoe UI", Arial, sans-serif;
   margin: 0;
-  background: #f2f7fc;
-  color: #003366;
+  padding: 0;
+  background: #f4f8fb;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 header {
-  background: linear-gradient(135deg, #cfe9ff, #e7f3ff);
-  color: #003366;
+  background: linear-gradient(90deg, #007bff, #00aaff);
+  color: white;
   text-align: center;
-  padding: 10px 0;
+  padding: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  gap: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .logo {
-  width: 60px;
-  height: auto;
+  height: 50px;
 }
 
-header h1 {
+h1 {
   margin: 0;
-  font-size: 1.6em;
-  font-weight: 600;
+  font-size: 1.8rem;
 }
 
-#dateHeure {
-  font-size: 0.9em;
-  color: #004080;
-}
-
-/* ==== MENU ==== */
-nav#mainMenu {
+/* --- MENU NAVIGATION --- */
+nav.menu {
   display: flex;
   justify-content: space-around;
-  background: #007acc;
   flex-wrap: wrap;
-  padding: 5px 0;
+  background: #e7f2ff;
+  padding: 10px 0;
+  border-bottom: 2px solid #cfe5ff;
 }
 
-nav#mainMenu button {
-  background: #e7f3ff;
-  border: none;
-  border-radius: 25px;
-  padding: 10px 15px;
-  font-size: 0.9em;
-  margin: 4px;
-  color: #004080;
+nav.menu button {
+  background: white;
+  border: 1px solid #a0cfff;
+  color: #007bff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-nav#mainMenu button:hover {
-  background: #b8ddff;
-  transform: scale(1.05);
+nav.menu button:hover {
+  background: #007bff;
+  color: white;
 }
 
-/* ==== CONTENU ==== */
+/* --- PAGES --- */
 main {
-  padding: 10px;
+  flex: 1;
+  padding: 1rem;
 }
 
 .page {
   display: none;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .page.active {
   display: block;
 }
 
-h2 {
-  color: #004080;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-form {
-  background: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  margin: 10px 0;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-}
-
-label {
-  display: block;
-  margin-top: 8px;
-  font-weight: 500;
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border-radius: 6px;
-  border: 1px solid #cce0ff;
-}
-
-button {
-  background: #007acc;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 15px;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background: #005fa3;
-}
-
-/* ==== TABLEAUX ==== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-th, td {
-  border: 1px solid #cce0ff;
-  padding: 6px;
-  text-align: center;
-}
-
-th {
-  background: #007acc;
-  color: #fff;
-}
-
-tr:nth-child(even) {
-  background: #f7fbff;
-}
-
-/* ==== ESTIMATION ==== */
-.estimation {
-  background: #e7f3ff;
-  padding: 6px;
-  border-radius: 6px;
-  margin-top: 6px;
-  color: #003366;
-  font-size: 0.95em;
-}
-
-/* ==== CALCULATRICE ==== */
-#floatCalcBtn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #007acc;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 1.4em;
-  cursor: grab;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: 0.3s;
-  z-index: 999;
-}
-
-#floatCalcBtn:hover {
-  transform: scale(1.1);
-  background: #005fa3;
-}
-
-#calculator {
-  position: fixed;
-  bottom: 100px;
-  right: 20px;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 10px;
-  width: 220px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  z-index: 1000;
-}
-
-#calculator.hidden {
-  display: none;
-}
-
-#calcDisplay {
-  width: 100%;
-  font-size: 1.1em;
-  margin-bottom: 6px;
-  padding: 6px;
-  text-align: right;
-  border: 1px solid #cce0ff;
-  border-radius: 6px;
-}
-
-#calcButtons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
-}
-
-#calcButtons button {
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 1em;
-  background: #e7f3ff;
-  color: #004080;
-  border: none;
-}
-
-#calcButtons button:hover {
-  background: #b8ddff;
-}
-
-.closeCalc {
-  background: #007acc;
-  color: #fff;
-  margin-top: 6px;
-  width: 100%;
-}
-
-/* ==== GRAPH ===== */
-canvas {
-  width: 100%;
-  margin-top: 10px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 8px;
-}
-
-/* ==== ANIM ==== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ==== RESPONSIVE ==== */
-@media (max-width: 700px) {
-  nav#mainMenu button {
-    flex: 1 1 45%;
-    margin: 3px;
-  }
-  header {
-    flex-direction: column;
-  }
-        }
+/* --- TABLES --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+th {
+  background: #007bff;
+  color: white;
+}
+
+tr:hover {
+  background: #f0f9ff;
+}
+
+/* --- FORMULAIRES --- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-top: 1rem;
+}
+
+input, select, textarea {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* --- BOUTONS --- */
+button[type="button"], .export-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+button[type="button"]:hover, .export-btn:hover {
+  background: #005fcc;
+}
+
+/* --- LIGNES PRODUCTION --- */
+.lignes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.ligne-btn {
+  background: #ffffff;
+  border: 2px solid #007bff;
+  color: #007bff;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.ligne-btn:hover {
+  background: #007bff;
+  color: white;
+}
+
+/* --- GRAPHIQUES --- */
+canvas {
+  max-width: 100%;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* --- FOOTER --- */
+footer {
+  background: #e7f2ff;
+  text-align: center;
+  padding: 0.8rem;
+  border-top: 2px solid #cfe5ff;
+}
+
+/* --- CALCULATRICE FLOTTANTE --- */
+#calculator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  display: none;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.calc-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 3px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.calc-display {
+  background: #f0f9ff;
+  border: 1px solid #007bff;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 1.2rem;
+  text-align: right;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  h1 { font-size: 1.4rem; }
+  nav.menu { flex-direction: column; gap: 8px; }
+  .lignes { grid-template-columns: repeat(2, 1fr); }
+}
