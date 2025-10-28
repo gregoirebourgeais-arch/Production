@@ -1,112 +1,106 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atelier PPNC</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
   <header>
-    <img src="icon-192.png" alt="Logo Lactalis" class="logo" />
+    <img src="logo-lactalis.png" alt="Logo Lactalis" class="logo">
     <h1>Atelier PPNC</h1>
   </header>
 
   <nav id="mainMenu">
-    <button onclick="showSection('atelier')">🏭 Atelier</button>
-    <button onclick="showSection('production')">📦 Production</button>
-    <button onclick="showSection('arrets')">⏱️ Arrêts</button>
-    <button onclick="showSection('organisation')">🗒️ Organisation</button>
-    <button onclick="showSection('personnel')">👥 Personnel</button>
+    <button onclick="showPage('atelier')">🏭 Atelier</button>
+    <button onclick="showPage('production')">📦 Production</button>
+    <button onclick="showPage('arrets')">⏱️ Arrêts</button>
+    <button onclick="showPage('organisation')">📝 Organisation</button>
+    <button onclick="showPage('personnel')">👥 Personnel</button>
   </nav>
 
   <main>
-    <!-- PAGE ATELIER -->
+    <!-- Atelier -->
     <section id="atelier" class="page active">
       <h2>Vue d'ensemble Atelier</h2>
       <canvas id="atelierChart"></canvas>
-      <button onclick="exportGlobalExcel()">📊 Export Excel global</button>
-      <div id="resumeAtelier"></div>
+      <button onclick="exportExcel()" class="export-btn">📊 Export Excel global</button>
     </section>
 
-    <!-- PAGE PRODUCTION -->
+    <!-- Production -->
     <section id="production" class="page">
       <h2>Production</h2>
       <div id="ligneButtons"></div>
-      <div id="ligneContainer"></div>
+      <div id="ligneContent"></div>
     </section>
 
-    <!-- PAGE ARRETS -->
+    <!-- Arrêts -->
     <section id="arrets" class="page">
-      <h2>Arrêts de ligne</h2>
-      <form id="formArret" onsubmit="saveArret(event)">
+      <h2>Arrêts</h2>
+      <form id="arretForm">
         <label>Ligne :</label>
         <select id="arretLigne">
-          <option value="">--Choisir une ligne--</option>
+          <option value="">Choisir une ligne</option>
+          <option>Râpé</option><option>T2</option><option>RT</option>
+          <option>OMORI</option><option>T1</option><option>Sticks</option>
+          <option>Emballage</option><option>Dés</option><option>Filets</option><option>Prédécoupés</option>
         </select>
-        <label>Type d'arrêt :</label>
-        <select id="arretType">
-          <option value="Découpe">Découpe</option>
-          <option value="Packing">Packing</option>
-          <option value="MEC">MEC</option>
+
+        <label>Zone concernée :</label>
+        <select id="arretZone">
+          <option>Découpe</option><option>Packing</option><option>MEC</option>
         </select>
+
         <label>Durée (minutes) :</label>
-        <input type="number" id="arretDuree" placeholder="Ex: 20" />
+        <input type="number" id="arretDuree">
+
         <label>Commentaire :</label>
-        <input type="text" id="arretCommentaire" placeholder="Raison de l'arrêt" />
-        <button type="submit">💾 Enregistrer</button>
+        <textarea id="arretCommentaire"></textarea>
+
+        <button type="button" onclick="saveArret()">💾 Enregistrer</button>
       </form>
-      <div id="arretHistorique"></div>
+
+      <h3>Historique des arrêts</h3>
+      <table id="arretsTable">
+        <thead><tr><th>Ligne</th><th>Zone</th><th>Durée</th><th>Commentaire</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </section>
 
-    <!-- PAGE ORGANISATION -->
+    <!-- Organisation -->
     <section id="organisation" class="page">
-      <h2>Organisation</h2>
-      <form id="formConsigne" onsubmit="saveConsigne(event)">
+      <h2>Organisation / Consignes</h2>
+      <form id="consigneForm">
         <label>Nouvelle consigne :</label>
-        <input type="text" id="consigneTexte" placeholder="Saisir une consigne..." />
-        <button type="submit">💾 Ajouter</button>
+        <input id="newConsigne" placeholder="Renseigner la consigne...">
+        <label><input type="checkbox" id="consigneRealisee"> Consigne réalisée</label>
+        <button type="button" onclick="saveConsigne()">💾 Enregistrer</button>
       </form>
-      <h3>Historique des consignes</h3>
-      <div id="consigneHistorique"></div>
+      <h3>Historique Consignes</h3>
+      <table id="consignesTable">
+        <thead><tr><th>Date</th><th>Texte</th><th>État</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </section>
 
-    <!-- PAGE PERSONNEL -->
+    <!-- Personnel -->
     <section id="personnel" class="page">
       <h2>Personnel</h2>
-      <form id="formPersonnel" onsubmit="savePersonnel(event)">
-        <label>Nom :</label>
-        <input type="text" id="persoNom" placeholder="Nom de la personne" />
-        <label>Motif :</label>
-        <input type="text" id="persoMotif" placeholder="Motif : absence, retard, etc." />
-        <label>Commentaire :</label>
-        <input type="text" id="persoCommentaire" placeholder="Commentaire additionnel" />
-        <button type="submit">💾 Enregistrer</button>
-      </form>
-      <div id="personnelHistorique"></div>
+      <p>Suivi du personnel à venir.</p>
     </section>
   </main>
 
-  <!-- CALCULATRICE FLOTTANTE -->
-  <div id="calculator" class="draggable hidden" onmousedown="startDrag(event)">
-    <input id="calcDisplay" readonly />
+  <!-- Calculatrice flottante -->
+  <button id="floatCalcBtn" title="Ouvrir la calculatrice">🧮</button>
+  <div id="calculator" class="hidden">
+    <input type="text" id="calcDisplay" readonly>
     <div id="calcButtons"></div>
-    <button class="closeCalc" onclick="toggleCalculator()">✖</button>
+    <button class="closeCalc" onclick="toggleCalc()">Fermer</button>
   </div>
 
-  <!-- BOUTON FLOTTANT -->
-  <button id="floatCalcBtn" onclick="toggleCalculator()">🧮</button>
-
   <script src="app.js"></script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js").then(() => {
-        console.log("✅ Service Worker actif");
-      });
-    }
-  </script>
 </body>
 </html>
