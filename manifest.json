@@ -3,8 +3,9 @@
   "short_name": "PPNC",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f5faff",
-  "theme_color": "#0090ff",
+  "background_color": "#eaf2fb",
+  "theme_color": "#1a68c7",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icons/icon-192.png",
