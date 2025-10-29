@@ -1,5 +1,6 @@
-const CACHE_NAME = "atelier-ppnc-v1.0";
-const urlsToCache = [
+const CACHE_NAME = "atelier-ppnc-v1";
+const FILES_TO_CACHE = [
+  "./",
   "./index.html",
   "./style.css",
   "./app.js",
@@ -9,31 +10,35 @@ const urlsToCache = [
 ];
 
 // Installation du service worker
-self.addEventListener("install", event => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(FILES_TO_CACHE);
     })
   );
+  self.skipWaiting();
 });
 
-// Activation + nettoyage des anciens caches
-self.addEventListener("activate", event => {
+// Activation : suppression des anciens caches
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((keyList) => {
       return Promise.all(
-        cacheNames
-          .filter(name => name !== CACHE_NAME)
-          .map(name => caches.delete(name))
+        keyList.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
       );
     })
   );
+  self.clients.claim();
 });
 
-// Interception des requêtes
-self.addEventListener("fetch", event => {
+// Interception des requêtes réseau
+self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then(response => {
+    caches.match(event.request).then((response) => {
       return response || fetch(event.request);
     })
   );
