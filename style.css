@@ -1,221 +1,236 @@
 /* === STYLE GLOBAL === */
-* {
-  box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, sans-serif;
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f5f9ff;
   margin: 0;
   padding: 0;
-}
-
-body {
-  background: #f4f9ff;
   color: #003366;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 header {
-  background-color: #007bff;
+  background: #007bff;
   color: white;
-  width: 100%;
-  padding: 12px 0;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  padding: 10px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-header h1 {
-  font-size: 1.6em;
+h1 {
+  margin: 0;
+  font-size: 1.8em;
   letter-spacing: 1px;
 }
 
-#datetime {
+#infos {
   font-size: 0.9em;
   opacity: 0.9;
 }
 
-/* === MENU PRINCIPAL === */
+/* === MENU DE NAVIGATION === */
 nav.menu {
   display: flex;
+  justify-content: space-around;
+  background: #eaf2ff;
+  border-bottom: 2px solid #007bff;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 5px;
-  margin: 10px 0 15px 0;
 }
 
 nav.menu button {
-  background: #e0f0ff;
-  border: 1px solid #007bff;
+  background: #007bff;
+  color: white;
+  border: none;
   border-radius: 6px;
-  color: #003366;
-  padding: 6px 10px;
+  padding: 10px 15px;
+  margin: 5px;
   cursor: pointer;
-  font-weight: 500;
-  transition: 0.3s;
+  font-size: 1em;
+  transition: background 0.2s;
 }
 
 nav.menu button:hover {
-  background: #007bff;
-  color: #fff;
-  transform: scale(1.03);
+  background: #005bb5;
 }
 
+/* === PAGES === */
 .page {
   display: none;
-  width: 95%;
-  max-width: 900px;
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-  animation: fadeIn 0.3s ease;
+  padding: 20px;
 }
 
 .page.active {
   display: block;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* === FORMULAIRES DE LIGNES === */
-.ligne-form {
+/* === LIGNES === */
+.lignes {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
-.ligne-form label {
-  font-weight: bold;
-}
-
-.ligne-form input, .ligne-form select {
-  padding: 8px;
-  border: 1px solid #b0d4ff;
-  border-radius: 6px;
-}
-
-.ligne-form button {
-  background-color: #007bff;
+.ligneBtn {
+  background: #0069d9;
   color: white;
-  padding: 8px;
   border: none;
-  border-radius: 6px;
-  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin: 5px;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: bold;
+  transition: 0.2s;
 }
 
-.ligne-form button:hover {
-  background-color: #0056b3;
+.ligneBtn:hover {
+  background: #004b9e;
 }
 
-/* === SECTIONS === */
-.resultats {
-  background-color: #eaf4ff;
+/* === FORMULAIRES === */
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+input, select, textarea {
+  width: 95%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccddee;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #005bb5;
+}
+
+/* === HISTORIQUES === */
+#historiqueLigne, #historiqueGlobal {
+  background: white;
+  border-radius: 10px;
   padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  text-align: center;
+  margin-top: 15px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
-.historique {
-  background-color: #f8fbff;
-  border: 1px solid #d0e7ff;
-  padding: 10px;
-  border-radius: 8px;
-  max-height: 250px;
-  overflow-y: auto;
+#historiqueLigne div, #historiqueGlobal div {
+  border-bottom: 1px solid #eee;
+  padding: 4px 0;
   font-size: 0.9em;
 }
 
-/* === ORGANISATION / CONSIGNES === */
-#listeConsignes {
-  list-style: none;
-  margin-top: 10px;
+/* === CALCULATRICE FLOTTANTE === */
+.floating {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 1000;
+  transition: transform 0.2s;
 }
 
-#listeConsignes li {
-  background-color: #e9f5ff;
-  margin: 5px 0;
-  padding: 6px;
-  border-radius: 6px;
+.floating:hover {
+  transform: scale(1.1);
+}
+
+#calcWrapper {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  padding: 15px;
+  z-index: 999;
+  width: 240px;
+}
+
+#calcWrapper.hidden {
+  display: none;
+}
+
+#calc {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
 }
 
-#listeConsignes li.done {
-  text-decoration: line-through;
-  color: #888;
+#calcDisplay {
+  width: 200px;
+  margin-bottom: 10px;
+  padding: 5px;
+  text-align: right;
+  font-size: 1.1em;
+}
+
+#calcButtons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+#calcButtons button {
+  padding: 10px;
+  font-size: 1.1em;
+  border-radius: 6px;
 }
 
 /* === GRAPHIQUES === */
 canvas {
-  background: #ffffff;
-  border: 1px solid #b0d4ff;
-  border-radius: 10px;
-  margin: 10px 0;
-  max-width: 100%;
-}
-
-/* === CALCULATRICE FLOTTANTE === */
-#calculator {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: #ffffff;
-  border: 2px solid #007bff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  display: none;
-  flex-direction: column;
-  width: 240px;
-  z-index: 999;
-}
-
-#calculator.active {
-  display: flex;
-}
-
-.calc-display {
-  background: #eaf4ff;
-  padding: 10px;
-  font-size: 1.4em;
-  text-align: right;
-  border-bottom: 1px solid #007bff;
-}
-
-.calc-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-  padding: 10px;
-}
-
-.calc-buttons button {
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px;
-  font-size: 1em;
-  cursor: pointer;
-}
-
-.calc-buttons button:hover {
-  background: #0056b3;
+  width: 100% !important;
+  max-width: 800px;
+  height: 300px !important;
+  margin: 20px auto;
+  display: block;
 }
 
 /* === RESPONSIVE === */
-@media (max-width: 768px) {
-  header h1 { font-size: 1.3em; }
-  nav.menu button { font-size: 0.8em; padding: 5px 8px; }
+@media (max-width: 600px) {
+  nav.menu {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  nav.menu button {
+    width: 90%;
+    margin: 5px 0;
+  }
+
+  .floating {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  #calcWrapper {
+    right: 10px;
+    bottom: 80px;
+  }
 }
