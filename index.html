@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atelier PPNC</title>
-
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.0/build/global/luxon.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.0/dist/chartjs-adapter-luxon.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <script>
@@ -23,9 +20,11 @@
 
 <body>
   <header>
-    <img src="icons/logo-lactalis.png" alt="Logo Lactalis" class="logo" />
-    <div class="header-text">
+    <div class="header-left">
+      <img src="icons/logo-lactalis.png" alt="Logo" class="logo">
       <h1>Atelier PPNC</h1>
+    </div>
+    <div class="header-right">
       <p id="dateTimeDisplay"></p>
     </div>
   </header>
@@ -41,58 +40,90 @@
 
   <!-- ===== PAGE ATELIER ===== -->
   <section id="atelier" class="page active">
-    <h2>Vue d'ensemble de l'atelier</h2>
+    <h2>Vue d’ensemble de l’atelier</h2>
     <canvas id="atelierChart"></canvas>
-    <div id="historiqueAtelier" class="historique"></div>
+    <div id="historiqueAtelier"></div>
   </section>
 
   <!-- ===== PAGE PRODUCTION ===== -->
   <section id="production" class="page">
-    <h2 id="ligneTitle">Ligne</h2>
+    <h2>Production par ligne</h2>
+    <div class="lignes-buttons">
+      <button onclick="selectLigne('Râpé')">Râpé</button>
+      <button onclick="selectLigne('T2')">T2</button>
+      <button onclick="selectLigne('RT')">RT</button>
+      <button onclick="selectLigne('OMORI T1')">OMORI T1</button>
+      <button onclick="selectLigne('Sticks')">Sticks</button>
+      <button onclick="selectLigne('Emballage')">Emballage</button>
+      <button onclick="selectLigne('Dés')">Dés</button>
+      <button onclick="selectLigne('Filets')">Filets</button>
+      <button onclick="selectLigne('Prédécoupés')">Prédécoupés</button>
+    </div>
+
+    <h3 id="ligneTitle">Sélectionnez une ligne</h3>
+
     <form id="productionForm">
       <label>Heure début :</label>
-      <input type="time" id="heureDebut" required />
+      <input type="time" id="heureDebut" required>
+
       <label>Heure fin :</label>
-      <input type="time" id="heureFin" />
+      <input type="time" id="heureFin" required>
+
       <label>Quantité produite :</label>
-      <input type="number" id="quantiteProduite" placeholder="colis..." />
+      <input type="number" id="quantiteProduite" placeholder="colis...">
+
       <label>Quantité restante :</label>
-      <input type="number" id="quantiteRestante" placeholder="colis..." />
+      <input type="number" id="quantiteRestante" placeholder="colis...">
+
       <label>Cadence manuelle (colis/h) :</label>
-      <input type="number" id="cadenceManuelle" placeholder="cadence..." />
-      <div class="fin-estimee">
-        <b>Fin estimée :</b> <span id="finEstimee">--</span>
-      </div>
+      <input type="number" id="cadenceManuelle" placeholder="cadence...">
+
+      <p><strong>Temps restant estimé :</strong> <span id="finEstimee">--</span></p>
+
       <div class="form-buttons">
         <button type="submit" class="btn-save">💾 Enregistrer</button>
-        <button type="button" onclick="resetForm()" class="btn-reset">♻️ Remise à zéro</button>
+        <button type="button" class="btn-reset" onclick="resetForm()">♻️ Remise à zéro</button>
       </div>
     </form>
-    <div id="historiqueProduction" class="historique"></div>
+
+    <div id="historiqueProduction"></div>
   </section>
 
   <!-- ===== PAGE ARRETS ===== -->
   <section id="arrets" class="page">
-    <h2>Arrêts de production</h2>
+    <h2>Arrêts</h2>
     <form id="arretForm">
       <label>Ligne :</label>
-      <select name="ligneArret" required>
+      <select id="ligneArret">
         <option value="">Sélectionner</option>
-        <option>Râpé</option><option>T2</option><option>RT</option><option>OMORI T1</option>
-        <option>Sticks</option><option>Emballage</option><option>Dés</option>
-        <option>Filets</option><option>Prédécoupés</option>
+        <option>Râpé</option>
+        <option>T2</option>
+        <option>RT</option>
+        <option>OMORI T1</option>
+        <option>Sticks</option>
+        <option>Emballage</option>
+        <option>Dés</option>
+        <option>Filets</option>
+        <option>Prédécoupés</option>
       </select>
-      <label>Type d'arrêt :</label>
-      <select name="typeArret" required>
-        <option>Découpe</option><option>Packing</option><option>MEC</option>
+
+      <label>Type d’arrêt :</label>
+      <select id="typeArret">
+        <option>Découpe</option>
+        <option>Packing</option>
+        <option>MEC</option>
       </select>
+
       <label>Durée (min) :</label>
-      <input type="number" name="dureeArret" required />
+      <input type="number" id="dureeArret">
+
       <label>Commentaire :</label>
-      <input type="text" name="commentaireArret" />
+      <input type="text" id="commentaireArret">
+
       <button type="submit">Enregistrer</button>
     </form>
-    <div id="historiqueArrets" class="historique"></div>
+
+    <div id="historiqueArrets"></div>
   </section>
 
   <!-- ===== PAGE ORGANISATION ===== -->
@@ -100,13 +131,14 @@
     <h2>Consignes / Organisation</h2>
     <form id="consigneForm">
       <label>Nouvelle consigne :</label>
-      <textarea name="texteConsigne" required></textarea>
-      <div class="consigne-validation">
-        <input type="checkbox" id="valideConsigne" /> <label for="valideConsigne">Validée</label>
+      <textarea id="texteConsigne" required></textarea>
+      <div class="validation-consigne">
+        <input type="checkbox" id="valideConsigne"> <label for="valideConsigne">Validée</label>
       </div>
       <button type="submit">Ajouter</button>
     </form>
-    <div id="historiqueConsignes" class="historique"></div>
+
+    <div id="historiqueConsignes"></div>
   </section>
 
   <!-- ===== PAGE PERSONNEL ===== -->
@@ -114,14 +146,18 @@
     <h2>Personnel</h2>
     <form id="personnelForm">
       <label>Nom :</label>
-      <input type="text" name="nomPersonnel" required />
+      <input type="text" id="nomPersonnel" required>
+
       <label>Motif :</label>
-      <input type="text" name="motifPersonnel" required />
+      <input type="text" id="motifPersonnel" required>
+
       <label>Commentaire :</label>
-      <input type="text" name="commentairePersonnel" />
+      <input type="text" id="commentairePersonnel">
+
       <button type="submit">Enregistrer</button>
     </form>
-    <div id="historiquePersonnel" class="historique"></div>
+
+    <div id="historiquePersonnel"></div>
   </section>
 
   <!-- ===== CALCULATRICE ===== -->
@@ -131,7 +167,10 @@
     <div id="calcButtons"></div>
   </div>
 
-  <footer><p>© Atelier PPNC - Application interne</p></footer>
+  <footer>
+    <p>© Atelier PPNC - Application interne Lactalis</p>
+  </footer>
+
   <script src="app.js"></script>
 </body>
-</html>
+  </html>
