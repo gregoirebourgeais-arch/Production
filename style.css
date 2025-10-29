@@ -1,305 +1,256 @@
-/* === STYLE MARBRE FINAL === */
-
-/* ---------------------- */
-/* Global                 */
-/* ---------------------- */
+/* --- Style global --- */
 body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(180deg, #e8f0ff 0%, #cddfff 100%);
+  color: #003366;
   margin: 0;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background-color: #f5f8fc;
-  color: #002b5c;
+  padding: 0;
   text-align: center;
 }
 
-h1, h2, h3 {
-  margin: 10px 0;
-  color: #002b5c;
-}
-
-p {
-  margin: 4px 0;
-}
-
-/* ---------------------- */
-/* Header                 */
-/* ---------------------- */
-.app-header {
-  background: linear-gradient(90deg, #007bff, #2b8fff);
-  color: white;
-  padding: 10px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.logo {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
-
-.header-text h1 {
-  margin: 0;
-  font-size: 1.6em;
-}
-
-.header-text p {
-  margin: 2px 0;
-  font-size: 0.9em;
-}
-
-/* ---------------------- */
-/* Navigation menu        */
-/* ---------------------- */
-.menu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin: 15px 0;
-}
-
-.menu button {
+header {
   background-color: #007bff;
   color: white;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.8em;
+  letter-spacing: 1px;
+}
+
+#dateTimeDisplay {
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: #e2eaff;
+}
+
+/* --- Navigation --- */
+.top-nav {
+  background-color: #0056b3;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 8px;
+  gap: 6px;
+}
+
+.top-nav button {
+  background-color: white;
+  color: #0056b3;
   border: none;
-  border-radius: 50px;
-  padding: 12px 25px;
-  font-size: 1em;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  width: 80%;
-  max-width: 300px;
-  transition: 0.2s ease;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.2s ease-in-out;
 }
 
-.menu button:hover {
-  background-color: #005dc1;
-  transform: scale(1.03);
+.top-nav button:hover {
+  background-color: #007bff;
+  color: white;
 }
 
-/* ---------------------- */
-/* Pages structure        */
-/* ---------------------- */
+/* --- Pages --- */
 .page {
   display: none;
   padding: 15px;
+  animation: fadeIn 0.4s ease;
 }
 
 .page.active {
   display: block;
 }
 
-label {
-  display: block;
-  font-weight: 600;
-  margin: 10px 0 4px;
-  text-align: left;
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
 }
 
-input, textarea, select {
-  width: 95%;
-  padding: 8px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1em;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-button {
-  cursor: pointer;
-}
-
-/* ---------------------- */
-/* Sections spécifiques   */
-/* ---------------------- */
-.select-ligne {
+/* --- Formulaires --- */
+form {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 15px;
-}
-
-.select-ligne button {
-  background-color: #2b8fff;
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  font-weight: 600;
-  transition: 0.2s ease;
-}
-
-.select-ligne button:hover {
-  background-color: #005dc1;
-}
-
-.form-ligne {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.form-ligne p {
-  font-weight: 600;
-  color: #003366;
-}
-
-.buttons {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 10px;
-}
-
-.buttons button {
-  flex: 1;
-  margin: 5px;
-  background-color: #007bff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px;
-  color: white;
-  font-size: 1em;
-  transition: 0.2s ease;
-}
-
-.buttons button:hover {
-  background-color: #005dc1;
-}
-
-/* ---------------------- */
-/* Historique             */
-/* ---------------------- */
-.historiques {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  margin-top: 15px;
-  text-align: left;
-}
-
-.historiques h3 {
-  border-bottom: 2px solid #007bff;
-  padding-bottom: 5px;
-}
-
-.historiques ul {
-  list-style: none;
-  padding: 0;
-  font-size: 0.9em;
-}
-
-.historiques li {
-  background: #eef5ff;
-  border-left: 4px solid #007bff;
-  padding: 5px 10px;
-  margin: 4px 0;
-  border-radius: 5px;
-}
-
-/* ---------------------- */
-/* Graphique              */
-/* ---------------------- */
-#atelierChart {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* ---------------------- */
-/* Calculatrice flottante  */
-/* ---------------------- */
-.calc-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 50%;
-  width: 55px;
-  height: 55px;
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: 1.8em;
-  cursor: grab;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.calculatrice {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  background: white;
+  gap: 8px;
+  background: #ffffffb3;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  padding: 10px;
-  display: none;
+  padding: 15px;
+  margin: 15px auto;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.calculatrice input {
+form input, form select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   width: 100%;
-  text-align: right;
-  font-size: 1.2em;
-  margin-bottom: 8px;
-}
-
-.calc-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-
-.calc-grid button {
-  padding: 10px;
   font-size: 1em;
-  border-radius: 8px;
+}
+
+form button {
+  background-color: #007bff;
+  color: white;
   border: none;
-  background-color: #f1f4f9;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
   transition: 0.2s;
 }
 
-.calc-grid button:hover {
-  background-color: #d8e8ff;
+form button:hover {
+  background-color: #0056b3;
 }
 
-.calc-grid .clear {
-  grid-column: span 4;
-  background-color: #ff6666;
+/* --- Résultats et Historique --- */
+#resultatsCalculs {
+  font-weight: bold;
+  color: #004080;
+  margin: 10px 0;
+}
+
+#historiqueProduction,
+#historiqueArrets,
+#historiqueConsignes,
+#historiquePersonnel,
+#historiqueAtelier {
+  background-color: #f7f9ff;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 10px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+  text-align: left;
+  font-size: 0.95em;
+}
+
+/* --- Boutons principaux --- */
+button {
+  font-family: inherit;
+  font-weight: 600;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* --- Boutons de lignes --- */
+.ligne-buttons {
+  margin-top: 20px;
+}
+
+.ligne-buttons h3 {
+  margin-bottom: 8px;
+}
+
+#ligneContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  padding: 5px;
+}
+
+#ligneContainer button {
+  background-color: white;
+  color: #007bff;
+  border: 2px solid #007bff;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#ligneContainer button:hover {
+  background-color: #007bff;
   color: white;
 }
 
-footer {
-  text-align: center;
-  padding: 15px;
-  font-size: 0.85em;
-  color: #555;
+/* --- Calculatrice flottante --- */
+.floating {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  z-index: 999;
 }
 
-/* ---------------------- */
-/* Responsive             */
-/* ---------------------- */
-@media (min-width: 700px) {
-  .menu {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+#calcToggle {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 1.2em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
 
-  .menu button {
-    width: auto;
-    min-width: 150px;
+#calcPanel {
+  background-color: white;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+#calcButtons {
+  display: grid;
+  grid-template-columns: repeat(4, 45px);
+  gap: 5px;
+}
+
+#calcButtons button {
+  background-color: #f0f4ff;
+  border: 1px solid #007bff;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1em;
+  color: #003366;
+  padding: 8px;
+  cursor: pointer;
+}
+
+#calcButtons button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+#calcDisplay {
+  margin-bottom: 8px;
+  width: 180px;
+  text-align: right;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 5px;
+  font-size: 1em;
+}
+
+/* --- Graphiques --- */
+canvas {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin: 10px auto;
+  max-width: 95%;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .top-nav button {
+    padding: 8px 10px;
+    font-size: 0.9em;
   }
+  h1 { font-size: 1.4em; }
+  form { width: 95%; }
 }
