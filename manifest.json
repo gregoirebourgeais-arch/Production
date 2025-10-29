@@ -1,13 +1,10 @@
 {
   "name": "Atelier PPNC",
   "short_name": "PPNC",
-  "description": "Application de suivi de production Atelier PPNC",
-  "lang": "fr-FR",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#e8f0ff",
-  "theme_color": "#007bff",
-  "orientation": "portrait-primary",
+  "background_color": "#f5faff",
+  "theme_color": "#0090ff",
   "icons": [
     {
       "src": "icons/icon-192.png",
