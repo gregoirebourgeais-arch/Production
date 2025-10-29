@@ -1,240 +1,305 @@
-/* ---------- Style général ---------- */
+/* === STYLE MARBRE FINAL === */
+
+/* ---------------------- */
+/* Global                 */
+/* ---------------------- */
 body {
   margin: 0;
-  font-family: "Segoe UI", Tahoma, sans-serif;
-  background-color: #f4f8fc;
-  color: #003366;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background-color: #f5f8fc;
+  color: #002b5c;
+  text-align: center;
 }
 
-h1, h2, h3, h4 {
-  text-align: center;
-  color: #004a99;
+h1, h2, h3 {
   margin: 10px 0;
+  color: #002b5c;
 }
 
 p {
   margin: 4px 0;
 }
 
-/* ---------- En-tête ---------- */
+/* ---------------------- */
+/* Header                 */
+/* ---------------------- */
 .app-header {
+  background: linear-gradient(90deg, #007bff, #2b8fff);
+  color: white;
+  padding: 10px 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e6f0ff;
-  width: 100%;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .logo {
-  height: 50px;
-  margin-right: 10px;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
-/* ---------- Navigation ---------- */
+.header-text h1 {
+  margin: 0;
+  font-size: 1.6em;
+}
+
+.header-text p {
+  margin: 2px 0;
+  font-size: 0.9em;
+}
+
+/* ---------------------- */
+/* Navigation menu        */
+/* ---------------------- */
 .menu {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  background: #007bff;
-  padding: 10px;
-  width: 100%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
 }
 
-.btn-menu {
-  background: white;
-  color: #007bff;
+.menu button {
+  background-color: #007bff;
+  color: white;
   border: none;
-  border-radius: 30px;
-  padding: 8px 15px;
-  margin: 5px;
-  font-size: 15px;
-  font-weight: 600;
+  border-radius: 50px;
+  padding: 12px 25px;
+  font-size: 1em;
   cursor: pointer;
-  transition: 0.2s;
+  width: 80%;
+  max-width: 300px;
+  transition: 0.2s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
-.btn-menu:hover {
-  background: #007bff;
-  color: white;
+.menu button:hover {
+  background-color: #005dc1;
+  transform: scale(1.03);
 }
 
-.btn-menu.export {
-  background: #004a99;
-  color: white;
-}
-
-.btn-menu.export:hover {
-  background: #002f66;
-}
-
-/* ---------- Pages ---------- */
+/* ---------------------- */
+/* Pages structure        */
+/* ---------------------- */
 .page {
   display: none;
-  width: 95%;
-  max-width: 1000px;
-  background: white;
-  padding: 20px;
-  margin: 20px 0;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 15px;
 }
 
 .page.active {
   display: block;
 }
 
-/* ---------- Formulaires ---------- */
 label {
   display: block;
-  margin-top: 10px;
-  font-weight: bold;
+  font-weight: 600;
+  margin: 10px 0 4px;
+  text-align: left;
 }
 
-input, select, textarea {
-  width: 100%;
+input, textarea, select {
+  width: 95%;
   padding: 8px;
-  border: 1px solid #b3d1ff;
+  margin-bottom: 8px;
   border-radius: 8px;
-  box-sizing: border-box;
-  margin-top: 4px;
+  border: 1px solid #ccc;
+  font-size: 1em;
 }
 
 textarea {
+  resize: vertical;
   min-height: 60px;
 }
 
 button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 20px;
-  font-weight: 600;
   cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.2s;
 }
 
-button:hover {
-  background-color: #005fcc;
-}
-
-/* ---------- Sélecteur de ligne ---------- */
-.ligne-selector {
+/* ---------------------- */
+/* Sections spécifiques   */
+/* ---------------------- */
+.select-ligne {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 10px 0 20px;
+  gap: 8px;
+  margin-bottom: 15px;
 }
 
-.ligne-selector button {
-  margin: 6px;
-  background: #eaf2ff;
-  color: #003366;
-  border: 1px solid #99c2ff;
-  border-radius: 30px;
-  padding: 8px 15px;
-}
-
-.ligne-selector button:hover {
-  background: #007bff;
+.select-ligne button {
+  background-color: #2b8fff;
   color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: 0.2s ease;
 }
 
-/* ---------- Historique ---------- */
-ul {
-  list-style-type: none;
-  padding: 0;
+.select-ligne button:hover {
+  background-color: #005dc1;
 }
 
-ul li {
-  background: #e6f0ff;
-  margin: 5px 0;
-  padding: 8px 10px;
-  border-radius: 10px;
-  font-size: 14px;
-}
-
-/* ---------- Calculatrice ---------- */
-#calculator {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 240px;
+.form-ligne {
   background: white;
   border-radius: 15px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form-ligne p {
+  font-weight: 600;
+  color: #003366;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.buttons button {
+  flex: 1;
+  margin: 5px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 10px;
   padding: 10px;
-  display: none;
+  color: white;
+  font-size: 1em;
+  transition: 0.2s ease;
 }
 
-#calculator.show {
-  display: block;
+.buttons button:hover {
+  background-color: #005dc1;
 }
 
-#calcToggle {
+/* ---------------------- */
+/* Historique             */
+/* ---------------------- */
+.historiques {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-top: 15px;
+  text-align: left;
+}
+
+.historiques h3 {
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+}
+
+.historiques ul {
+  list-style: none;
+  padding: 0;
+  font-size: 0.9em;
+}
+
+.historiques li {
+  background: #eef5ff;
+  border-left: 4px solid #007bff;
+  padding: 5px 10px;
+  margin: 4px 0;
+  border-radius: 5px;
+}
+
+/* ---------------------- */
+/* Graphique              */
+/* ---------------------- */
+#atelierChart {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ---------------------- */
+/* Calculatrice flottante  */
+/* ---------------------- */
+.calc-button {
   position: fixed;
   bottom: 20px;
   right: 20px;
   background-color: #007bff;
   color: white;
-  border: none;
   border-radius: 50%;
   width: 55px;
   height: 55px;
-  font-size: 22px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8em;
+  cursor: grab;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.calculator button {
-  width: 50px;
-  height: 50px;
-  margin: 4px;
-  font-size: 16px;
-  border-radius: 10px;
-  background-color: #e6f0ff;
-  border: 1px solid #99c2ff;
+.calculatrice {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  padding: 10px;
+  display: none;
 }
 
-.calculator button:hover {
-  background-color: #007bff;
+.calculatrice input {
+  width: 100%;
+  text-align: right;
+  font-size: 1.2em;
+  margin-bottom: 8px;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.calc-grid button {
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 8px;
+  border: none;
+  background-color: #f1f4f9;
+  transition: 0.2s;
+}
+
+.calc-grid button:hover {
+  background-color: #d8e8ff;
+}
+
+.calc-grid .clear {
+  grid-column: span 4;
+  background-color: #ff6666;
   color: white;
 }
 
-/* ---------- Graphiques ---------- */
-canvas {
-  background: #f8fbff;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 20px;
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 0.85em;
+  color: #555;
 }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 600px) {
+/* ---------------------- */
+/* Responsive             */
+/* ---------------------- */
+@media (min-width: 700px) {
   .menu {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  .btn-menu {
-    width: 90%;
-    margin: 6px 0;
-  }
-
-  #calculator {
-    bottom: 80px;
-    right: 10px;
-  }
-
-  #calcToggle {
-    right: 10px;
-    bottom: 10px;
+  .menu button {
+    width: auto;
+    min-width: 150px;
   }
 }
