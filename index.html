@@ -1,88 +1,197 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Atelier PPNC</title>
+
+  <!-- Style principal -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
-  }
-</script>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Chart.js pour graphiques (courbes) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- XLSX pour export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Service worker registration (si PWA possible) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{ /* silent fail */ });
+    }
+  </script>
 </head>
 <body>
-  <header>
-    <h1>Atelier PPNC</h1>
-    <div id="dateDisplay"></div>
+  <header class="topbar">
+    <div class="top-left">
+      <img src="logo.png" alt="Logo" class="logo" onerror="this.style.display='none'"/>
+      <div class="app-title">Atelier PPNC</div>
+    </div>
+    <div class="meta" id="metaInfo">
+      <!-- date / heure / quantième / semaine / equipe — rempli par JS -->
+      <div id="metaLine">—</div>
+    </div>
   </header>
 
-  <nav class="menu">
-    <button onclick="showPage('atelier')">🏭 Atelier</button>
-    <button onclick="showPage('production')">📦 Production</button>
-    <button onclick="showPage('arrets')">⏸️ Arrêts</button>
-    <button onclick="showPage('organisation')">🗒️ Organisation</button>
-    <button onclick="showPage('personnel')">👥 Personnel</button>
+  <nav class="main-nav" id="mainNav">
+    <button class="nav-btn" data-page="atelier" onclick="openPage('atelier')">🏭 Atelier</button>
+    <button class="nav-btn" data-page="production" onclick="openPage('production')">📦 Production</button>
+    <button class="nav-btn" data-page="arrets" onclick="openPage('arrets')">⏸️ Arrêts</button>
+    <button class="nav-btn" data-page="organisation" onclick="openPage('organisation')">🗂️ Organisation</button>
+    <button class="nav-btn" data-page="personnel" onclick="openPage('personnel')">👥 Personnel</button>
+    <button class="nav-btn export" onclick="exportAll()">📊 Export Excel</button>
   </nav>
 
-  <main>
-    <!-- Atelier -->
+  <main id="main">
+    <!-- Atelier (page d'accueil) -->
     <section id="atelier" class="page">
-      <h2>Vue d'ensemble Atelier</h2>
-      <canvas id="atelierChart"></canvas>
+      <h1>Vue d'ensemble de l'atelier</h1>
 
-      <div id="historiqueAtelier"></div>
+      <div class="card">
+        <canvas id="atelierChart" height="220"></canvas>
+      </div>
+
+      <div class="card" id="atelierHistoryCard">
+        <h3>Historique global</h3>
+        <div id="globalHistoryList" class="history-list">Aucun enregistrement</div>
+      </div>
     </section>
 
-    <!-- Production -->
+    <!-- Production - formulaire par ligne -->
     <section id="production" class="page hidden">
-      <h2>Production par Ligne</h2>
-      <div class="ligne-buttons" id="ligneButtons"></div>
-      <div id="ligneContainer"></div>
+      <h1>Production</h1>
+
+      <div class="line-selection" id="lineButtons"></div>
+
+      <div class="card" id="productionFormCard">
+        <h2 id="productionLineTitle">Ligne</h2>
+
+        <label>Heure début :</label>
+        <input type="time" id="startTime" />
+
+        <label>Heure fin :</label>
+        <input type="time" id="endTime" />
+
+        <label>Quantité produite :</label>
+        <input type="number" id="qtyProduced" min="0" placeholder="Quantité..." />
+
+        <label>Quantité restante :</label>
+        <input type="number" id="qtyRemaining" min="0" placeholder="Restant... (facultatif)" />
+
+        <label>Cadence manuelle (colis/h) :</label>
+        <input type="number" id="manualCadence" min="0" placeholder="Saisir cadence..." />
+
+        <div class="infoRow">
+          <div>Cadence calculée : <span id="cadenceCalc">0</span> colis/h</div>
+          <div>Temps restant : <span id="timeRemaining">--:--</span></div>
+        </div>
+
+        <div class="form-actions">
+          <button class="primary" onclick="saveProduction()">💾 Enregistrer</button>
+          <button onclick="cancelProduction()">↩️ Annuler</button>
+          <button onclick="resetProduction()">♻️ Remise à zéro</button>
+        </div>
+
+        <div class="card small" id="productionHistoryCard">
+          <h3>Historique Production</h3>
+          <div id="productionHistoryList" class="history-list">Aucun enregistrement</div>
+        </div>
+      </div>
     </section>
 
     <!-- Arrêts -->
     <section id="arrets" class="page hidden">
-      <h2>Arrêts de Ligne</h2>
-      <form id="formArret">
-        <select id="ligneArret" required></select>
-        <select id="typeArret">
+      <h1>Arrêts</h1>
+      <div class="card">
+        <label>Ligne :</label>
+        <select id="arretLine"></select>
+        <label>Type :</label>
+        <select id="arretType">
           <option value="Découpe">Découpe</option>
           <option value="Packing">Packing</option>
           <option value="MEC">MEC</option>
         </select>
-        <input type="number" id="dureeArret" placeholder="Durée (min)" required />
-        <input type="text" id="commentaireArret" placeholder="Commentaire" />
-        <button type="submit">Enregistrer</button>
-      </form>
-      <div id="historiqueArrets"></div>
+        <label>Durée (min) :</label>
+        <input type="number" id="arretDuree" min="0" />
+        <label>Commentaire :</label>
+        <textarea id="arretComment" rows="3"></textarea>
+        <div class="form-actions">
+          <button class="primary" onclick="saveArret()">💾 Enregistrer arrêt</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Historique Arrêts</h3>
+        <div id="arretsHistoryList" class="history-list">Aucun arrêt</div>
+      </div>
     </section>
 
-    <!-- Organisation -->
+    <!-- Organisation / Consignes -->
     <section id="organisation" class="page hidden">
-      <h2>Consignes / Organisation</h2>
-      <form id="formOrganisation">
-        <input type="text" id="consigneTexte" placeholder="Nouvelle consigne..." required />
-        <button type="submit">Ajouter</button>
-      </form>
-      <div id="historiqueOrganisation"></div>
+      <h1>Organisation / Consignes</h1>
+      <div class="card">
+        <label>Nouvelle consigne :</label>
+        <textarea id="consigneText" rows="3" placeholder="Renseigner la consigne..."></textarea>
+        <label><input type="checkbox" id="consigneValide"/> Consigne réalisée</label>
+        <label>Pour la ligne :</label>
+        <select id="consigneLine"></select>
+        <div class="form-actions">
+          <button class="primary" onclick="saveConsigne()">💾 Enregistrer</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Historique Consignes</h3>
+        <div id="consignesHistoryList" class="history-list">Aucune consigne</div>
+      </div>
     </section>
 
     <!-- Personnel -->
     <section id="personnel" class="page hidden">
-      <h2>Suivi du Personnel</h2>
-      <form id="formPersonnel">
-        <input type="text" id="nomPersonnel" placeholder="Nom" required />
-        <input type="text" id="motifPersonnel" placeholder="Motif (absence, retard...)" required />
-        <input type="text" id="commentairePersonnel" placeholder="Commentaire" />
-        <button type="submit">Enregistrer</button>
-      </form>
-      <div id="historiquePersonnel"></div>
+      <h1>Personnel</h1>
+      <div class="card">
+        <label>Nom / Info :</label>
+        <input id="personnelText" placeholder="Ex: Chgmt équipe..." />
+        <label>Pour la ligne :</label>
+        <select id="personnelLine"></select>
+        <div class="form-actions">
+          <button class="primary" onclick="savePersonnel()">💾 Enregistrer</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Historique Personnel</h3>
+        <div id="personnelHistoryList" class="history-list">Aucun enregistrement</div>
+      </div>
     </section>
   </main>
 
+  <!-- Floating calculator icon -->
+  <button id="calcOpenBtn" class="fab" title="Calculatrice" aria-label="Calculatrice">🧮</button>
+
+  <!-- Calculator panel (hidden by default) -->
+  <div id="calculator" class="calculator hidden" role="dialog" aria-hidden="true">
+    <div class="calc-header">
+      <span>Calculatrice</span>
+      <button onclick="closeCalculator()">✖</button>
+    </div>
+    <input id="calcDisplay" readonly />
+    <div class="calc-grid">
+      <button onclick="calcPress('7')">7</button><button onclick="calcPress('8')">8</button><button onclick="calcPress('9')">9</button><button onclick="calcPress('/')">/</button>
+      <button onclick="calcPress('4')">4</button><button onclick="calcPress('5')">5</button><button onclick="calcPress('6')">6</button><button onclick="calcPress('*')">*</button>
+      <button onclick="calcPress('1')">1</button><button onclick="calcPress('2')">2</button><button onclick="calcPress('3')">3</button><button onclick="calcPress('-')">-</button>
+      <button onclick="calcPress('0')">0</button><button onclick="calcPress('.')">.</button><button onclick="calcCalc()">=</button><button onclick="calcPress('+')">+</button>
+    </div>
+    <div class="calc-actions">
+      <button onclick="calcClear()">C</button>
+      <button onclick="insertCalcResult()">Insérer</button>
+    </div>
+  </div>
+
+  <!-- app.js (fonctionnalité) -->
   <script src="app.js"></script>
 </body>
 </html>
