@@ -31,6 +31,28 @@ function openPage(id) {
   document.getElementById(id).classList.add("active");
   window.scrollTo(0, 0);
 }
+// === NAVIGATION ENTRE LES PAGES (corrigée) ===
+function openPage(id) {
+  document.querySelectorAll(".page").forEach(p => {
+    p.classList.remove("active");
+    p.style.display = "none";
+  });
+  const target = document.getElementById(id);
+  if (target) {
+    target.classList.add("active");
+    target.style.display = "block";
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+// Attache les événements aux boutons de navigation
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-target]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      openPage(btn.dataset.target);
+    });
+  });
+});
 
 // === CALCULATRICE ===
 function toggleCalc() {
