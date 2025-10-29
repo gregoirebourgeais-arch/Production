@@ -1,176 +1,255 @@
 // === INITIALISATION ===
 document.addEventListener("DOMContentLoaded", () => {
-  afficherDate();
-  loadHistoriqueGlobal();
-  initGraphique();
-  autoExportOnShiftChange();
-});
+  const pages = document.querySelectorAll(".page");
+  const buttons = document.querySelectorAll("nav.menu button");
 
-// === AFFICHAGE DATE, HEURE, SEMAINE, ÉQUIPE ===
-function afficherDate() {
-  const dateDisplay = document.getElementById("dateDisplay");
+  // Navigation entre pages
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.target;
+      pages.forEach(p => p.classList.remove("active"));
+      document.getElementById(target).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+
+  // Horloge, date, semaine
+  const datetime = document.getElementById("datetime");
   setInterval(() => {
     const now = new Date();
     const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-    const semaine = Math.ceil(((now - new Date(now.getFullYear(), 0, 1)) / 86400000 + now.getDay() + 1) / 7);
-    const quantieme = Math.ceil((now - new Date(now.getFullYear(), 0, 1)) / 86400000);
-    const equipe = getEquipe(now.getHours());
-    dateDisplay.textContent = `${now.toLocaleDateString("fr-FR", options)} — ${now.toLocaleTimeString("fr-FR", {hour: '2-digit', minute:'2-digit'})} — Sem. ${semaine} — Jour ${quantieme} — Équipe ${equipe}`;
+    const week = getWeekNumber(now);
+    const team = getTeam(now);
+    datetime.textContent = `${now.toLocaleDateString("fr-FR", options)} — S${week} — ${team} — ${now.toLocaleTimeString("fr-FR")}`;
   }, 1000);
-}
 
-function getEquipe(h) {
-  if (h >= 5 && h < 13) return "M";
-  if (h >= 13 && h < 21) return "AM";
-  return "N";
-}
-
-// === NAVIGATION ENTRE LES PAGES ===
-function openPage(id) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  window.scrollTo(0, 0);
-}
-// === NAVIGATION ENTRE LES PAGES (corrigée) ===
-function openPage(id) {
-  document.querySelectorAll(".page").forEach(p => {
-    p.classList.remove("active");
-    p.style.display = "none";
-  });
-  const target = document.getElementById(id);
-  if (target) {
-    target.classList.add("active");
-    target.style.display = "block";
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  function getWeekNumber(d) {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   }
-}
 
-// Attache les événements aux boutons de navigation
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("[data-target]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      openPage(btn.dataset.target);
+  function getTeam(now) {
+    const h = now.getHours();
+    if (h >= 5 && h < 13) return "Équipe M";
+    if (h >= 13 && h < 21) return "Équipe AM";
+    return "Équipe N";
+  }
+
+  // === GESTION DES FORMULAIRES DE LIGNES ===
+  const lignes = document.querySelectorAll(".ligne-form");
+  lignes.forEach(form => {
+    const section = form.closest("section");
+    const quantite = form.querySelector(".quantite");
+    const reste = form.querySelector(".reste");
+    const start = form.querySelector(".start-time");
+    const end = form.querySelector(".end-time");
+    const btnSave = form.querySelector(".enregistrer");
+    const histoDiv = section.querySelector(".historique");
+    const cadenceTxt = section.querySelector(".cadence");
+    const finTxt = section.querySelector(".fin");
+    const chartCanvas = section.querySelector(".ligneChart");
+
+    let historique = JSON.parse(localStorage.getItem(section.id + "_data")) || [];
+
+    function updateHistorique() {
+      histoDiv.innerHTML = "";
+      historique.forEach(entry => {
+        const div = document.createElement("div");
+        div.textContent = `Début: ${entry.debut} | Fin: ${entry.fin} | Qté: ${entry.qte} | Cadence: ${entry.cadence} | Fin estimée: ${entry.finEst}`;
+        histoDiv.appendChild(div);
+      });
+      localStorage.setItem(section.id + "_data", JSON.stringify(historique));
+    }
+
+    function calculerCadenceEtFin() {
+      const startTime = start.value;
+      const endTime = end.value;
+      const qte = parseFloat(quantite.value) || 0;
+      const resteQte = parseFloat(reste.value) || 0;
+      if (!startTime || !endTime || qte === 0) return;
+
+      const debut = new Date(`1970-01-01T${startTime}:00`);
+      const fin = new Date(`1970-01-01T${endTime}:00`);
+      let diffH = (fin - debut) / 3600000;
+      if (diffH <= 0) diffH += 24;
+      const cadence = (qte / diffH).toFixed(1);
+      cadenceTxt.textContent = cadence;
+
+      // Fin estimée
+      if (resteQte > 0) {
+        const heuresRestantes = (resteQte / cadence).toFixed(2);
+        const dateFin = new Date();
+        dateFin.setHours(dateFin.getHours() + parseFloat(heuresRestantes));
+        const finEstimee = dateFin.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+        finTxt.textContent = finEstimee;
+      }
+      return cadence;
+    }
+
+    reste.addEventListener("input", calculerCadenceEtFin);
+
+    btnSave.addEventListener("click", () => {
+      const cadence = calculerCadenceEtFin();
+      const data = {
+        debut: start.value,
+        fin: end.value,
+        qte: quantite.value,
+        reste: reste.value,
+        cadence: cadence,
+        finEst: finTxt.textContent,
+        date: new Date().toLocaleString("fr-FR")
+      };
+      historique.push(data);
+      updateHistorique();
+      quantite.value = "";
+      reste.value = "";
+      start.value = "";
+      end.value = "";
+      cadenceTxt.textContent = "0";
+      finTxt.textContent = "--:--";
+      drawChart();
     });
-  });
-});
 
-// === CALCULATRICE ===
-function toggleCalc() {
-  const calc = document.getElementById("calcContainer");
-  calc.classList.toggle("hidden");
-}
-function calcEval() {
-  try {
-    const input = document.getElementById("calcInput");
-    input.value = eval(input.value);
-  } catch {
-    alert("Expression invalide");
+    updateHistorique();
+
+    // === GRAPHIQUE DE LIGNE ===
+    function drawChart() {
+      if (!chartCanvas) return;
+      const labels = historique.map(e => e.date);
+      const data = historique.map(e => parseFloat(e.cadence) || 0);
+      new Chart(chartCanvas, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "Cadence",
+            data,
+            borderColor: "#007bff",
+            fill: false,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    drawChart();
+  });
+
+  // === CONSIGNES ===
+  const listeConsignes = document.getElementById("listeConsignes");
+  const ajouterConsigne = document.getElementById("ajouterConsigne");
+  const consigneTexte = document.getElementById("consigneTexte");
+
+  let consignes = JSON.parse(localStorage.getItem("consignes")) || [];
+  function renderConsignes() {
+    listeConsignes.innerHTML = "";
+    consignes.forEach((c, i) => {
+      const li = document.createElement("li");
+      li.textContent = c.text;
+      const btn = document.createElement("button");
+      btn.textContent = "✔";
+      btn.onclick = () => {
+        consignes[i].done = !consignes[i].done;
+        li.classList.toggle("done", consignes[i].done);
+        localStorage.setItem("consignes", JSON.stringify(consignes));
+      };
+      li.classList.toggle("done", c.done);
+      li.appendChild(btn);
+      listeConsignes.appendChild(li);
+    });
   }
-}
-
-// === PERSISTANCE ET CALCULS PAR LIGNE ===
-const lignes = ["Râpé", "T2", "RT", "T1", "Omori", "Sticks", "Emballage", "Dés", "Filets", "Prédécoupés"];
-let data = JSON.parse(localStorage.getItem("atelierPPNC")) || { production: [], arrets: [], organisation: [], personnel: [] };
-
-// Calcul du temps restant
-function calculTempsRestant(cadence, qRestante) {
-  if (!cadence || !qRestante) return "";
-  const tempsHeures = qRestante / cadence;
-  const minutes = Math.round(tempsHeures * 60);
-  return `${minutes} min restantes`;
-}
-
-// Sauvegarde d’un enregistrement
-function enregistrer(ligne, obj, type) {
-  data[type].push({ ligne, ...obj, date: new Date().toLocaleString(), equipe: getEquipe(new Date().getHours()) });
-  localStorage.setItem("atelierPPNC", JSON.stringify(data));
-  alert("Enregistrement réussi !");
-  loadHistoriqueGlobal();
-}
-
-// === HISTORIQUE GLOBAL (page Atelier) ===
-function loadHistoriqueGlobal() {
-  const div = document.getElementById("historiqueContent");
-  if (!div) return;
-  div.innerHTML = "";
-
-  ["production", "arrets", "organisation", "personnel"].forEach(cat => {
-    if (data[cat]?.length) {
-      const bloc = document.createElement("div");
-      bloc.innerHTML = `<h4>${cat.toUpperCase()}</h4>` + data[cat]
-        .map(r => `<p><b>${r.ligne || ""}</b> — ${r.date} — ${r.equipe || ""}<br>${Object.entries(r)
-        .filter(([k]) => !["ligne", "date", "equipe"].includes(k))
-        .map(([k,v]) => `${k}: ${v}`).join(" | ")}</p>`).join("");
-      div.appendChild(bloc);
+  ajouterConsigne.addEventListener("click", () => {
+    if (consigneTexte.value.trim() !== "") {
+      consignes.push({ text: consigneTexte.value, done: false });
+      localStorage.setItem("consignes", JSON.stringify(consignes));
+      consigneTexte.value = "";
+      renderConsignes();
     }
   });
-}
+  renderConsignes();
 
-// === GRAPHIQUE ATELIER ===
-let chart;
-function initGraphique() {
-  const ctx = document.getElementById("atelierChart");
-  if (!ctx) return;
-  const couleurs = [
-    "#1a68c7","#ff9800","#4caf50","#f44336","#9c27b0",
-    "#009688","#3f51b5","#e91e63","#00bcd4","#8bc34a"
-  ];
+  // === PERSONNEL ===
+  const personnelForm = document.getElementById("personnelForm");
+  const historiquePersonnel = document.getElementById("historiquePersonnel");
+  let personnelData = JSON.parse(localStorage.getItem("personnel")) || [];
 
-  const labels = Array.from({length: 10}, (_,i)=>`T${i+1}`);
-  const datasets = lignes.map((nom, i) => ({
-    label: nom,
-    data: labels.map(()=>Math.round(Math.random()*100)),
-    borderColor: couleurs[i],
-    tension: 0.3,
-    fill: false
-  }));
-
-  chart = new Chart(ctx, {
-    type: "line",
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      plugins: { legend: { position: "bottom" } },
-      scales: { y: { beginAtZero: true, title: { display: true, text: "Cadence" } } }
-    }
-  });
-}
-
-// === EXPORT EXCEL ===
-function exportExcel() {
-  const wb = XLSX.utils.book_new();
-  const all = [];
-
-  ["production", "arrets", "organisation", "personnel"].forEach(cat => {
-    if (data[cat].length) {
-      all.push({cat, items: data[cat]});
-    }
+  personnelForm.addEventListener("submit", e => e.preventDefault());
+  document.getElementById("ajouterPersonnel").addEventListener("click", () => {
+    const nom = document.getElementById("nomPersonnel").value;
+    const motif = document.getElementById("motifPersonnel").value;
+    const com = document.getElementById("commentairePersonnel").value;
+    if (!nom) return;
+    const entry = { nom, motif, com, date: new Date().toLocaleString("fr-FR") };
+    personnelData.push(entry);
+    localStorage.setItem("personnel", JSON.stringify(personnelData));
+    renderPersonnel();
+    personnelForm.reset();
   });
 
-  let rows = [];
-  all.forEach(a => {
-    rows.push([a.cat.toUpperCase()]);
-    rows.push(Object.keys(a.items[0]));
-    a.items.forEach(item => rows.push(Object.values(item)));
-    rows.push([]);
+  function renderPersonnel() {
+    historiquePersonnel.innerHTML = "";
+    personnelData.forEach(e => {
+      const div = document.createElement("div");
+      div.textContent = `${e.date} - ${e.nom} (${e.motif}) : ${e.com}`;
+      historiquePersonnel.appendChild(div);
+    });
+  }
+  renderPersonnel();
+
+  // === ARRÊTS ===
+  const arretsForm = document.getElementById("arretsForm");
+  const historiqueArrets = document.getElementById("historiqueArrets");
+  let arretsData = JSON.parse(localStorage.getItem("arrets")) || [];
+
+  document.getElementById("ajouterArret").addEventListener("click", () => {
+    const ligne = document.getElementById("ligneArret").value;
+    const type = document.getElementById("typeArret").value;
+    const duree = document.getElementById("tempsArret").value;
+    const com = document.getElementById("commentaireArret").value;
+    if (!ligne || !duree) return;
+    const entry = { ligne, type, duree, com, date: new Date().toLocaleString("fr-FR") };
+    arretsData.push(entry);
+    localStorage.setItem("arrets", JSON.stringify(arretsData));
+    renderArrets();
+    arretsForm.reset();
   });
 
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  XLSX.utils.book_append_sheet(wb, ws, "Atelier PPNC");
+  function renderArrets() {
+    historiqueArrets.innerHTML = "";
+    arretsData.forEach(a => {
+      const div = document.createElement("div");
+      div.textContent = `${a.date} - ${a.ligne} (${a.type}) : ${a.duree} min - ${a.com}`;
+      historiqueArrets.appendChild(div);
+    });
+  }
+  renderArrets();
 
-  const date = new Date();
-  const fileName = `Atelier_PPNC_${date.getHours()}h${date.getMinutes()}_${date.getSeconds()}.xlsx`;
-  XLSX.writeFile(wb, fileName);
-}
-
-// === EXPORT AUTOMATIQUE À LA FIN D’ÉQUIPE ===
-function autoExportOnShiftChange() {
-  setInterval(() => {
-    const now = new Date();
-    const heure = now.getHours();
-    const minute = now.getMinutes();
-    if ((heure === 5 || heure === 13 || heure === 21) && minute === 0) {
-      if (confirm("Fin d’équipe — exporter les données ?")) exportExcel();
-    }
-  }, 60000);
-         }
+  // === PAGE ATELIER ===
+  const atelierChart = document.getElementById("atelierChart");
+  if (atelierChart) {
+    const ctx = atelierChart.getContext("2d");
+    const lignes = ["Râpé", "T2"];
+    const datasets = lignes.map(nom => {
+      const data = JSON.parse(localStorage.getItem(nom + "_data")) || [];
+      return {
+        label: nom,
+        data: data.map(e => parseFloat(e.cadence) || 0),
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3
+      };
+    });
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: JSON.parse(localStorage.getItem("Râpé_data"))?.map(e => e.date) || [],
+        datasets
+      },
+      options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+    });
+  }
+});
