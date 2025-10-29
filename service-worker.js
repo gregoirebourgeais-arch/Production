@@ -1,36 +1,36 @@
-// === SERVICE WORKER Atelier PPNC ===
 const CACHE_NAME = "atelier-ppnc-v1";
-const URLS_TO_CACHE = [
-  "./",
+const FILES_TO_CACHE = [
   "./index.html",
   "./style.css",
   "./app.js",
   "./manifest.json",
-  "https://cdn.jsdelivr.net/npm/chart.js",
-  "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
-// Installation
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE))
+// Installation et mise en cache
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
   );
+  self.skipWaiting();
 });
 
-// Activation (nettoyage anciens caches)
-self.addEventListener("activate", event => {
-  event.waitUntil(
+// Activation et nettoyage ancien cache
+self.addEventListener("activate", e => {
+  e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(keys.map(k => {
+        if (k !== CACHE_NAME) return caches.delete(k);
+      }))
     )
   );
+  self.clients.claim();
 });
 
 // Interception des requêtes
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(response =>
-      response || fetch(event.request)
-    )
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(resp => resp || fetch(e.request))
   );
 });
