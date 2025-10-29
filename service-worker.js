@@ -1,42 +1,45 @@
-const CACHE_NAME = 'atelier-ppnc-cache-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './style.css',
-  './app.js',
-  './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  'https://cdn.jsdelivr.net/npm/chart.js',
-  'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+// === Service Worker Atelier PPNC ===
+
+const CACHE_NAME = "atelier-ppnc-cache-v1";
+const urlsToCache = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./manifest.json",
+  "https://cdn.jsdelivr.net/npm/chart.js",
+  "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
 ];
 
-// Installation du service worker et mise en cache
-self.addEventListener('install', event => {
+// Installation du SW
+self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS);
+      return cache.addAll(urlsToCache);
     })
   );
 });
 
-// Activation et nettoyage des anciens caches
-self.addEventListener('activate', event => {
+// Activation
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
-            .map(key => caches.delete(key))
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))
+    )
   );
 });
 
-// Interception des requêtes réseau
-self.addEventListener('fetch', event => {
+// Interception des requêtes
+self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    caches.match(event.request).then(response =>
+      response ||
+      fetch(event.request).catch(() =>
+        new Response("⚠️ Application hors ligne", {
+          status: 503,
+          headers: { "Content-Type": "text/plain" }
+        })
+      )
+    )
   );
 });
