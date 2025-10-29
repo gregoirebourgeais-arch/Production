@@ -228,28 +228,31 @@ document.addEventListener("DOMContentLoaded", () => {
     XLSX.writeFile(wb, `Atelier_PPNC_${new Date().toLocaleDateString("fr-FR")}.xlsx`);
   };
 
-  // --- Calculatrice flottante ---
-  const calcToggle = document.getElementById("calcToggle");
-  const calcPanel = document.getElementById("calcPanel");
-  const calcDisplay = document.getElementById("calcDisplay");
-  const calcButtons = document.getElementById("calcButtons");
-  const calcKeys = ["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+","C"];
-  let expression = "";
+// --- Calculatrice flottante ---
+const calcToggle = document.getElementById("calcToggle");
+const calcPanel = document.getElementById("calcPanel");
+const calcDisplay = document.getElementById("calcDisplay");
+const calcButtons = document.getElementById("calcButtons");
+const calcKeys = ["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+","C"];
+let expression = "";
 
-  calcKeys.forEach((k) => {
-    const b = document.createElement("button");
-    b.textContent = k;
-    b.onclick = () => {
-      if (k === "=") expression = eval(expression || 0).toString();
-      else if (k === "C") expression = "";
-      else expression += k;
-      calcDisplay.value = expression;
-    };
-    calcButtons.appendChild(b);
-  });
+calcPanel.classList.add("hidden"); // 🔹 Fermée par défaut
 
-  calcToggle.onclick = () => calcPanel.classList.toggle("hidden");
+calcKeys.forEach((k) => {
+  const b = document.createElement("button");
+  b.textContent = k;
+  b.onclick = () => {
+    if (k === "=") expression = eval(expression || 0).toString();
+    else if (k === "C") expression = "";
+    else expression += k;
+    calcDisplay.value = expression;
+  };
+  calcButtons.appendChild(b);
+});
 
+calcToggle.onclick = () => {
+  calcPanel.classList.toggle("hidden"); // 🔹 Ouvre ou ferme
+};
   // --- Initialisation ---
   majArrets();
   majConsignes();
