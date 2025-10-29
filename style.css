@@ -1,236 +1,227 @@
-/* === STYLE GLOBAL === */
+/* === Style global Atelier PPNC === */
+
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f5f9ff;
   margin: 0;
-  padding: 0;
-  color: #003366;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background-color: #f4f8fb;
+  color: #222;
 }
 
 header {
-  background: #007bff;
+  background-color: #0078d7;
   color: white;
   text-align: center;
-  padding: 10px 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 15px 10px;
+  font-size: 1.3em;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-h1 {
-  margin: 0;
-  font-size: 1.8em;
-  letter-spacing: 1px;
-}
-
-#infos {
+#dateDisplay {
   font-size: 0.9em;
-  opacity: 0.9;
+  margin-top: 5px;
+  color: #eef6ff;
 }
 
-/* === MENU DE NAVIGATION === */
+/* === Menu principal === */
 nav.menu {
   display: flex;
   justify-content: space-around;
-  background: #eaf2ff;
-  border-bottom: 2px solid #007bff;
+  background-color: #e6f1fb;
+  padding: 10px;
+  border-bottom: 2px solid #0078d7;
   flex-wrap: wrap;
 }
 
 nav.menu button {
-  background: #007bff;
+  background-color: #0078d7;
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 10px 15px;
+  padding: 10px 14px;
   margin: 5px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1em;
-  transition: background 0.2s;
+  transition: all 0.2s ease-in-out;
 }
 
 nav.menu button:hover {
-  background: #005bb5;
+  background-color: #005fa3;
+  transform: scale(1.05);
 }
 
-/* === PAGES === */
+/* === Contenu principal === */
+main {
+  padding: 15px;
+}
+
 .page {
   display: none;
-  padding: 20px;
+  animation: fadeIn 0.5s ease;
 }
 
 .page.active {
   display: block;
 }
 
-/* === LIGNES === */
-.lignes {
+.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* === Sections et formulaires === */
+form {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
 }
 
-.ligneBtn {
-  background: #0069d9;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  margin: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
-}
-
-.ligneBtn:hover {
-  background: #004b9e;
-}
-
-/* === FORMULAIRES === */
-label {
-  display: block;
-  margin-top: 10px;
-  font-weight: 600;
-}
-
-input, select, textarea {
-  width: 95%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccddee;
-  box-sizing: border-box;
+form input, form select, form button {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
   font-size: 1em;
 }
 
-textarea {
-  resize: vertical;
-}
-
-button {
-  background: #007bff;
+form button {
+  background-color: #0078d7;
   color: white;
+  font-weight: 600;
   border: none;
-  padding: 10px 20px;
-  margin-top: 10px;
-  border-radius: 6px;
-  font-weight: bold;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-button:hover {
-  background: #005bb5;
+form button:hover {
+  background-color: #005fa3;
 }
 
-/* === HISTORIQUES === */
-#historiqueLigne, #historiqueGlobal {
-  background: white;
-  border-radius: 10px;
+/* === Historique affiché === */
+#historiqueAtelier, 
+#historiqueArrets, 
+#historiqueOrganisation,
+#historiquePersonnel {
+  background-color: white;
   padding: 10px;
-  margin-top: 15px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-#historiqueLigne div, #historiqueGlobal div {
-  border-bottom: 1px solid #eee;
-  padding: 4px 0;
-  font-size: 0.9em;
+.histo-item {
+  border-bottom: 1px solid #ddd;
+  padding: 6px 0;
 }
 
-/* === CALCULATRICE FLOTTANTE === */
-.floating {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #007bff;
-  color: white;
-  border-radius: 50%;
-  width: 55px;
-  height: 55px;
-  font-size: 24px;
+.histo-item:last-child {
+  border-bottom: none;
+}
+
+/* === Boutons de lignes === */
+.ligne-buttons {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: center;
+  margin-bottom: 15px;
+}
+
+.ligne-buttons button {
+  background-color: #0078d7;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  font-weight: bold;
+  font-size: 0.9em;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  z-index: 1000;
-  transition: transform 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, background 0.3s;
 }
 
-.floating:hover {
-  transform: scale(1.1);
+.ligne-buttons button:hover {
+  background-color: #005fa3;
+  transform: scale(1.05);
 }
 
-#calcWrapper {
-  position: fixed;
-  bottom: 100px;
-  right: 20px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  padding: 15px;
-  z-index: 999;
-  width: 240px;
-}
-
-#calcWrapper.hidden {
-  display: none;
-}
-
-#calc {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#calcDisplay {
-  width: 200px;
-  margin-bottom: 10px;
-  padding: 5px;
-  text-align: right;
-  font-size: 1.1em;
-}
-
-#calcButtons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-}
-
-#calcButtons button {
-  padding: 10px;
-  font-size: 1.1em;
-  border-radius: 6px;
-}
-
-/* === GRAPHIQUES === */
+/* === Graphiques === */
 canvas {
-  width: 100% !important;
+  width: 100%;
   max-width: 800px;
-  height: 300px !important;
-  margin: 20px auto;
+  height: 400px;
+  margin: 0 auto;
   display: block;
 }
 
-/* === RESPONSIVE === */
-@media (max-width: 600px) {
+/* === Calculatrice flottante === */
+#calcContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  padding: 10px;
+  display: none;
+  flex-direction: column;
+  z-index: 2000;
+}
+
+#calcContainer button {
+  margin: 4px;
+  padding: 10px;
+  width: 45px;
+  height: 45px;
+  font-weight: bold;
+  font-size: 1em;
+  border-radius: 8px;
+  background: #0078d7;
+  color: white;
+  border: none;
+}
+
+#calcToggle {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #0078d7;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  font-size: 1.3em;
+  z-index: 2001;
+}
+#calcToggle:hover {
+  background: #005fa3;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  canvas {
+    height: 250px;
+  }
+
   nav.menu {
     flex-direction: column;
     align-items: center;
   }
 
-  nav.menu button {
-    width: 90%;
-    margin: 5px 0;
-  }
-
-  .floating {
-    right: 10px;
-    bottom: 10px;
-  }
-
-  #calcWrapper {
-    right: 10px;
-    bottom: 80px;
+  .ligne-buttons button {
+    width: 60px;
+    height: 60px;
+    font-size: 0.8em;
   }
 }
