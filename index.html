@@ -1,176 +1,121 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atelier PPNC</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icons/icon-192.png" type="image/png">
 
+  <!-- Feuille de style -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Chart.js pour le graphique -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Librairie Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
+  <!-- Icône PWA -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 </head>
-
 <body>
-  <header>
+  <!-- DEBUG OVERLAY (affiche les erreurs JS, à retirer après tests) -->
+  <div id="debug-overlay"
+       style="position:fixed;top:0;left:0;right:0;z-index:99999;
+       background:rgba(220,0,0,.9);color:#fff;font:12px/1.4 monospace;
+       padding:6px;display:none"></div>
+  <script>
+    (function(){
+      const box=document.getElementById('debug-overlay');
+      function show(msg){
+        box.style.display='block';
+        box.innerHTML+=(box.innerHTML?'<br>':'')+msg;
+      }
+      window.addEventListener('error',e=>show('JS error: '+e.message+' @ '+(e.filename||'')+':'+(e.lineno||'')));
+      window.addEventListener('unhandledrejection',e=>show('Promise rejection: '+(e.reason&&e.reason.message?e.reason.message:String(e.reason))));
+    })();
+  </script>
+
+  <!-- HEADER -->
+  <header class="header">
     <div class="header-left">
-      <img src="icons/logo-lactalis.png" alt="Logo" class="logo">
-      <h1>Atelier PPNC</h1>
-    </div>
-    <div class="header-right">
-      <p id="dateTimeDisplay"></p>
+      <img src="logo-lactalis.png" alt="Logo" class="logo">
+      <div class="header-title">
+        <h1>Atelier PPNC</h1>
+        <p id="dateDisplay"></p>
+      </div>
     </div>
   </header>
 
-  <nav class="menu">
-    <button onclick="showPage('atelier')">🏭 Atelier</button>
-    <button onclick="showPage('production')">📦 Production</button>
-    <button onclick="showPage('arrets')">⏸️ Arrêts</button>
-    <button onclick="showPage('organisation')">🗂️ Organisation</button>
-    <button onclick="showPage('personnel')">👥 Personnel</button>
-    <button onclick="exportAllToExcel()">📤 Export Excel</button>
+  <!-- MENU PRINCIPAL -->
+  <nav class="main-nav">
+    <button onclick="openPage('atelier')">📊 Atelier</button>
+    <button onclick="openPage('production')">📦 Production</button>
+    <button onclick="openPage('arrets')">⏸️ Arrêts</button>
+    <button onclick="openPage('organisation')">🗂️ Organisation</button>
+    <button onclick="openPage('personnel')">👥 Personnel</button>
+    <button onclick="exportExcel()">📈 Export Excel</button>
   </nav>
 
-  <!-- ===== PAGE ATELIER ===== -->
-  <section id="atelier" class="page active">
+  <!-- SECTION ATELIER (page par défaut) -->
+  <main id="atelier" class="page active">
     <h2>Vue d’ensemble de l’atelier</h2>
-    <canvas id="atelierChart"></canvas>
-    <div id="historiqueAtelier"></div>
-  </section>
 
-  <!-- ===== PAGE PRODUCTION ===== -->
-  <section id="production" class="page">
-    <h2>Production par ligne</h2>
-    <div class="lignes-buttons">
-      <button onclick="selectLigne('Râpé')">Râpé</button>
-      <button onclick="selectLigne('T2')">T2</button>
-      <button onclick="selectLigne('RT')">RT</button>
-      <button onclick="selectLigne('OMORI T1')">OMORI T1</button>
-      <button onclick="selectLigne('Sticks')">Sticks</button>
-      <button onclick="selectLigne('Emballage')">Emballage</button>
-      <button onclick="selectLigne('Dés')">Dés</button>
-      <button onclick="selectLigne('Filets')">Filets</button>
-      <button onclick="selectLigne('Prédécoupés')">Prédécoupés</button>
+    <!-- GRAPH -->
+    <div class="card">
+      <canvas id="atelierChart" height="180"></canvas>
     </div>
 
-    <h3 id="ligneTitle">Sélectionnez une ligne</h3>
+    <!-- HISTORIQUE GLOBAL -->
+    <section id="atelierHistorique" class="historique">
+      <h3>Historique global</h3>
+      <div id="historiqueContent"></div>
+    </section>
 
-    <form id="productionForm">
-      <label>Heure début :</label>
-      <input type="time" id="heureDebut" required>
+    <!-- BOUTON CALCULATRICE -->
+    <button id="calcToggle" class="floating-btn" onclick="toggleCalc()">🧮</button>
 
-      <label>Heure fin :</label>
-      <input type="time" id="heureFin" required>
+    <!-- CALCULATRICE -->
+    <div id="calcContainer" class="calc hidden">
+      <input type="text" id="calcInput" readonly>
+      <div class="calc-grid">
+        <button onclick="calcInput.value += '7'">7</button>
+        <button onclick="calcInput.value += '8'">8</button>
+        <button onclick="calcInput.value += '9'">9</button>
+        <button onclick="calcInput.value += '/'">/</button>
 
-      <label>Quantité produite :</label>
-      <input type="number" id="quantiteProduite" placeholder="colis...">
+        <button onclick="calcInput.value += '4'">4</button>
+        <button onclick="calcInput.value += '5'">5</button>
+        <button onclick="calcInput.value += '6'">6</button>
+        <button onclick="calcInput.value += '*'">*</button>
 
-      <label>Quantité restante :</label>
-      <input type="number" id="quantiteRestante" placeholder="colis...">
+        <button onclick="calcInput.value += '1'">1</button>
+        <button onclick="calcInput.value += '2'">2</button>
+        <button onclick="calcInput.value += '3'">3</button>
+        <button onclick="calcInput.value += '-'">-</button>
 
-      <label>Cadence manuelle (colis/h) :</label>
-      <input type="number" id="cadenceManuelle" placeholder="cadence...">
-
-      <p><strong>Temps restant estimé :</strong> <span id="finEstimee">--</span></p>
-
-      <div class="form-buttons">
-        <button type="submit" class="btn-save">💾 Enregistrer</button>
-        <button type="button" class="btn-reset" onclick="resetForm()">♻️ Remise à zéro</button>
+        <button onclick="calcInput.value += '0'">0</button>
+        <button onclick="calcInput.value += '.'">.</button>
+        <button onclick="calcEval()">=</button>
+        <button onclick="calcInput.value += '+'">+</button>
       </div>
-    </form>
+    </div>
+  </main>
 
-    <div id="historiqueProduction"></div>
-  </section>
+  <!-- AUTRES PAGES (masquées au chargement) -->
+  <main id="production" class="page"></main>
+  <main id="arrets" class="page"></main>
+  <main id="organisation" class="page"></main>
+  <main id="personnel" class="page"></main>
 
-  <!-- ===== PAGE ARRETS ===== -->
-  <section id="arrets" class="page">
-    <h2>Arrêts</h2>
-    <form id="arretForm">
-      <label>Ligne :</label>
-      <select id="ligneArret">
-        <option value="">Sélectionner</option>
-        <option>Râpé</option>
-        <option>T2</option>
-        <option>RT</option>
-        <option>OMORI T1</option>
-        <option>Sticks</option>
-        <option>Emballage</option>
-        <option>Dés</option>
-        <option>Filets</option>
-        <option>Prédécoupés</option>
-      </select>
-
-      <label>Type d’arrêt :</label>
-      <select id="typeArret">
-        <option>Découpe</option>
-        <option>Packing</option>
-        <option>MEC</option>
-      </select>
-
-      <label>Durée (min) :</label>
-      <input type="number" id="dureeArret">
-
-      <label>Commentaire :</label>
-      <input type="text" id="commentaireArret">
-
-      <button type="submit">Enregistrer</button>
-    </form>
-
-    <div id="historiqueArrets"></div>
-  </section>
-
-  <!-- ===== PAGE ORGANISATION ===== -->
-  <section id="organisation" class="page">
-    <h2>Consignes / Organisation</h2>
-    <form id="consigneForm">
-      <label>Nouvelle consigne :</label>
-      <textarea id="texteConsigne" required></textarea>
-      <div class="validation-consigne">
-        <input type="checkbox" id="valideConsigne"> <label for="valideConsigne">Validée</label>
-      </div>
-      <button type="submit">Ajouter</button>
-    </form>
-
-    <div id="historiqueConsignes"></div>
-  </section>
-
-  <!-- ===== PAGE PERSONNEL ===== -->
-  <section id="personnel" class="page">
-    <h2>Personnel</h2>
-    <form id="personnelForm">
-      <label>Nom :</label>
-      <input type="text" id="nomPersonnel" required>
-
-      <label>Motif :</label>
-      <input type="text" id="motifPersonnel" required>
-
-      <label>Commentaire :</label>
-      <input type="text" id="commentairePersonnel">
-
-      <button type="submit">Enregistrer</button>
-    </form>
-
-    <div id="historiquePersonnel"></div>
-  </section>
-
-  <!-- ===== CALCULATRICE ===== -->
-  <button id="calcToggle" class="calc-btn">🧮</button>
-  <div id="calcPanel" class="calc hidden">
-    <input id="calcDisplay" readonly />
-    <div id="calcButtons"></div>
-  </div>
-
+  <!-- FOOTER -->
   <footer>
-    <p>© Atelier PPNC - Application interne Lactalis</p>
+    <p>© Atelier PPNC — Application interne Lactalis</p>
   </footer>
 
+  <!-- SCRIPT PRINCIPAL -->
   <script src="app.js"></script>
 </body>
-  </html>
+</html>
