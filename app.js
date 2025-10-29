@@ -194,20 +194,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Graphique Atelier ---
   function majGraphiqueAtelier() {
-    if (chartInstance) chartInstance.destroy();
-    const labels = lignes;
-    const quantites = lignes.map((l) => (data[l] ? data[l].reduce((a, b) => a + +b.quantite, 0) : 0));
-    chartInstance = new Chart(atelierChart, {
-      type: "bar",
-      data: { labels, datasets: [{ label: "Quantités produites", data: quantites, backgroundColor: "#007bff" }] },
-      options: { responsive: true, scales: { y: { beginAtZero: true } } },
-    });
+  if (chartInstance) chartInstance.destroy();
 
-    historiqueAtelier.innerHTML = "";
-    lignes.forEach((l) => {
-      if (data[l])
-        historiqueAtelier.innerHTML += `<p><b>${l}</b> : ${data[l].length} enregistrements</p>`;
+  // Labels = heures, valeurs = cadence moyenne par ligne
+  const labels = [];
+  const datasets = [];
+
+  lignes.forEach((ligne, index) => {
+    if (!data[ligne]) return;
+    const points = data[ligne].map((e) => ({
+      x: e.date,
+      y: parseFloat(e.cadence) || 0
+    }));
+
+    datasets.push({
+      label: ligne,
+      data: points,
+      borderColor: `hsl(${index * 40}, 80%, 45%)`,
+      backgroundColor: `hsl(${index * 40}, 80%, 70%)`,
+      fill: false,
+      tension: 0.3
     });
+  });
+
+  chartInstance = new Chart(atelierChart, {
+    type: "line",
+    data: { datasets },
+    options: {
+      responsive: true,
+      interaction: { mode: "nearest", axis: "x", intersect: false },
+      scales: {
+        x: {
+          type: "time",
+          time: { unit: "hour", tooltipFormat: "dd/MM HH:mm" },
+          title: { display: true, text: "Temps" }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "Cadence (colis/h)" }
+        }
+      },
+      plugins: { legend: { position: "bottom" } }
+    }
+  });
+
+  // 🔹 Historique visible sur la page Atelier
+  historiqueAtelier.innerHTML = "";
+  lignes.forEach((l) => {
+    if (data[l])
+      historiqueAtelier.innerHTML += `<p><b>${l}</b> : ${data[l].length} enregistrements – Dernier : ${data[l][data[l].length - 1].cadence} col/h</p>`;
+  });
   }
 
   // --- Export Excel multi-onglets ---
