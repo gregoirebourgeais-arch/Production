@@ -1,163 +1,244 @@
-body {
-  font-family: "Segoe UI", sans-serif;
+/* ====== STYLES GÉNÉRAUX ====== */
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, sans-serif;
   margin: 0;
-  background-color: #eaf2ff;
-  color: #001f3f;
+  padding: 0;
 }
 
-header {
-  background-color: #007bff;
-  color: white;
+body {
+  background-color: #eaf2fb;
+  color: #0e2e50;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ====== HEADER ====== */
+.header {
+  background-color: #1a68c7;
+  color: #fff;
+  padding: 0.8rem 1rem;
   display: flex;
   align-items: center;
-  padding: 10px;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
-header img.logo {
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 40px;
   height: 40px;
-  margin-right: 10px;
+  margin-right: 0.8rem;
 }
 
-h1 {
-  margin: 0;
-  font-size: 1.5rem;
+.header-title h1 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 2px;
 }
 
-.menu {
+.header-title p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* ====== NAVIGATION ====== */
+.main-nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  background: #d8e7ff;
-  padding: 10px;
+  gap: 0.6rem;
+  background-color: #d8e6f9;
+  padding: 0.6rem;
 }
 
-.menu button {
-  background-color: #007bff;
-  color: white;
+.main-nav button {
+  background-color: #1a68c7;
+  color: #fff;
   border: none;
-  margin: 5px;
-  padding: 10px 20px;
-  border-radius: 20px;
+  padding: 0.6rem 1.1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 1.5rem;
   cursor: pointer;
-  font-weight: bold;
+  transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.menu button:hover {
-  background-color: #0056b3;
+.main-nav button:hover {
+  background-color: #104c91;
+  transform: scale(1.03);
 }
 
+/* ====== PAGES ====== */
 .page {
   display: none;
-  padding: 15px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  flex-grow: 1;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
 }
 
 .page.active {
-  display: block;
-}
-
-form {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-label {
-  display: block;
-  margin-top: 10px;
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-button {
-  border: none;
-  cursor: pointer;
-}
-
-.form-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
 }
 
-.btn-save {
-  background-color: #28a745;
-  color: white;
-  padding: 8px 15px;
-  border-radius: 8px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.btn-reset {
-  background-color: #dc3545;
-  color: white;
-  padding: 8px 15px;
-  border-radius: 8px;
+/* ====== SECTIONS ====== */
+h2 {
+  font-size: 1.4rem;
+  margin: 1rem 0;
+  color: #0d3361;
+  text-align: center;
 }
 
+/* ====== CARDS ====== */
+.card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 95%;
+  max-width: 700px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+/* ====== HISTORIQUE ====== */
 .historique {
-  margin-top: 15px;
+  width: 95%;
+  max-width: 700px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 0.8rem 1rem;
+}
+
+.historique h3 {
+  font-size: 1.1rem;
+  color: #0e2e50;
+  margin-bottom: 0.6rem;
+}
+
+.historique div {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+/* ====== GRAPHIQUE ====== */
+#atelierChart {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+canvas {
   background: #fff;
   border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   padding: 10px;
 }
 
-.calc-btn {
+/* ====== CALCULATRICE ====== */
+.floating-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #007bff;
+  background-color: #1a68c7;
   color: white;
   border: none;
-  padding: 12px;
   border-radius: 50%;
-  font-size: 22px;
+  width: 55px;
+  height: 55px;
+  font-size: 1.5rem;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  transition: 0.2s;
+}
+
+.floating-btn:hover {
+  background-color: #104c91;
+  transform: scale(1.1);
 }
 
 .calc {
   position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background: white;
+  bottom: 85px;
+  right: 15px;
+  width: 240px;
+  background: #fff;
   border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-  padding: 10px;
-  width: 220px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  overflow: hidden;
+  transition: all 0.25s ease;
+  transform: translateY(0);
+  opacity: 1;
+  z-index: 100;
 }
 
 .calc.hidden {
-  display: none;
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.calc input {
+#calcInput {
   width: 100%;
-  padding: 6px;
-  text-align: right;
-  margin-bottom: 5px;
-}
-
-.calc button {
-  width: 25%;
-  padding: 8px;
-  margin: 1px;
-  background-color: #007bff;
-  color: white;
+  height: 45px;
   border: none;
-  border-radius: 6px;
-  font-weight: bold;
+  background: #eaf2fb;
+  text-align: right;
+  font-size: 1.2rem;
+  padding: 5px 10px;
 }
 
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.calc-grid button {
+  background: #f0f4f9;
+  border: none;
+  font-size: 1.1rem;
+  padding: 0.7rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.calc-grid button:hover {
+  background: #d8e6f9;
+}
+
+/* ====== FOOTER ====== */
 footer {
   text-align: center;
-  padding: 10px;
-  background: #007bff;
-  color: white;
-  margin-top: 20px;
+  font-size: 0.9rem;
+  background: #1a68c7;
+  color: #fff;
+  padding: 0.6rem;
+  margin-top: auto;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 600px) {
+  .main-nav button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.8rem;
+  }
+  h2 {
+    font-size: 1.2rem;
+  }
 }
