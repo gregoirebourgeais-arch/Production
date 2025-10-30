@@ -4,161 +4,133 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atelier PPNC</title>
-  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="manifest" href="manifest.json" />
   <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
-  }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
   </script>
 </head>
+
 <body>
-  <header>
+  <header class="topbar">
     <h1>Atelier PPNC</h1>
-    <header class="topbar">
-  <h1>Atelier PPNC</h1>
-  <p id="topDateTime">—</p>
-    </header>
+    <p id="topDateTime">—</p>
   </header>
 
-  <nav id="menu">
-    <button onclick="afficherPage('atelier')">Atelier</button>
-    <button onclick="afficherPage('rapé')">Râpé</button>
-    <button onclick="afficherPage('t2')">T2</button>
-    <button onclick="afficherPage('rt')">RT</button>
-    <button onclick="afficherPage('omori')">OMORI</button>
-    <button onclick="afficherPage('t1')">T1</button>
-    <button onclick="afficherPage('sticks')">Sticks</button>
-    <button onclick="afficherPage('emballage')">Emballage</button>
-    <button onclick="afficherPage('des')">Dés</button>
-    <button onclick="afficherPage('filets')">Filets</button>
-    <button onclick="afficherPage('predecoupes')">Prédécoupés</button>
-    <button onclick="afficherPage('arrets')">Arrêts</button>
-    <button onclick="afficherPage('organisation')">Organisation</button>
-    <button onclick="afficherPage('personnel')">Personnel</button>
-  </nav>
-
   <main>
+    <section id="menu">
+      <div class="button-grid">
+        <button onclick="openPage('atelier')" class="btn atelier">📊 Atelier</button>
+        <button onclick="openPage('production')" class="btn production">📦 Production</button>
+        <button onclick="openPage('arrets')" class="btn arrets">⏸️ Arrêts</button>
+        <button onclick="openPage('organisation')" class="btn organisation">🗂️ Organisation</button>
+        <button onclick="openPage('personnel')" class="btn personnel">👥 Personnel</button>
+        <button onclick="exportExcel()" class="btn export">📈 Export Excel</button>
+      </div>
+    </section>
+
     <!-- Page Atelier -->
-    <section id="atelier" class="page active">
+    <section id="atelier" class="page">
       <h2>Vue d'ensemble de l'atelier</h2>
-      <canvas id="graphiqueAtelier" height="200"></canvas>
-      <div id="historiqueAtelier"></div>
+      <canvas id="atelierChart"></canvas>
+      <div id="historiqueGlobal" class="historique"></div>
     </section>
 
-    <!-- Pages de lignes -->
-    <section id="rapé" class="page">
-      <h2>Ligne Râpé</h2>
-      <div class="time-row">
-  <label for="debut-Râpé">Heure début :</label>
-  <select id="debut-Râpé" class="time-select"></select>
-</div>
-<div class="time-row">
-  <label for="fin-Râpé">Heure fin :</label>
-  <select id="fin-Râpé" class="time-select"></select>
-</div>
-      <div class="form-ligne" data-ligne="Râpé"></div>
-    </section>
-    <section id="t2" class="page">
-      <h2>Ligne T2</h2>
-      <div class="form-ligne" data-ligne="T2"></div>
-    </section>
-    <section id="rt" class="page">
-      <h2>Ligne RT</h2>
-      <div class="form-ligne" data-ligne="RT"></div>
-    </section>
-    <section id="omori" class="page">
-      <h2>Ligne OMORI</h2>
-      <div class="form-ligne" data-ligne="OMORI"></div>
-    </section>
-    <section id="t1" class="page">
-      <h2>Ligne T1</h2>
-      <div class="form-ligne" data-ligne="T1"></div>
-    </section>
-    <section id="sticks" class="page">
-      <h2>Ligne Sticks</h2>
-      <div class="form-ligne" data-ligne="Sticks"></div>
-    </section>
-    <section id="emballage" class="page">
-      <h2>Ligne Emballage</h2>
-      <div class="form-ligne" data-ligne="Emballage"></div>
-    </section>
-    <section id="des" class="page">
-      <h2>Ligne Dés</h2>
-      <div class="form-ligne" data-ligne="Dés"></div>
-    </section>
-    <section id="filets" class="page">
-      <h2>Ligne Filets</h2>
-      <div class="form-ligne" data-ligne="Filets"></div>
-    </section>
-    <section id="predecoupes" class="page">
-      <h2>Ligne Prédécoupés</h2>
-      <div class="form-ligne" data-ligne="Prédécoupés"></div>
+    <!-- Pages Lignes de production -->
+    <section id="production" class="page">
+      <h2>Sélection de ligne</h2>
+      <div class="ligne-buttons">
+        <button onclick="openLigne('RAPE')">Râpé</button>
+        <button onclick="openLigne('T2')">T2</button>
+        <button onclick="openLigne('RT')">RT</button>
+        <button onclick="openLigne('OMORI')">OMORI</button>
+        <button onclick="openLigne('T1')">T1</button>
+        <button onclick="openLigne('STICKS')">Sticks</button>
+        <button onclick="openLigne('EMBALLAGE')">Emballage</button>
+        <button onclick="openLigne('DES')">Dés</button>
+        <button onclick="openLigne('FILETS')">Filets</button>
+        <button onclick="openLigne('PREDECOUPES')">Prédécoupés</button>
+      </div>
     </section>
 
-    <!-- Page Arrêts -->
+    <!-- Page type Ligne -->
+    <section id="pageLigne" class="page">
+      <h2 id="titreLigne">Ligne</h2>
+      <div class="inputs">
+        <label>Heure début :</label>
+        <select id="heureDebut"></select>
+
+        <label>Heure fin :</label>
+        <select id="heureFin"></select>
+
+        <label>Quantité produite :</label>
+        <input type="number" id="quantiteProduite" placeholder="Saisir..." />
+
+        <label>Quantité restante :</label>
+        <input type="number" id="quantiteRestante" placeholder="Saisir..." />
+
+        <label>Cadence manuelle :</label>
+        <input type="number" id="cadenceManuelle" placeholder="Saisir cadence..." />
+
+        <div class="eta">Fin estimée : <span id="eta">--:--</span></div>
+
+        <button onclick="enregistrerLigne()">💾 Enregistrer</button>
+      </div>
+
+      <div id="historiqueLigne" class="historique"></div>
+    </section>
+
+    <!-- Pages complémentaires -->
     <section id="arrets" class="page">
-      <h2>Arrêts de ligne</h2>
-      <form id="formArrets">
-        <label>Ligne :</label>
-        <select id="ligneArret">
-          <option value="Râpé">Râpé</option>
-          <option value="T2">T2</option>
-          <option value="RT">RT</option>
-          <option value="OMORI">OMORI</option>
-          <option value="T1">T1</option>
-          <option value="Sticks">Sticks</option>
-          <option value="Emballage">Emballage</option>
-          <option value="Dés">Dés</option>
-          <option value="Filets">Filets</option>
-          <option value="Prédécoupés">Prédécoupés</option>
-        </select>
-        <label>Motif :</label>
-        <input type="text" id="motifArret" required />
-        <label>Commentaire :</label>
-        <textarea id="commentaireArret"></textarea>
-        <button type="submit">Enregistrer</button>
-      </form>
+      <h2>Historique Arrêts</h2>
       <div id="historiqueArrets"></div>
     </section>
 
-    <!-- Page Organisation -->
     <section id="organisation" class="page">
-      <h2>Consignes et Organisation</h2>
-      <form id="formOrganisation">
-        <label>Consigne :</label>
-        <textarea id="texteConsigne"></textarea>
-        <button type="submit">Enregistrer</button>
-      </form>
+      <h2>Organisation</h2>
       <div id="historiqueOrganisation"></div>
     </section>
 
-    <!-- Page Personnel -->
     <section id="personnel" class="page">
       <h2>Personnel</h2>
-      <form id="formPersonnel">
-        <label>Nom :</label>
-        <input type="text" id="nomPersonnel" required />
-        <label>Motif :</label>
-        <input type="text" id="motifPersonnel" required />
-        <label>Commentaire :</label>
-        <textarea id="commentairePersonnel"></textarea>
-        <button type="submit">Enregistrer</button>
-      </form>
       <div id="historiquePersonnel"></div>
     </section>
   </main>
 
-  <div id="calculatrice" class="cacher">
-    <div id="calcHeader">
-      <span>Calculatrice</span>
-      <button id="closeCalc">✖</button>
-    </div>
+  <!-- Bouton calculatrice -->
+  <button id="calcToggle" class="floating-calc-btn">🧮</button>
+  <div id="calculator" class="calculator hidden">
     <input type="text" id="calcDisplay" readonly />
-    <div id="calcButtons"></div>
+    <div class="calc-buttons">
+      <button onclick="appendCalc('7')">7</button>
+      <button onclick="appendCalc('8')">8</button>
+      <button onclick="appendCalc('9')">9</button>
+      <button onclick="appendCalc('/')">÷</button>
+      <button onclick="appendCalc('4')">4</button>
+      <button onclick="appendCalc('5')">5</button>
+      <button onclick="appendCalc('6')">6</button>
+      <button onclick="appendCalc('*')">×</button>
+      <button onclick="appendCalc('1')">1</button>
+      <button onclick="appendCalc('2')">2</button>
+      <button onclick="appendCalc('3')">3</button>
+      <button onclick="appendCalc('-')">−</button>
+      <button onclick="appendCalc('0')">0</button>
+      <button onclick="appendCalc('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="appendCalc('+')">+</button>
+      <button onclick="clearCalc()">C</button>
+      <button onclick="closeCalc()">Fermer</button>
+    </div>
   </div>
 
+  <footer>
+    © Atelier PPNC – Application interne Lactalis
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
