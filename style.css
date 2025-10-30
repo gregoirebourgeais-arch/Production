@@ -1,68 +1,38 @@
+/* ----- STYLE GLOBAL ----- */
 body {
-  font-family: "Segoe UI", Tahoma, sans-serif;
   margin: 0;
-  padding: 0;
-  background-color: #f6f9ff;
-  color: #002147;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background-color: #f4f8fb;
+  color: #333;
+  text-align: center;
 }
 
-header {
-  background-color: #007bff;
+/* ----- EN-TÊTE ----- */
+header.topbar {
+  background-color: #0096db;
   color: white;
-  text-align: center;
-  padding: 10px 0;
+  padding: 10px;
+  font-size: 1.2rem;
   position: sticky;
   top: 0;
   z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+header h1 {
+  margin: 5px 0;
+}
+#topDateTime {
+  font-size: 0.9rem;
 }
 
-h1 {
-  margin: 0;
-  font-size: 1.6em;
-}
-
-#dateHeure {
-  font-size: 0.9em;
-  opacity: 0.9;
-}
-
-nav#menu {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  background-color: #eaf2ff;
-  border-bottom: 2px solid #c7d9ff;
-  padding: 5px;
-}
-
-nav#menu button {
-  margin: 4px;
-  padding: 8px 14px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s;
-  font-weight: 500;
-}
-
-nav#menu button:hover {
-  background-color: #005dc1;
-}
-
+/* ----- STRUCTURE ----- */
 main {
-  flex-grow: 1;
-  padding: 15px;
-  overflow-y: auto;
+  padding: 20px;
 }
 
 .page {
   display: none;
-  animation: fadeIn 0.4s ease-in-out;
+  animation: fadeIn 0.4s ease;
 }
 
 .page.active {
@@ -70,121 +40,159 @@ main {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  max-width: 400px;
-  margin-bottom: 20px;
+/* ----- BOUTONS ----- */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 20px auto;
+  max-width: 600px;
 }
-
-form label {
-  margin-top: 8px;
-  font-weight: 600;
-}
-
-form input,
-form textarea,
-form select {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-top: 4px;
-}
-
-form button {
-  margin-top: 10px;
-  background-color: #007bff;
+.btn {
+  background-color: #0096db;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 8px;
+  border-radius: 10px;
+  padding: 10px;
   cursor: pointer;
+  transition: 0.2s;
+  font-size: 1rem;
+}
+.btn:hover {
+  background-color: #007bb0;
+  transform: scale(1.03);
+}
+.btn:active {
+  background-color: #005b80;
 }
 
-form button:hover {
-  background-color: #005dc1;
+/* ----- CHAMPS ----- */
+.inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
 }
-
-#historiqueAtelier,
-#historiqueArrets,
-#historiqueOrganisation,
-#historiquePersonnel {
-  background-color: white;
+input, select {
+  padding: 8px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 10px;
+  border-radius: 6px;
+  width: 80%;
+  max-width: 350px;
+  font-size: 1rem;
+}
+label {
+  font-weight: 600;
+  color: #007bb0;
+}
+
+/* ----- HISTORIQUES ----- */
+.historique {
+  background-color: white;
+  margin: 20px auto;
+  padding: 15px;
+  width: 90%;
   max-width: 700px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: left;
+}
+.historique p {
+  margin: 5px 0;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
 }
 
-#graphiqueAtelier {
-  max-width: 100%;
-  margin-bottom: 20px;
-  background: white;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
-}
-
-/* Calculatrice flottante */
-#calculatrice {
+/* ----- CALCULATRICE ----- */
+.floating-calc-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  background-color: #007bb0;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 50;
+}
+
+.calculator {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  background-color: #e8f4fb;
+  border-radius: 12px;
+  padding: 10px;
   width: 240px;
-  background-color: #f8f9fa;
-  border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  display: none;
-  flex-direction: column;
   z-index: 100;
 }
-
-#calculatrice.active {
-  display: flex;
+.calculator.hidden {
+  display: none;
 }
-
-#calcHeader {
-  background-color: #007bff;
-  color: white;
-  padding: 5px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 10px 10px 0 0;
-  cursor: move;
-}
-
-#calcDisplay {
+.calculator input {
+  width: 100%;
+  height: 40px;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
   text-align: right;
-  padding: 10px;
   border: none;
-  background-color: #e9ecef;
-  font-size: 1.4em;
-  border-bottom: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 6px;
+  padding-right: 8px;
 }
-
-#calcButtons {
+.calc-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
 }
-
-#calcButtons button {
+.calc-buttons button {
+  padding: 10px;
   border: none;
-  padding: 15px;
-  background-color: #ffffff;
-  border-right: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #0096db;
+  color: white;
+  font-size: 1rem;
   cursor: pointer;
-  font-size: 1.1em;
-  transition: background 0.2s;
+  transition: 0.2s;
+}
+.calc-buttons button:hover {
+  background-color: #007bb0;
 }
 
-#calcButtons button:hover {
-  background-color: #007bff;
+/* ----- GRAPH ----- */
+canvas {
+  margin: 20px auto;
+  background: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  max-width: 700px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ----- ESTIMATION ----- */
+.eta {
+  font-weight: bold;
+  color: #0096db;
+  margin-top: 10px;
+}
+
+/* ----- FOOTER ----- */
+footer {
+  background-color: #0096db;
   color: white;
+  padding: 10px;
+  font-size: 0.9rem;
+  position: sticky;
+  bottom: 0;
+  margin-top: 40px;
 }
