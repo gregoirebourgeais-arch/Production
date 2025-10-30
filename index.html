@@ -4,10 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atelier PPNC</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Librairies externes -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Feuille de style -->
+  <link rel="stylesheet" href="style.css" />
+
 </head>
 <body>
   <header>
@@ -15,107 +19,115 @@
     <div id="dateDisplay"></div>
   </header>
 
-  <nav id="topNav">
-    <button class="nav-btn" onclick="showPage('atelier')">🏭 Atelier</button>
-    <button class="nav-btn" onclick="showPage('production')">📦 Production</button>
-    <button class="nav-btn" onclick="showPage('arrets')">⏸️ Arrêts</button>
-    <button class="nav-btn" onclick="showPage('organisation')">🗒️ Organisation</button>
+  <!-- Navigation -->
+  <nav>
+    <button class="nav-btn" onclick="showPage('atelier')">🏠 Atelier</button>
+    <button class="nav-btn" onclick="showPage('production')">🏭 Production</button>
+    <button class="nav-btn" onclick="showPage('arrets')">⛔ Arrêts</button>
+    <button class="nav-btn" onclick="showPage('organisation')">📝 Organisation</button>
     <button class="nav-btn" onclick="showPage('personnel')">👷 Personnel</button>
   </nav>
 
-  <main>
-    <!-- PAGE ATELIER -->
-    <section id="atelier" class="page active">
-      <h2>Vue d'ensemble Atelier</h2>
-      <canvas id="atelierChart"></canvas>
-      <div id="atelierHistoriques">
-        <h3>Historique global</h3>
-        <div id="atelierResume"></div>
-      </div>
-      <button id="exportGlobal">📊 Export Excel Global</button>
-    </section>
+  <!-- PAGE ATELIER -->
+  <section id="atelier" class="page active">
+    <h2>Vue d'ensemble Atelier</h2>
+    <canvas id="atelierChart" height="180"></canvas>
+    <button id="exportGlobal">📦 Export Excel complet</button>
 
-    <!-- PAGE PRODUCTION -->
-    <section id="production" class="page">
-      <h2>Production - Lignes</h2>
-      <div class="ligne-buttons" id="ligneButtons"></div>
-      <div id="lignesContainer"></div>
-    </section>
-
-    <!-- PAGE ARRETS -->
-    <section id="arrets" class="page">
-      <h2>Arrêts de ligne</h2>
-      <label>Ligne :</label>
-      <select id="arretLigne">
-        <option value="">Sélectionner...</option>
-        <option value="Râpé">Râpé</option>
-        <option value="T2">T2</option>
-        <option value="RT">RT</option>
-        <option value="OMORI T1">OMORI T1</option>
-        <option value="Sticks">Sticks</option>
-        <option value="Emballage">Emballage</option>
-        <option value="Dés">Dés</option>
-        <option value="Filets">Filets</option>
-        <option value="Prédécoupés">Prédécoupés</option>
-      </select>
-      <label>Type :</label>
-      <select id="arretType">
-        <option value="">Sélectionner...</option>
-        <option value="Découpe">Découpe</option>
-        <option value="Packing">Packing</option>
-        <option value="MEC">MEC</option>
-      </select>
-      <label>Durée (min) :</label>
-      <input type="number" id="arretDuree" />
-      <label>Commentaire :</label>
-      <input type="text" id="arretCommentaire" />
-      <button id="saveArret">💾 Enregistrer</button>
+    <div class="historique-bloc">
+      <h3>Historique des Arrêts</h3>
       <div id="arretsHistorique"></div>
-    </section>
-
-    <!-- PAGE ORGANISATION -->
-    <section id="organisation" class="page">
-      <h2>Organisation & Consignes</h2>
-      <label>Consigne :</label>
-      <input type="text" id="consigneTexte" />
-      <button id="saveConsigne">💾 Enregistrer</button>
+      <h3>Historique Organisation</h3>
       <div id="organisationHistorique"></div>
-    </section>
-
-    <!-- PAGE PERSONNEL -->
-    <section id="personnel" class="page">
-      <h2>Personnel</h2>
-      <label>Nom :</label>
-      <input type="text" id="persNom" />
-      <label>Motif :</label>
-      <select id="persMotif">
-        <option value="">Choisir...</option>
-        <option value="Absence">Absence</option>
-        <option value="Retard">Retard</option>
-        <option value="Infirmerie">Infirmerie</option>
-        <option value="Départ">Départ</option>
-        <option value="Autre">Autre</option>
-      </select>
-      <label>Commentaire :</label>
-      <input type="text" id="persCommentaire" />
-      <button id="savePersonnel">💾 Enregistrer</button>
+      <h3>Historique Personnel</h3>
       <div id="personnelHistorique"></div>
-    </section>
-  </main>
+    </div>
+  </section>
+
+  <!-- PAGE PRODUCTION -->
+  <section id="production" class="page">
+    <h2>Production par ligne</h2>
+    <div id="ligneButtons" class="ligne-btns"></div>
+    <div id="lignesContainer" class="lignes-container"></div>
+  </section>
+
+  <!-- PAGE ARRETS -->
+  <section id="arrets" class="page">
+    <h2>Gestion des Arrêts</h2>
+    <label>Ligne :</label>
+    <select id="arretLigne">
+      <option value="">Sélectionner</option>
+      <option>Râpé</option>
+      <option>T2</option>
+      <option>RT</option>
+      <option>OMORI</option>
+      <option>T1</option>
+      <option>Sticks</option>
+      <option>Emballage</option>
+      <option>Dés</option>
+      <option>Filets</option>
+      <option>Prédécoupés</option>
+    </select>
+    <label>Type :</label>
+    <select id="arretType">
+      <option value="">Choisir</option>
+      <option>Découpe</option>
+      <option>Packing</option>
+      <option>MEC</option>
+    </select>
+    <label>Durée (min) :</label><input type="number" id="arretDuree" />
+    <label>Commentaire :</label><textarea id="arretCommentaire"></textarea>
+    <button id="saveArret">💾 Enregistrer</button>
+    <div id="arretsHistorique"></div>
+  </section>
+
+  <!-- PAGE ORGANISATION -->
+  <section id="organisation" class="page">
+    <h2>Consignes Organisation</h2>
+    <textarea id="consigneTexte" placeholder="Écrire la consigne..."></textarea>
+    <button id="saveConsigne">💾 Ajouter la consigne</button>
+    <div id="organisationHistorique"></div>
+  </section>
+
+  <!-- PAGE PERSONNEL -->
+  <section id="personnel" class="page">
+    <h2>Suivi du Personnel</h2>
+    <label>Nom :</label><input type="text" id="persNom" />
+    <label>Motif :</label><input type="text" id="persMotif" />
+    <label>Commentaire :</label><textarea id="persCommentaire"></textarea>
+    <button id="savePersonnel">💾 Enregistrer</button>
+    <div id="personnelHistorique"></div>
+  </section>
 
   <!-- CALCULATRICE FLOTTANTE -->
+  <button id="calcButton">🧮</button>
   <div id="calculator" class="hidden">
-    <div id="calcHeader">🧮 Calculatrice <button id="closeCalc">❌</button></div>
-    <input id="calcScreen" readonly />
-    <div id="calcButtons">
-      <button class="calc-btn">7</button><button class="calc-btn">8</button><button class="calc-btn">9</button><button class="calc-btn">/</button>
-      <button class="calc-btn">4</button><button class="calc-btn">5</button><button class="calc-btn">6</button><button class="calc-btn">*</button>
-      <button class="calc-btn">1</button><button class="calc-btn">2</button><button class="calc-btn">3</button><button class="calc-btn">-</button>
-      <button class="calc-btn">0</button><button class="calc-btn">C</button><button class="calc-btn">=</button><button class="calc-btn">+</button>
+    <div class="calc-header">
+      <span>Calculatrice</span>
+      <button id="closeCalc">✖</button>
+    </div>
+    <input type="text" id="calcScreen" readonly />
+    <div class="calc-grid">
+      <button class="calc-btn">7</button>
+      <button class="calc-btn">8</button>
+      <button class="calc-btn">9</button>
+      <button class="calc-btn">/</button>
+      <button class="calc-btn">4</button>
+      <button class="calc-btn">5</button>
+      <button class="calc-btn">6</button>
+      <button class="calc-btn">*</button>
+      <button class="calc-btn">1</button>
+      <button class="calc-btn">2</button>
+      <button class="calc-btn">3</button>
+      <button class="calc-btn">-</button>
+      <button class="calc-btn">0</button>
+      <button class="calc-btn">C</button>
+      <button class="calc-btn">=</button>
+      <button class="calc-btn">+</button>
     </div>
   </div>
 
-  <button id="calcButton">🧮</button>
+  <!-- Script principal -->
   <script src="app.js"></script>
 </body>
 </html>
