@@ -1,112 +1,147 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atelier PPNC</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <header>
     <h1>Atelier PPNC</h1>
-    <div id="datetime"></div>
+    <div id="dateHeure"></div>
   </header>
 
-  <nav>
-    <button onclick="showSection('atelier')">Atelier</button>
-    <button onclick="showSection('production')">Production</button>
-    <button onclick="showSection('arrets')">Arrêts</button>
-    <button onclick="showSection('organisation')">Organisation</button>
-    <button onclick="showSection('personnel')">Personnel</button>
+  <nav id="menu">
+    <button onclick="afficherPage('atelier')">Atelier</button>
+    <button onclick="afficherPage('rapé')">Râpé</button>
+    <button onclick="afficherPage('t2')">T2</button>
+    <button onclick="afficherPage('rt')">RT</button>
+    <button onclick="afficherPage('omori')">OMORI</button>
+    <button onclick="afficherPage('t1')">T1</button>
+    <button onclick="afficherPage('sticks')">Sticks</button>
+    <button onclick="afficherPage('emballage')">Emballage</button>
+    <button onclick="afficherPage('des')">Dés</button>
+    <button onclick="afficherPage('filets')">Filets</button>
+    <button onclick="afficherPage('predecoupes')">Prédécoupés</button>
+    <button onclick="afficherPage('arrets')">Arrêts</button>
+    <button onclick="afficherPage('organisation')">Organisation</button>
+    <button onclick="afficherPage('personnel')">Personnel</button>
   </nav>
 
   <main>
-    <!-- Atelier -->
-    <section id="atelier" class="active">
-      <h2>Vue d'ensemble des lignes</h2>
-      <canvas id="productionChart"></canvas>
+    <!-- Page Atelier -->
+    <section id="atelier" class="page active">
+      <h2>Vue d'ensemble de l'atelier</h2>
+      <canvas id="graphiqueAtelier" height="200"></canvas>
       <div id="historiqueAtelier"></div>
     </section>
 
-    <!-- Production -->
-    <section id="production">
-      <h2>Suivi Production</h2>
-      <label>Ligne :</label>
-      <select id="ligne">
-        <option value="Râpé">Râpé</option>
-        <option value="T2">T2</option>
-        <option value="RT">RT</option>
-        <option value="OMORI">OMORI</option>
-        <option value="T1">T1</option>
-        <option value="Sticks">Sticks</option>
-        <option value="Emballage">Emballage</option>
-        <option value="Dés">Dés</option>
-        <option value="Filets">Filets</option>
-        <option value="Prédécoupés">Prédécoupés</option>
-      </select>
-      <label>Quantité restante :</label>
-      <input type="number" id="quantiteRestante" placeholder="Quantité...">
-      <label>Cadence (colis/h) :</label>
-      <input type="number" id="cadence" placeholder="Cadence...">
-      <p id="tempsRestant"></p>
-      <button onclick="enregistrerProduction()">Enregistrer</button>
-      <div id="historiqueProduction"></div>
+    <!-- Pages de lignes -->
+    <section id="rapé" class="page">
+      <h2>Ligne Râpé</h2>
+      <div class="form-ligne" data-ligne="Râpé"></div>
+    </section>
+    <section id="t2" class="page">
+      <h2>Ligne T2</h2>
+      <div class="form-ligne" data-ligne="T2"></div>
+    </section>
+    <section id="rt" class="page">
+      <h2>Ligne RT</h2>
+      <div class="form-ligne" data-ligne="RT"></div>
+    </section>
+    <section id="omori" class="page">
+      <h2>Ligne OMORI</h2>
+      <div class="form-ligne" data-ligne="OMORI"></div>
+    </section>
+    <section id="t1" class="page">
+      <h2>Ligne T1</h2>
+      <div class="form-ligne" data-ligne="T1"></div>
+    </section>
+    <section id="sticks" class="page">
+      <h2>Ligne Sticks</h2>
+      <div class="form-ligne" data-ligne="Sticks"></div>
+    </section>
+    <section id="emballage" class="page">
+      <h2>Ligne Emballage</h2>
+      <div class="form-ligne" data-ligne="Emballage"></div>
+    </section>
+    <section id="des" class="page">
+      <h2>Ligne Dés</h2>
+      <div class="form-ligne" data-ligne="Dés"></div>
+    </section>
+    <section id="filets" class="page">
+      <h2>Ligne Filets</h2>
+      <div class="form-ligne" data-ligne="Filets"></div>
+    </section>
+    <section id="predecoupes" class="page">
+      <h2>Ligne Prédécoupés</h2>
+      <div class="form-ligne" data-ligne="Prédécoupés"></div>
     </section>
 
-    <!-- Arrêts -->
-    <section id="arrets">
-      <h2>Arrêts</h2>
-      <label>Ligne :</label>
-      <select id="ligneArret">
-        <option value="Râpé">Râpé</option>
-        <option value="T2">T2</option>
-        <option value="RT">RT</option>
-        <option value="OMORI">OMORI</option>
-        <option value="T1">T1</option>
-        <option value="Sticks">Sticks</option>
-        <option value="Emballage">Emballage</option>
-        <option value="Dés">Dés</option>
-        <option value="Filets">Filets</option>
-        <option value="Prédécoupés">Prédécoupés</option>
-      </select>
-      <label>Type :</label>
-      <select id="typeArret">
-        <option value="Découpe">Découpe</option>
-        <option value="Packing">Packing</option>
-        <option value="MEC">MEC</option>
-      </select>
-      <label>Durée (minutes) :</label>
-      <input type="number" id="dureeArret" placeholder="Durée...">
-      <label>Commentaire :</label>
-      <input type="text" id="commentaireArret" placeholder="Commentaire...">
-      <button onclick="enregistrerArret()">Enregistrer</button>
+    <!-- Page Arrêts -->
+    <section id="arrets" class="page">
+      <h2>Arrêts de ligne</h2>
+      <form id="formArrets">
+        <label>Ligne :</label>
+        <select id="ligneArret">
+          <option value="Râpé">Râpé</option>
+          <option value="T2">T2</option>
+          <option value="RT">RT</option>
+          <option value="OMORI">OMORI</option>
+          <option value="T1">T1</option>
+          <option value="Sticks">Sticks</option>
+          <option value="Emballage">Emballage</option>
+          <option value="Dés">Dés</option>
+          <option value="Filets">Filets</option>
+          <option value="Prédécoupés">Prédécoupés</option>
+        </select>
+        <label>Motif :</label>
+        <input type="text" id="motifArret" required />
+        <label>Commentaire :</label>
+        <textarea id="commentaireArret"></textarea>
+        <button type="submit">Enregistrer</button>
+      </form>
       <div id="historiqueArrets"></div>
     </section>
 
-    <!-- Organisation -->
-    <section id="organisation">
-      <h2>Consignes</h2>
-      <input type="text" id="consigneTexte" placeholder="Nouvelle consigne...">
-      <button onclick="enregistrerConsigne()">Enregistrer</button>
+    <!-- Page Organisation -->
+    <section id="organisation" class="page">
+      <h2>Consignes et Organisation</h2>
+      <form id="formOrganisation">
+        <label>Consigne :</label>
+        <textarea id="texteConsigne"></textarea>
+        <button type="submit">Enregistrer</button>
+      </form>
       <div id="historiqueOrganisation"></div>
     </section>
 
-    <!-- Personnel -->
-    <section id="personnel">
+    <!-- Page Personnel -->
+    <section id="personnel" class="page">
       <h2>Personnel</h2>
-      <input type="text" id="nomPersonnel" placeholder="Nom...">
-      <input type="text" id="motifPersonnel" placeholder="Motif...">
-      <input type="text" id="commentairePersonnel" placeholder="Commentaire...">
-      <button onclick="enregistrerPersonnel()">Enregistrer</button>
+      <form id="formPersonnel">
+        <label>Nom :</label>
+        <input type="text" id="nomPersonnel" required />
+        <label>Motif :</label>
+        <input type="text" id="motifPersonnel" required />
+        <label>Commentaire :</label>
+        <textarea id="commentairePersonnel"></textarea>
+        <button type="submit">Enregistrer</button>
+      </form>
       <div id="historiquePersonnel"></div>
     </section>
   </main>
 
-  <footer>
-    <button onclick="exportExcel()">Export Excel</button>
-  </footer>
+  <div id="calculatrice" class="cacher">
+    <div id="calcHeader">
+      <span>Calculatrice</span>
+      <button id="closeCalc">✖</button>
+    </div>
+    <input type="text" id="calcDisplay" readonly />
+    <div id="calcButtons"></div>
+  </div>
 
   <script src="app.js"></script>
 </body>
