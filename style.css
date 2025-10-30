@@ -1,167 +1,201 @@
-/* ---- RESET ---- */
+/* ---- STYLE GLOBAL ---- */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
-/* ---- STRUCTURE ---- */
 body {
-  background: #f7fbff;
+  margin: 0;
+  background-color: #f3f8ff;
   color: #003366;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
+/* ---- EN-TÊTE ---- */
 header {
-  background: #007bff;
+  background: linear-gradient(90deg, #007bff, #66b2ff);
   color: white;
-  padding: 12px;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  padding: 10px 5px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
-h1 {
+header h1 {
+  margin: 0;
   font-size: 1.6em;
-  margin-bottom: 4px;
 }
+
 #dateDisplay {
   font-size: 0.9em;
-  color: #e0e0e0;
+  opacity: 0.9;
+  margin-top: 5px;
 }
 
 /* ---- NAVIGATION ---- */
-#topNav {
+nav {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   flex-wrap: wrap;
-  background: #e6f0ff;
-  padding: 6px 0;
-  border-bottom: 2px solid #bcd0f5;
+  gap: 6px;
+  padding: 8px;
+  background-color: #e6f0ff;
+  border-bottom: 2px solid #b3d1ff;
 }
+
 .nav-btn {
-  background: #007bff;
-  border: none;
+  background-color: #007bff;
   color: white;
+  border: none;
   padding: 8px 14px;
-  margin: 4px;
-  border-radius: 8px;
+  border-radius: 25px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: 0.2s;
+  font-weight: bold;
 }
+
 .nav-btn:hover {
-  background: #0056b3;
+  background-color: #005bb5;
+  transform: scale(1.05);
 }
 
 /* ---- PAGES ---- */
-main {
-  flex: 1;
-  padding: 12px;
-  overflow-y: auto;
-}
 .page {
   display: none;
-  animation: fadeIn 0.3s ease;
+  padding: 15px;
+  flex: 1;
+  overflow-y: auto;
 }
+
 .page.active {
   display: block;
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+
+/* ---- CARTES ---- */
+.lignes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 10px;
-  color: #004080;
+.ligne-card {
+  background-color: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  display: none;
 }
 
-/* ---- LIGNES ---- */
-.ligne-buttons {
+.ligne-card.active {
+  display: block;
+}
+
+.ligne-card h3 {
+  color: #005bb5;
+  margin-top: 0;
+}
+
+.ligne-card input {
+  display: block;
+  width: 100%;
+  margin: 6px 0 10px 0;
+  padding: 6px;
+  border: 1px solid #b3d1ff;
+  border-radius: 8px;
+}
+
+.ligne-card button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ligne-card button:hover {
+  background-color: #005bb5;
+}
+
+/* ---- RESULTAT ---- */
+.result {
+  background-color: #e6f0ff;
+  border-left: 4px solid #007bff;
+  padding: 6px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+
+/* ---- BOUTONS DE LIGNES ---- */
+.ligne-btns {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 8px;
-  margin-bottom: 10px;
-}
-.ligne-buttons button {
-  background: #bcd0f5;
-  color: #002a5c;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 600;
-}
-.ligne-buttons button:hover {
-  background: #007bff;
-  color: #fff;
+  justify-content: center;
+  margin-bottom: 12px;
 }
 
-/* ---- FORMULAIRES ---- */
-label {
-  display: block;
-  margin-top: 8px;
-  font-weight: 500;
-}
-input, select {
-  width: 100%;
-  padding: 6px;
-  margin-top: 3px;
-  border: 1px solid #bcd0f5;
-  border-radius: 6px;
-  background: #fff;
-}
-button {
-  margin-top: 8px;
-}
-#saveArret, #saveConsigne, #savePersonnel {
-  background: #28a745;
+.ligne-btns button {
+  background-color: #66b2ff;
   color: white;
-  font-weight: 600;
   border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
   cursor: pointer;
-}
-#saveArret:hover, #saveConsigne:hover, #savePersonnel:hover {
-  background: #218838;
+  transition: 0.3s;
 }
 
-/* ---- TABLEAUX HISTORIQUES ---- */
-#atelierResume, #arretsHistorique, #organisationHistorique, #personnelHistorique {
-  margin-top: 10px;
+.ligne-btns button:hover {
+  background-color: #005bb5;
+  transform: scale(1.05);
+}
+
+/* ---- HISTORIQUES ---- */
+.historique-bloc {
+  margin-top: 15px;
+}
+
+.historique-bloc div {
   background: #ffffff;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  max-height: 350px;
-  overflow-y: auto;
-}
-#atelierResume div, #arretsHistorique div, #organisationHistorique div, #personnelHistorique div {
-  padding: 5px;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 8px;
+  padding: 8px;
+  border-left: 4px solid #007bff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ---- BOUTON EXPORT ---- */
-#exportGlobal {
-  display: block;
-  margin: 12px auto;
-  background: #ffc107;
-  color: #002a5c;
-  font-weight: bold;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+/* ---- TEXTAREA & INPUTS ---- */
+textarea {
+  width: 100%;
+  border: 1px solid #b3d1ff;
+  border-radius: 8px;
+  padding: 6px;
+  margin-bottom: 8px;
+  resize: vertical;
 }
-#exportGlobal:hover {
-  background: #ffb300;
+
+input[type="text"], input[type="number"] {
+  width: 100%;
+  border: 1px solid #b3d1ff;
+  border-radius: 8px;
+  padding: 6px;
+  margin-bottom: 8px;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #005bb5;
 }
 
 /* ---- CALCULATRICE ---- */
@@ -169,91 +203,78 @@ button {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: #007bff;
+  background-color: #007bff;
   color: white;
   border: none;
-  padding: 14px;
   border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 1.4em;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  font-size: 20px;
-  transition: background 0.3s;
-}
-#calcButton:hover {
-  background: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
 }
 
 #calculator {
   position: fixed;
-  bottom: 80px;
+  bottom: 90px;
   right: 20px;
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-  width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  padding: 10px;
+  width: 240px;
   z-index: 1000;
 }
-.hidden {
+
+#calculator.hidden {
   display: none;
 }
-#calcHeader {
-  background: #007bff;
-  color: white;
-  padding: 6px;
-  text-align: center;
-  cursor: move;
-  border-radius: 10px 10px 0 0;
+
+.calc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
 }
-#calcHeader button {
-  float: right;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-#calcScreen {
-  width: 90%;
-  margin: 8px 5%;
-  height: 30px;
-  text-align: right;
-  padding-right: 6px;
-  font-size: 1em;
-}
-#calcButtons {
+
+.calc-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
-  padding: 6px;
+  gap: 6px;
 }
+
 .calc-btn {
-  background: #e6f0ff;
+  background-color: #007bff;
+  color: white;
   border: none;
   padding: 8px;
   border-radius: 6px;
-  font-weight: 600;
-  color: #003366;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: 0.2s;
 }
+
 .calc-btn:hover {
-  background: #bcd0f5;
+  background-color: #005bb5;
 }
 
-/* ---- GRAPHIQUE ATELIER ---- */
-#atelierChart {
-  max-width: 100%;
-  margin: 10px auto;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  padding: 10px;
+#calcScreen {
+  width: 100%;
+  text-align: right;
+  border: 1px solid #b3d1ff;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  padding: 6px;
+  font-size: 1.1em;
 }
 
-/* ---- SCROLL ---- */
-::-webkit-scrollbar {
-  width: 8px;
+/* ---- SCROLL & RESPONSIVE ---- */
+html, body {
+  scroll-behavior: smooth;
 }
-::-webkit-scrollbar-thumb {
-  background-color: #007bff;
-  border-radius: 10px;
+
+@media (max-width: 700px) {
+  header h1 { font-size: 1.3em; }
+  nav { flex-direction: column; align-items: center; }
+  #calculator { width: 200px; }
 }
