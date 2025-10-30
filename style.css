@@ -1,198 +1,259 @@
-/* ----- STYLE GLOBAL ----- */
-body {
+/* ---- RESET ---- */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: "Segoe UI", Roboto, sans-serif;
-  background-color: #f4f8fb;
-  color: #333;
-  text-align: center;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
-/* ----- EN-TÊTE ----- */
-header.topbar {
-  background-color: #0096db;
+/* ---- STRUCTURE ---- */
+body {
+  background: #f7fbff;
+  color: #003366;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: #007bff;
   color: white;
-  padding: 10px;
-  font-size: 1.2rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-header h1 {
-  margin: 5px 0;
-}
-#topDateTime {
-  font-size: 0.9rem;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* ----- STRUCTURE ----- */
+h1 {
+  font-size: 1.6em;
+  margin-bottom: 4px;
+}
+#dateDisplay {
+  font-size: 0.9em;
+  color: #e0e0e0;
+}
+
+/* ---- NAVIGATION ---- */
+#topNav {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  background: #e6f0ff;
+  padding: 6px 0;
+  border-bottom: 2px solid #bcd0f5;
+}
+.nav-btn {
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  margin: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.nav-btn:hover {
+  background: #0056b3;
+}
+
+/* ---- PAGES ---- */
 main {
-  padding: 20px;
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
 }
-
 .page {
   display: none;
-  animation: fadeIn 0.4s ease;
+  animation: fadeIn 0.3s ease;
 }
-
 .page.active {
   display: block;
 }
-
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* ----- BOUTONS ----- */
-.button-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
-  margin: 20px auto;
-  max-width: 600px;
-}
-.btn {
-  background-color: #0096db;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px;
-  cursor: pointer;
-  transition: 0.2s;
-  font-size: 1rem;
-}
-.btn:hover {
-  background-color: #007bb0;
-  transform: scale(1.03);
-}
-.btn:active {
-  background-color: #005b80;
+h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #004080;
 }
 
-/* ----- CHAMPS ----- */
-.inputs {
+/* ---- LIGNES ---- */
+.ligne-buttons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-top: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ligne-buttons button {
+  background: #bcd0f5;
+  color: #002a5c;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 600;
+}
+.ligne-buttons button:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+/* ---- FORMULAIRES ---- */
+label {
+  display: block;
+  margin-top: 8px;
+  font-weight: 500;
 }
 input, select {
-  padding: 8px;
-  border: 1px solid #ccc;
+  width: 100%;
+  padding: 6px;
+  margin-top: 3px;
+  border: 1px solid #bcd0f5;
   border-radius: 6px;
-  width: 80%;
-  max-width: 350px;
-  font-size: 1rem;
+  background: #fff;
 }
-label {
+button {
+  margin-top: 8px;
+}
+#saveArret, #saveConsigne, #savePersonnel {
+  background: #28a745;
+  color: white;
   font-weight: 600;
-  color: #007bb0;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#saveArret:hover, #saveConsigne:hover, #savePersonnel:hover {
+  background: #218838;
 }
 
-/* ----- HISTORIQUES ----- */
-.historique {
-  background-color: white;
-  margin: 20px auto;
-  padding: 15px;
-  width: 90%;
-  max-width: 700px;
-  border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  text-align: left;
+/* ---- TABLEAUX HISTORIQUES ---- */
+#atelierResume, #arretsHistorique, #organisationHistorique, #personnelHistorique {
+  margin-top: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  max-height: 350px;
+  overflow-y: auto;
 }
-.historique p {
-  margin: 5px 0;
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
+#atelierResume div, #arretsHistorique div, #organisationHistorique div, #personnelHistorique div {
+  padding: 5px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-/* ----- CALCULATRICE ----- */
-.floating-calc-btn {
+/* ---- BOUTON EXPORT ---- */
+#exportGlobal {
+  display: block;
+  margin: 12px auto;
+  background: #ffc107;
+  color: #002a5c;
+  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+#exportGlobal:hover {
+  background: #ffb300;
+}
+
+/* ---- CALCULATRICE ---- */
+#calcButton {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #007bb0;
+  background: #007bff;
   color: white;
   border: none;
+  padding: 14px;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 1.5rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   cursor: pointer;
-  z-index: 50;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  font-size: 20px;
+  transition: background 0.3s;
+}
+#calcButton:hover {
+  background: #0056b3;
 }
 
-.calculator {
+#calculator {
   position: fixed;
-  bottom: 100px;
+  bottom: 80px;
   right: 20px;
-  background-color: #e8f4fb;
-  border-radius: 12px;
-  padding: 10px;
-  width: 240px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  z-index: 100;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  width: 220px;
+  z-index: 1000;
 }
-.calculator.hidden {
+.hidden {
   display: none;
 }
-.calculator input {
-  width: 100%;
-  height: 40px;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-  text-align: right;
-  border: none;
-  background-color: #fff;
-  border-radius: 6px;
-  padding-right: 8px;
+#calcHeader {
+  background: #007bff;
+  color: white;
+  padding: 6px;
+  text-align: center;
+  cursor: move;
+  border-radius: 10px 10px 0 0;
 }
-.calc-buttons {
+#calcHeader button {
+  float: right;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+#calcScreen {
+  width: 90%;
+  margin: 8px 5%;
+  height: 30px;
+  text-align: right;
+  padding-right: 6px;
+  font-size: 1em;
+}
+#calcButtons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
+  gap: 4px;
+  padding: 6px;
 }
-.calc-buttons button {
-  padding: 10px;
+.calc-btn {
+  background: #e6f0ff;
   border: none;
+  padding: 8px;
   border-radius: 6px;
-  background-color: #0096db;
-  color: white;
-  font-size: 1rem;
+  font-weight: 600;
+  color: #003366;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background 0.2s;
 }
-.calc-buttons button:hover {
-  background-color: #007bb0;
+.calc-btn:hover {
+  background: #bcd0f5;
 }
 
-/* ----- GRAPH ----- */
-canvas {
-  margin: 20px auto;
+/* ---- GRAPHIQUE ATELIER ---- */
+#atelierChart {
+  max-width: 100%;
+  margin: 10px auto;
   background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   padding: 10px;
-  border-radius: 12px;
-  max-width: 700px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-/* ----- ESTIMATION ----- */
-.eta {
-  font-weight: bold;
-  color: #0096db;
-  margin-top: 10px;
+/* ---- SCROLL ---- */
+::-webkit-scrollbar {
+  width: 8px;
 }
-
-/* ----- FOOTER ----- */
-footer {
-  background-color: #0096db;
-  color: white;
-  padding: 10px;
-  font-size: 0.9rem;
-  position: sticky;
-  bottom: 0;
-  margin-top: 40px;
+::-webkit-scrollbar-thumb {
+  background-color: #007bff;
+  border-radius: 10px;
 }
