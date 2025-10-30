@@ -1,12 +1,11 @@
 {
   "name": "Atelier PPNC",
-  "short_name": "Atelier PPNC",
-  "description": "Application de suivi Atelier PPNC — production, arrêts, organisation, personnel.",
+  "short_name": "PPNC",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f6f9ff",
-  "theme_color": "#007bff",
-  "orientation": "portrait",
+  "background_color": "#0096db",
+  "theme_color": "#0096db",
+  "description": "Application Atelier PPNC – suivi production, arrêts, personnel et organisation.",
   "icons": [
     {
       "src": "icons/icon-192.png",
